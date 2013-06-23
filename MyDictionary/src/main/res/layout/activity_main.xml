@@ -44,7 +44,8 @@
             android:drawableRight="@android:drawable/ic_menu_search"
             android:imeOptions="actionSearch"
             android:layout_marginRight="5dp"
-            android:layout_alignBottom="@+id/button"/>
+            android:layout_alignBottom="@+id/button"
+            android:hint="Start typing here to search"/>
 
     <ImageView
             android:layout_width="wrap_content"
@@ -55,5 +56,16 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
             android:layout_margin="65dp"/>
+
+    <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="New Button"
+            android:id="@+id/button2"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="55dp"
+            android:onClick="btnCheck"
+            android:visibility="gone"/>
 
 </RelativeLayout>

@@ -82,7 +82,6 @@ public class MainActivity extends Activity {
     String dialogMeaningText = null;
     int dialogMeaningWordPosition = 0;
     int positionForAskDelete = 0;//position for edit and delete dialog
-    //    int dialogEditWordPosition = 0;
     boolean dialogEditIsOpen = false;
     boolean dialogAskDeleteIsOpen = false;
 
@@ -97,7 +96,6 @@ public class MainActivity extends Activity {
     private boolean markSeveral = false;
     Parcelable listViewPosition = null;
 
-    SparseBooleanArray arrayItemsChecked = null;
     ArrayList<Integer> checkedPositionsInt;
 
     boolean isMark = true;
@@ -117,6 +115,7 @@ public class MainActivity extends Activity {
         if (markSeveral) {
             adapterWords1 = new Adapter(MainActivity.this, R.layout.row, arrayItemsToShow);
             markSeveral = false;
+            clearMarks();
             setElementsId();
             refreshListViewData();
         } else {
@@ -137,6 +136,9 @@ public class MainActivity extends Activity {
     }
 
 
+
+
+
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
@@ -149,7 +151,6 @@ public class MainActivity extends Activity {
 
         setImgAddVisibility();
         restore(icicle);
-
 
         listeners();
     }
@@ -181,7 +182,6 @@ public class MainActivity extends Activity {
                     } else {
                         arrayItemsToShow.get(position).setChChecked(true);
                     }
-//                    arrayItemsChecked = items.getCheckedItemPositions();
                     adapterWords1.notifyDataSetChanged();
                 }
             }
@@ -195,10 +195,13 @@ public class MainActivity extends Activity {
                     openOptionsMenu();
                 } else {
                     markSeveral = true;
+                    invalidateOptionsMenu();
                     setElementsId();
                     refreshListViewData();
+                    if (isFromSearch) {
+                        search(etSearch.getText().toString());
+                    }
                     arrayItemsToShow.get(position).setChChecked(true);
-//                    arrayItemsChecked = items.getCheckedItemPositions();
                     adapterWords1.notifyDataSetChanged();
                 }
                 return false;
@@ -348,7 +351,6 @@ public class MainActivity extends Activity {
             }
         }
     }
-
     void saveNewWord() {
         editorWords.putString("word" + Integer.toString(count), newWord);
         editorMeanings.putString("meaning" + Integer.toString(count), newMeaning);
@@ -491,7 +493,6 @@ public class MainActivity extends Activity {
         Button theButton = dialogEdit.getButton(DialogInterface.BUTTON_POSITIVE);
         theButton.setOnClickListener(new CustomListenerEdit(dialogEdit));
     }
-
     class CustomListenerEdit implements View.OnClickListener {
         private final Dialog dialog;
 
@@ -642,6 +643,13 @@ public class MainActivity extends Activity {
         if (isFromSearch) {
             search(etSearch.getText().toString());
         }
+
+        if (markSeveral && checkedPositionsInt.size() > 0) {
+            for (int i = 0; i < arrayItemsToShow.size(); i++) {
+                arrayItemsToShow.get(i).setChChecked(checkedPositionsInt.get(i) == 0 ? true : false);
+            }
+            adapterWords1.notifyDataSetChanged();
+        }
     }
 
 
@@ -759,8 +767,6 @@ public class MainActivity extends Activity {
             markSeveral = icicle.getBoolean("markSeveral");
 
         }
-
-
         if (dialogAddNewIsOpen) {
             dialogAddNew();
             EditText wordAddNew = (EditText) dialogAddNew.findViewById(R.id.word);
@@ -792,35 +798,13 @@ public class MainActivity extends Activity {
         }
 
         if (markSeveral) {
-            setElementsId();
             listViewPosition = icicle.getParcelable("listViewPosition");
             checkedPositionsInt = icicle.getIntegerArrayList("checkedPositionsInt");
-            setMarksAfterChange();
+            refreshListViewData();
         }
     }
 
 
-    void setMarksAfterChange() {
-        for (int i = 0; i < arrayItemsToShow.size(); i++) {
-            arrayItemsToShow.get(i).setChChecked(checkedPositionsInt.get(i) == 0);
-
-        }
-        adapterWords1.notifyDataSetChanged();
-//        if (markSeveral && !isFromDeleteMark) {
-//            if (checkedPositionsInt.size() > 0) {
-//                for (int i = 0; i < arrayItemsToShow.size(); i++) {
-//                    if (checkedPositionsInt.get(i) == 0) {
-//                        arrayItemsToShow.get(i).setChChecked(true);
-//                    }
-//                    else {
-//                        arrayItemsToShow.get(i).setChChecked(false);
-//                    }
-//                    adapterWords1.notifyDataSetChanged();
-//                    items.setAdapter(adapterWords1);
-//                }
-//            }
-//        }
-    }
 
     void clearMarks() {
         for (int i = 0; i < arrayItemsToShow.size(); i++) {
@@ -885,10 +869,9 @@ public class MainActivity extends Activity {
 
         if (markSeveral) {
             icicle.putBoolean("markSeveral", markSeveral);
-            arrayItemsChecked = items.getCheckedItemPositions();
             checkedPositionsInt.clear();
             for (int i = 0; i < arrayItemsToShow.size(); i++) {
-                checkedPositionsInt.add(i, arrayItemsChecked.get(i) ? 0 : 1);
+                checkedPositionsInt.add(i, arrayItemsToShow.get(i).isChChecked() ? 0 : 1);
             }
             icicle.putIntegerArrayList("checkedPositionsInt", checkedPositionsInt);
         }
@@ -937,10 +920,9 @@ public class MainActivity extends Activity {
 
 
     void menu_Delete() {
-        arrayItemsChecked = items.getCheckedItemPositions();
         checkedPositionsInt.clear();
         for (int i = 0; i < arrayItemsToShow.size(); i++) {
-            checkedPositionsInt.add(i, arrayItemsChecked.get(i) ? 0 : 1);
+            checkedPositionsInt.add(i, arrayItemsToShow.get(i).isChChecked() ? 0 : 1);
         }
         boolean arrayItemsCheckedIsEmpty = true;
         for (int i = 0; i < checkedPositionsInt.size(); i++) {
@@ -975,7 +957,6 @@ public class MainActivity extends Activity {
         super.onResume();
         getPrefs();
         refreshListViewData();
-//        items.setSelectionFromTop(listViewPosition, 0);
         items.onRestoreInstanceState(listViewPosition);
 
     }
@@ -1034,20 +1015,22 @@ public class MainActivity extends Activity {
             case R.id.action_markAll:
                 if (isMark) {
                     for (int i = 0; i < items.getCount(); i++) {
-                        items.setItemChecked(i, true);
+                        arrayItemsToShow.get(i).setChChecked(true);
                     }
                     isMark = false;
                 } else {
                     for (int i = 0; i < items.getCount(); i++) {
-                        items.setItemChecked(i, false);
+                        arrayItemsToShow.get(i).setChChecked(false);
                     }
                     isMark = true;
                 }
+                adapterWords1.notifyDataSetChanged();
                 return true;
 
 
             case R.id.action_cancel:
                 markSeveral = false;
+                clearMarks();
                 setElementsId();
                 refreshListViewData();
                 if (isFromSearch) {
@@ -1060,4 +1043,51 @@ public class MainActivity extends Activity {
     }
 
 
+
+    void dialogMeaning1() {
+        LayoutInflater inflater = this.getLayoutInflater();
+        dialogAddNew = new AlertDialog.Builder(this)
+                .setView(inflater.inflate(R.layout.dialog_meaning, null))
+                .setPositiveButton(R.string.save, new Dialog.OnClickListener() {
+                            public void onClick(DialogInterface d, int which) {
+
+                            }
+                        })
+                .setNegativeButton(R.string.cancel, null)
+                .create();
+        dialogAddNew.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+        dialogAddNew.show();
+        dialogAddNew.setCanceledOnTouchOutside(false);
+    }
+
+
+
+
+
+
+
+
+    public void btnCheck(View view) {
+//        MainActivity.this.startActivity(new Intent(MainActivity.this, DialogMeaning.class));
+        dialogMeaning1();
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

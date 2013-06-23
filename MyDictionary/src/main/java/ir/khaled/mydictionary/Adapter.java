@@ -55,10 +55,6 @@ public class Adapter extends ArrayAdapter<Custom>{
             holder.item2.setText(custom.getDate());
             holder.item3.setChecked(custom.isChChecked());
             holder.item3.setVisibility(custom.isChVisible() ? View.VISIBLE : View.INVISIBLE);
-
-//            if (holder.item3.isChecked()) {
-//                holder.item1.setBackgroundColor(R.color.blue);
-//            }
         }
         return v;
     }
