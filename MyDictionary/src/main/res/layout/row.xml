@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:descendantFocusability="blocksDescendants">
+
+    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:id="@+id/text1"
+              android:layout_width="fill_parent"
+              android:layout_height="wrap_content"
+              android:paddingLeft="5dp"
+              android:paddingRight="5dp"
+              android:paddingTop="17dp"
+              android:paddingBottom="17dp"
+              android:gravity="center_vertical|center_horizontal|left"
+              android:textSize="18dp"
+              tools:ignore="NewApi"
+              android:text="I'm The Word"/>
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="2dp"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Small Text"
+            android:id="@+id/text2"
+            android:layout_alignParentRight="true"
+            android:textColor="#010101"
+            tools:ignore="NewApi"
+            android:layout_marginRight="35dp"
+            android:textSize="11dp"
+            android:layout_alignBottom="@+id/text1"/>
+
+    <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/checkBox"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:checked="false"
+            android:layout_alignBaseline="@+id/text1"
+            android:layout_marginRight="2dp"/>
+
+</RelativeLayout>
