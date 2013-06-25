@@ -14,9 +14,15 @@
                 android:entries="@array/searchMethodItems"
                 android:entryValues="@array/searchMethodValues" />
         <CheckBoxPreference
-                android:title = "Show number of the item"
+                android:title = "Show the number"
                 android:key="showItemNumber"
+                android:summary="whether show the item's number in the list or not"
                 android:defaultValue="true"/>
+        <CheckBoxPreference
+                android:title = "Show the meaning "
+                android:key="showItemMeaning"
+                android:summary="whether show the item's meaning in the list or not"
+                android:defaultValue="false"/>
 
     </PreferenceCategory>
 

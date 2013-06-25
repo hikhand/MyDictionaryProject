@@ -2,11 +2,11 @@ package ir.khaled.mydictionary;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.app.Activity;
 import android.os.Handler;
@@ -14,20 +14,17 @@ import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
-import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.SubMenu;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -38,16 +35,20 @@ import android.view.KeyEvent;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import ir.khaled.mydictionary.R;
 
 public class MainActivity extends Activity {
     public SharedPreferences Words;
     public SharedPreferences Meanings;
     public SharedPreferences Dates;
+    public SharedPreferences Counts;
+    public SharedPreferences IsFavorite;
+
     public SharedPreferences Settings;
     SharedPreferences.Editor editorWords;
     SharedPreferences.Editor editorMeanings;
     SharedPreferences.Editor editorDates;
+    SharedPreferences.Editor editorCounts;
+    SharedPreferences.Editor editorIsFavorite;
     SharedPreferences.Editor editorSettings;
 
     public String newWord;
@@ -65,22 +66,23 @@ public class MainActivity extends Activity {
 
     ArrayList<Custom> arrayItems;
     ArrayList<Custom> arrayItemsToShow;
-    ArrayList<String> arrayMeaning;
-    ArrayList<String> arrayMeaningToShow;
+
 
     public Adapter adapterWords1;
 
 
     public AlertDialog dialogAddNew;
-    public AlertDialog dialogEdit;
     public AlertDialog dialogMeaning;
+    public AlertDialog dialogEdit;
+//    public AlertDialog dialogMeaning;
     public AlertDialog dialogAskDelete;
 
     boolean dialogAddNewIsOpen = false;
 
+//    boolean dialogMeaningIsOpen = false;
     boolean dialogMeaningIsOpen = false;
-    String dialogMeaningText = null;
     int dialogMeaningWordPosition = 0;
+
     int positionForAskDelete = 0;//position for edit and delete dialog
     boolean dialogEditIsOpen = false;
     boolean dialogAskDeleteIsOpen = false;
@@ -89,6 +91,7 @@ public class MainActivity extends Activity {
 
     String searchMethod;
     boolean showItemNumber = true;
+    boolean showItemMeaning = false;
 
     SharedPreferences prefs;
 
@@ -115,9 +118,9 @@ public class MainActivity extends Activity {
         if (markSeveral) {
             adapterWords1 = new Adapter(MainActivity.this, R.layout.row, arrayItemsToShow);
             markSeveral = false;
-            clearMarks();
             setElementsId();
             refreshListViewData();
+            clearMarks();
         } else {
             if (doubleBackToExitPressedOnce) {
                 super.onBackPressed();
@@ -134,8 +137,6 @@ public class MainActivity extends Activity {
             }, 2000);
         }
     }
-
-
 
 
 
@@ -174,15 +175,19 @@ public class MainActivity extends Activity {
                     return;
                 }
 
-                if (!markSeveral) {
-                    dialogMeaning(isFromSearch, position);
-                } else {
+                if (markSeveral) {
                     if (arrayItemsToShow.get(position).isChChecked()) {
                         arrayItemsToShow.get(position).setChChecked(false);
+                        adapterWords1.notifyDataSetChanged();
+                        notifyCheckedPositionsInt();
                     } else {
                         arrayItemsToShow.get(position).setChChecked(true);
+                        adapterWords1.notifyDataSetChanged();
+                        notifyCheckedPositionsInt();
                     }
-                    adapterWords1.notifyDataSetChanged();
+                } else {
+                    refreshItemsCount(getPosition(position));
+                    dialogMeaning(isFromSearch, getPosition(position));
                 }
             }
         });
@@ -195,7 +200,10 @@ public class MainActivity extends Activity {
                     openOptionsMenu();
                 } else {
                     markSeveral = true;
-                    invalidateOptionsMenu();
+                    int currentApi  = android.os.Build.VERSION.SDK_INT;
+                    if (currentApi >= Build.VERSION_CODES.HONEYCOMB){
+                        invalidateOptionsMenu();
+                    }
                     setElementsId();
                     refreshListViewData();
                     if (isFromSearch) {
@@ -203,6 +211,7 @@ public class MainActivity extends Activity {
                     }
                     arrayItemsToShow.get(position).setChChecked(true);
                     adapterWords1.notifyDataSetChanged();
+                    notifyCheckedPositionsInt();
                 }
                 return false;
             }
@@ -245,6 +254,12 @@ public class MainActivity extends Activity {
         });
     }
 
+    void notifyCheckedPositionsInt() {
+        checkedPositionsInt.clear();
+        for (int i = 0; i < arrayItemsToShow.size(); i++) {
+            checkedPositionsInt.add(i, arrayItemsToShow.get(i).isChChecked() ? 0 : 1);
+        }
+    }
 
     //Get Preferences
     //
@@ -254,6 +269,7 @@ public class MainActivity extends Activity {
         prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         searchMethod = prefs.getString("searchMethod", "wordsAndMeanings");
         showItemNumber = prefs.getBoolean("showItemNumber", true);
+        showItemMeaning = prefs.getBoolean("showItemMeaning", false);
     }
 
 
@@ -265,19 +281,22 @@ public class MainActivity extends Activity {
         Words = getSharedPreferences("Words", 0);
         Meanings = getSharedPreferences("Meanings", 0);
         Dates = getSharedPreferences("Dates", 0);
+        Counts = getSharedPreferences("Count", 0);
+        IsFavorite = getSharedPreferences("IsFavorite", 0);
         Settings = getSharedPreferences("Settings", 0);
+
         editorWords = Words.edit();
         editorMeanings = Meanings.edit();
-        editorSettings = Settings.edit();
         editorDates = Dates.edit();
+        editorCounts = Counts.edit();
+        editorIsFavorite = IsFavorite.edit();
+        editorSettings = Settings.edit();
 
         items = (ListView) findViewById(R.id.listView);
         etSearch = (EditText) findViewById(R.id.etSearch);
 
         arrayItems = new ArrayList<Custom>();
         arrayItemsToShow = new ArrayList<Custom>();
-        arrayMeaning = new ArrayList<String>();
-        arrayMeaningToShow = new ArrayList<String>();
 
         if (markSeveral) {
             adapterWords1 = new Adapter(MainActivity.this, R.layout.row, arrayItemsToShow);
@@ -290,8 +309,8 @@ public class MainActivity extends Activity {
         count = Integer.parseInt(countStr);
 
         dialogAddNew = new AlertDialog.Builder(this).create();
-        dialogEdit = new AlertDialog.Builder(this).create();
         dialogMeaning = new AlertDialog.Builder(this).create();
+        dialogEdit = new AlertDialog.Builder(this).create();
         dialogAskDelete = new AlertDialog.Builder(this).create();
 
         if (checkedPositionsInt == null) {
@@ -313,8 +332,6 @@ public class MainActivity extends Activity {
                 .setPositiveButton(R.string.save,
                         new Dialog.OnClickListener() {
                             public void onClick(DialogInterface d, int which) {
-
-
                             }
                         })
                 .setNegativeButton(R.string.cancel, null)
@@ -351,16 +368,20 @@ public class MainActivity extends Activity {
             }
         }
     }
+
     void saveNewWord() {
         editorWords.putString("word" + Integer.toString(count), newWord);
         editorMeanings.putString("meaning" + Integer.toString(count), newMeaning);
         editorDates.putString("date" + Integer.toString(count), newDate);
+        editorCounts.putInt("count" + Integer.toString(count), 0);
+        editorIsFavorite.putBoolean("date" + Integer.toString(count), false);
         editorWords.putString("count", Integer.toString(count + 1));
 
         editorWords.commit();
         editorMeanings.commit();
         editorDates.commit();
-
+        editorCounts.commit();
+        editorIsFavorite.commit();
         count++;
         setImgAddVisibility();
     }
@@ -369,34 +390,6 @@ public class MainActivity extends Activity {
     //Dialog Meaning
     //
     //
-    void dialogMeaning(boolean fromSearch, int position) {
-        final boolean isFromSearchForEdit = fromSearch;
-        final int positionForEdit = position;
-        dialogMeaningWordPosition = position;
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        if (fromSearch) {
-            int realPosition = getPosition(position);
-            builder.setMessage(arrayMeaning.get(realPosition));
-            dialogMeaningText = arrayMeaning.get(realPosition);
-        } else {
-            builder.setMessage(arrayMeaning.get(position));
-            dialogMeaningText = arrayMeaning.get(position);
-        }
-        builder.setIcon(android.R.drawable.ic_dialog_info);
-        builder.setPositiveButton(R.string.edit, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialogEdit(isFromSearchForEdit, positionForEdit);
-            }
-        });
-        builder.setNegativeButton("Close", null);
-        dialogMeaning = builder.create();
-        dialogMeaning.show();
-
-        TextView textView = (TextView) dialogMeaning.findViewById(android.R.id.message);
-        textView.setTextSize(28);
-    }
 
 
     //Search
@@ -406,27 +399,23 @@ public class MainActivity extends Activity {
         int found = 0;
         if (count > 0) {
             arrayItemsToShow.clear();
-            arrayMeaningToShow.clear();
             for (int i = 0; i < count; i++) {
                 key = key.toUpperCase();
                 String word = arrayItems.get(i).getWord().toUpperCase();
-                String meaning = arrayMeaning.get(i).toUpperCase();
+                String meaning = arrayItems.get(i).getMeaning().toUpperCase();
 
                 if (searchMethod.equals("wordsAndMeanings") ? word.contains(key) || meaning.contains(key) :
                         searchMethod.equals("justWords") ? word.contains(key) :
                                 meaning.contains(key)) {
 
-                    arrayMeaningToShow.add(Meanings.getString("meaning" + Integer.toString(i), "meaning" + Integer.toString(i)));
+                    String iStr = Integer.toString(i);
 
-                    if (showItemNumber) {
-                        arrayItemsToShow.add(new Custom(i + 1 + ". " + Words.getString("word" + Integer.toString(i), i + 1 + ". " + "word" + Integer.toString(i)),
-                                Dates.getString("date" + Integer.toString(i), "date" + Integer.toString(i)),
-                                markSeveral));
-                    } else {
-                        arrayItemsToShow.add(new Custom(Words.getString("word" + Integer.toString(i), "word" + Integer.toString(i)),
-                                Dates.getString("date" + Integer.toString(i), "date" + Integer.toString(i)),
-                                markSeveral));
-                    }
+                    arrayItemsToShow.add(new Custom(showItemNumber ? i + 1 + ". " + Words.getString("word" + iStr, i + 1 + ". " + "word" + iStr) : Words.getString("word" + iStr, "word" + iStr),
+                            Meanings.getString("meaning" + iStr, "meaning" + iStr),
+                            Dates.getString("date" + iStr, "date" + iStr),
+                            Counts.getInt("count" + iStr, 0),
+                            markSeveral,
+                            IsFavorite.getBoolean("isFavorite" + iStr, false)));
                     found++;
                 }
             }
@@ -435,7 +424,16 @@ public class MainActivity extends Activity {
                 items.setAdapter(adapterWords1);
             }
         }
+
+        if (count > 0) {
+            for (int i =0; i < arrayItemsToShow.size(); i++) {
+                arrayItemsToShow.get(i).setMeaningVisible(showItemMeaning);
+            }
+        }
+
         isFromSearch = true;
+
+        notifyCheckedPositionsInt();
     }
 
 
@@ -464,7 +462,7 @@ public class MainActivity extends Activity {
                         dialogAskDelete(positionToSendToDialogDelete);
                     }
                 })
-                .setNegativeButton(R.string.close, new DialogInterface.OnClickListener() {
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialogMeaning(isFromSearch, positionToSendToDialogDelete);
@@ -472,6 +470,8 @@ public class MainActivity extends Activity {
                 });
 
         dialogEdit = d.create();
+        dialogEdit.show();
+
         dialogEdit.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         etNewWord = (EditText) layout.findViewById(R.id.word);
@@ -479,14 +479,13 @@ public class MainActivity extends Activity {
         if (fromSearch) {
             int realPosition = getPosition(position);
             etNewWord.setText(arrayItems.get(realPosition).getWord());
-            etNewMeaning.setText(arrayMeaning.get(realPosition));
+            etNewMeaning.setText(arrayItems.get(realPosition).getMeaning());
 
         } else {
             etNewWord.setText(Words.getString("word" + Integer.toString(position), "word" + Integer.toString(position)));
-            etNewMeaning.setText(arrayMeaning.get(position));
+            etNewMeaning.setText(arrayItems.get(position).getMeaning());
         }
 
-        dialogEdit.show();
         dialogEdit.setCanceledOnTouchOutside(false);
 
 
@@ -565,16 +564,38 @@ public class MainActivity extends Activity {
     void refreshData() {
         editorWords.clear();
         editorMeanings.clear();
+        editorDates.clear();
+        editorCounts.clear();
+        editorIsFavorite.clear();
+
         editorWords.putString("count", Integer.toString(count));
 
         for (int i = 0; i < count; i++) {
             editorWords.putString("word" + Integer.toString(i), arrayItems.get(i).getWord());
-            editorWords.putString("date" + Integer.toString(i), arrayItems.get(i).getDate());
-            editorMeanings.putString("meaning" + Integer.toString(i), arrayMeaning.get(i));
+            editorMeanings.putString("meaning" + Integer.toString(i), arrayItems.get(i).getMeaning());
+            editorDates.putString("date" + Integer.toString(i), arrayItems.get(i).getDate());
+            editorCounts.putInt("count" + Integer.toString(i), arrayItems.get(i).getCount());
+            editorIsFavorite.putBoolean("isFavorite" + Integer.toString(i), arrayItems.get(i).isFavorite());
         }
         editorWords.commit();
         editorMeanings.commit();
+        editorDates.commit();
+        editorCounts.commit();
+        editorIsFavorite.commit();
     }
+
+
+
+
+    void refreshItemsCount(int position) {
+        int count = arrayItems.get(getPosition(position)).getCount();
+        editorCounts.putInt("count" + position, arrayItems.get(position).getCount());
+        editorCounts.commit();
+
+        arrayItems.get(getPosition(position)).setCount(count + 1);
+        arrayItemsToShow.get(getPosition(position)).setCount(count + 1);
+    }
+
 
 
     //Delete
@@ -584,15 +605,18 @@ public class MainActivity extends Activity {
         editorWords.remove("word" + positionReal);
         editorMeanings.remove("meaning" + positionReal);
         editorDates.remove("date" + positionReal);
+        editorCounts.remove("date" + positionReal);
+        editorIsFavorite.remove("date" + positionReal);
         arrayItems.remove(positionReal);
         arrayItemsToShow.remove(positionShow);
-        arrayMeaning.remove(positionReal);
-        arrayMeaningToShow.remove(positionShow);
+
         count--;
 
         editorWords.commit();
         editorMeanings.commit();
         editorDates.commit();
+        editorCounts.commit();
+        editorIsFavorite.commit();
 
         if (!isFromSearch) {
             setImgAddVisibility();
@@ -614,26 +638,25 @@ public class MainActivity extends Activity {
         if (count > 0) {
             arrayItems.clear();
             arrayItemsToShow.clear();
-            arrayMeaning.clear();
-            arrayMeaningToShow.clear();
+
             for (int i = 0; i < count; i++) {
-                arrayItems.add(new Custom(Words.getString("word" + Integer.toString(i), "word" + Integer.toString(i)),
-                        Dates.getString("date" + Integer.toString(i), "date" + Integer.toString(i)),
-                        markSeveral));
-                arrayMeaning.add(Meanings.getString("meaning" + Integer.toString(i), "meaning" + Integer.toString(i)));
+                String iStr = Integer.toString(i);
 
-                arrayMeaningToShow.add(Meanings.getString("meaning" + Integer.toString(i), "meaning" + Integer.toString(i)));
+                arrayItems.add(new Custom(Words.getString("word" + iStr, i + 1 + ". " + "word" + iStr),
+                        Meanings.getString("meaning" + iStr, "meaning" + iStr),
+                        Dates.getString("date" + iStr, "date" + iStr),
+                        Counts.getInt("count" + iStr, 0),
+                        markSeveral,
+                        IsFavorite.getBoolean("isFavorite" + iStr, false)));
 
-                if (showItemNumber) {
-                    arrayItemsToShow.add(new Custom(i + 1 + ". " + Words.getString("word" + Integer.toString(i), i + 1 + ". " + "word" + Integer.toString(i)),
-                            Dates.getString("date" + Integer.toString(i), "date" + Integer.toString(i)),
-                            markSeveral));
-                } else {
-                    arrayItemsToShow.add(new Custom(Words.getString("word" + Integer.toString(i), "word" + Integer.toString(i)),
-                            Dates.getString("date" + Integer.toString(i), "date" + Integer.toString(i)),
-                            markSeveral));
 
-                }
+                arrayItemsToShow.add(new Custom(showItemNumber ? i + 1 + ". " + Words.getString("word" + iStr, i + 1 + ". " + "word" + iStr) : Words.getString("word" + iStr, "word" + iStr),
+                        Meanings.getString("meaning" + iStr, "meaning" + iStr),
+                        Dates.getString("date" + iStr, "date" + iStr),
+                        Counts.getInt("count" + iStr, 0),
+                        markSeveral,
+                        IsFavorite.getBoolean("isFavorite" + iStr, false)));
+                arrayItemsToShow.get(i).setMeaningVisible(showItemMeaning);
             }
         }
         adapterWords1.notifyDataSetChanged();
@@ -644,10 +667,11 @@ public class MainActivity extends Activity {
             search(etSearch.getText().toString());
         }
 
-        if (markSeveral && checkedPositionsInt.size() > 0) {
-            for (int i = 0; i < arrayItemsToShow.size(); i++) {
-                arrayItemsToShow.get(i).setChChecked(checkedPositionsInt.get(i) == 0 ? true : false);
+        if (markSeveral && checkedPositionsInt.size() > 0 && !isFromDeleteMark) {
+            for (int i = 0; i < checkedPositionsInt.size(); i++) {
+                arrayItemsToShow.get(i).setChChecked(checkedPositionsInt.get(i) == 0);
             }
+            isFromDeleteMark = false;
             adapterWords1.notifyDataSetChanged();
         }
     }
@@ -676,14 +700,14 @@ public class MainActivity extends Activity {
         boolean found = false;
         for (int i = 0; i < arrayItems.size(); i++) {
             if (arrayItems.get(i).getWord().equals(arrayItemsToShow.get(position).getWord()) &&
-                    arrayMeaning.get(i).equals(arrayMeaningToShow.get(position))) {
+                    arrayItems.get(i).getMeaning().equals(arrayItemsToShow.get(position).getMeaning())) {
 
                 realPosition = i;
                 break;
             }
             for (int j = 0; j < arrayItems.size(); j++) {
                 if ((Integer.toString(j + 1) + ". " + arrayItems.get(i).getWord()).equals(arrayItemsToShow.get(position).getWord()) &&
-                        arrayMeaning.get(i).equals(arrayMeaningToShow.get(position))) {
+                        arrayItems.get(i).getMeaning().equals(arrayItemsToShow.get(position).getMeaning())) {
 
                     realPosition = i;
                     found = true;
@@ -714,7 +738,7 @@ public class MainActivity extends Activity {
             return false;
         }
         for (int i = 0; i < count; i++) {
-            if (newWord.equals(arrayItems.get(i)) && newMeaning.equals(arrayMeaning.get(i))) {
+            if (newWord.equals(arrayItems.get(i)) && newMeaning.equals(arrayItems.get(i).getMeaning())) {
                 Toast.makeText(this, "The Word exists in the database", Toast.LENGTH_SHORT).show();
                 return false;
             }
@@ -741,13 +765,13 @@ public class MainActivity extends Activity {
             return false;
         }
 
-        if (arrayItems.get(positionForAskDelete).getWord().equals(newWord) && arrayMeaning.get(positionForAskDelete).equals(newWord)) {
+        if (arrayItems.get(positionForAskDelete).getWord().equals(newWord) && arrayItems.get(positionForAskDelete).getMeaning().equals(newWord)) {
             Toast.makeText(this, "every Thing's the same.", Toast.LENGTH_SHORT).show();
             return false;
         }
 
         for (int i = 0; i < count; i++) {
-            if (newWord.equals(arrayItems.get(i)) && newMeaning.equals(arrayMeaning.get(i))) {
+            if (newWord.equals(arrayItems.get(i)) && newMeaning.equals(arrayItems.get(i).getMeaning())) {
                 Toast.makeText(this, "The Word exists in the database", Toast.LENGTH_SHORT).show();
                 return false;
             }
@@ -775,7 +799,6 @@ public class MainActivity extends Activity {
             meaningAddNew.setText(icicle.getString("editTextMeaningAddNew"));
         }
         if (dialogMeaningIsOpen) {
-            dialogMeaningText = icicle.getString("dialogMeaningText");
             dialogMeaningWordPosition = icicle.getInt("dialogMeaningWordPosition");
             isFromSearch = icicle.getBoolean("dialogMeaningIsFromSearch");
             dialogMeaning(isFromSearch, dialogMeaningWordPosition);
@@ -809,6 +832,7 @@ public class MainActivity extends Activity {
     void clearMarks() {
         for (int i = 0; i < arrayItemsToShow.size(); i++) {
             arrayItemsToShow.get(i).setChChecked(false);
+            notifyCheckedPositionsInt();
         }
         adapterWords1.notifyDataSetChanged();
     }
@@ -837,7 +861,6 @@ public class MainActivity extends Activity {
 
         if (dialogMeaning.isShowing()) {
             icicle.putBoolean("dialogMeaningIsOpen", dialogMeaning.isShowing());
-            icicle.putString("dialogMeaningText", dialogMeaningText);
             icicle.putInt("dialogMeaningWordPosition", dialogMeaningWordPosition);
             icicle.putBoolean("dialogMeaningIsFromSearch", isFromSearch);
         }
@@ -863,16 +886,13 @@ public class MainActivity extends Activity {
             icicle.putString("dialogEditMeaningText", newMeaningEdit);
         }
 
-        icicle.putBoolean("dialogMeaningIsOpen", dialogMeaning.isShowing());
-        icicle.putBoolean("dialogEditIsOpen", dialogEdit.isShowing());
+//        icicle.putBoolean("dialogMeaningIsOpen", dialogMeaning.isShowing());
+//        icicle.putBoolean("dialogEditIsOpen", dialogEdit.isShowing());
 
 
         if (markSeveral) {
             icicle.putBoolean("markSeveral", markSeveral);
-            checkedPositionsInt.clear();
-            for (int i = 0; i < arrayItemsToShow.size(); i++) {
-                checkedPositionsInt.add(i, arrayItemsToShow.get(i).isChChecked() ? 0 : 1);
-            }
+
             icicle.putIntegerArrayList("checkedPositionsInt", checkedPositionsInt);
         }
 
@@ -904,6 +924,7 @@ public class MainActivity extends Activity {
                     }
                     i++;
                 }
+                isFromDeleteMark = true;
                 Toast.makeText(MainActivity.this, "Successfully deleted.", Toast.LENGTH_SHORT).show();
             }
         });
@@ -920,19 +941,13 @@ public class MainActivity extends Activity {
 
 
     void menu_Delete() {
-        checkedPositionsInt.clear();
-        for (int i = 0; i < arrayItemsToShow.size(); i++) {
-            checkedPositionsInt.add(i, arrayItemsToShow.get(i).isChChecked() ? 0 : 1);
-        }
+
         boolean arrayItemsCheckedIsEmpty = true;
-        for (int i = 0; i < checkedPositionsInt.size(); i++) {
-            if (checkedPositionsInt.get(i) == 0) {
-                arrayItemsCheckedIsEmpty = false;
-                break;
-            } else {
-                arrayItemsCheckedIsEmpty = true;
-            }
-        }
+        if (checkedPositionsInt.contains(0))
+            arrayItemsCheckedIsEmpty = false;
+        else
+            arrayItemsCheckedIsEmpty = true;
+
         if (arrayItemsCheckedIsEmpty) {
             Toast.makeText(MainActivity.this, "You haven't selected any item.", Toast.LENGTH_SHORT).show();
         } else {
@@ -949,7 +964,11 @@ public class MainActivity extends Activity {
     @Override
     public void onStop() {
         super.onStop();
+        dialogAddNew.dismiss();
+        dialogEdit.dismiss();
+        dialogMeaning.dismiss();
     }
+
 
 
     @Override
@@ -1016,11 +1035,13 @@ public class MainActivity extends Activity {
                 if (isMark) {
                     for (int i = 0; i < items.getCount(); i++) {
                         arrayItemsToShow.get(i).setChChecked(true);
+                        notifyCheckedPositionsInt();
                     }
                     isMark = false;
                 } else {
                     for (int i = 0; i < items.getCount(); i++) {
                         arrayItemsToShow.get(i).setChChecked(false);
+                        notifyCheckedPositionsInt();
                     }
                     isMark = true;
                 }
@@ -1036,7 +1057,6 @@ public class MainActivity extends Activity {
                 if (isFromSearch) {
                     search(etSearch.getText().toString());
                 }
-                clearMarks();
                 return true;
         }
         return super.onMenuItemSelected(featureId, item);
@@ -1044,7 +1064,63 @@ public class MainActivity extends Activity {
 
 
 
-    void dialogMeaning1() {
+
+
+
+
+    void dialogMeaning(boolean fromSearch, int position) {
+        LayoutInflater inflater = this.getLayoutInflater();
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(inflater.inflate(R.layout.dialog_meaning, null));
+        final int positionForEdit = position;
+        builder.setPositiveButton(R.string.edit, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialogEdit(isFromSearch, positionForEdit);
+            }
+        });
+        builder.setNegativeButton(R.string.close, null);
+        int currentApi  = android.os.Build.VERSION.SDK_INT;
+//        if (currentApi >= Build.VERSION_CODES.HONEYCOMB){
+//            builder.setIconAttribute(android.R.drawable.ic_dialog_info);
+//        }else {
+            builder.setIcon(android.R.drawable.ic_dialog_info);
+//        }
+        dialogMeaning = builder.create();
+        dialogMeaning.show();
+
+        TextView tvDate = (TextView) dialogMeaning.findViewById(R.id.dmDate);
+        TextView tvWord = (TextView) dialogMeaning.findViewById(R.id.dmWord);
+        TextView tvMeaning = (TextView) dialogMeaning.findViewById(R.id.dmMeaning);
+        TextView tvCount = (TextView) dialogMeaning.findViewById(R.id.dmCount);
+        ImageButton tvFavorite = (ImageButton) dialogMeaning.findViewById(R.id.dmFavorite);
+
+        final boolean isFromSearchForEdit = fromSearch;
+        dialogMeaningWordPosition = position;
+
+
+        tvMeaning.setText(arrayItemsToShow.get(position).getMeaning());
+        tvWord.setText(arrayItems.get(position).getWord());
+        tvCount.setText(Integer.toString(arrayItemsToShow.get(position).getCount()));
+        tvDate.setText(arrayItemsToShow.get(position).getDate());
+
+        int x =0;
+        int x1 =0;
+
+
+        dialogMeaning.setCanceledOnTouchOutside(true);
+    }
+
+
+
+
+
+
+
+
+
+
+    void dialogMeaning2() {
         LayoutInflater inflater = this.getLayoutInflater();
         dialogAddNew = new AlertDialog.Builder(this)
                 .setView(inflater.inflate(R.layout.dialog_meaning, null))
@@ -1061,33 +1137,8 @@ public class MainActivity extends Activity {
     }
 
 
-
-
-
-
-
-
     public void btnCheck(View view) {
 //        MainActivity.this.startActivity(new Intent(MainActivity.this, DialogMeaning.class));
-        dialogMeaning1();
+        dialogMeaning2();
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -2,63 +2,104 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/dialog_meaning"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="8dp">
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#f2f2f2">
 
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="9999"
-            android:id="@+id/textView"
+            android:id="@+id/dmCount"
             android:layout_alignParentTop="true"
-            android:layout_alignParentRight="true"/>
+            android:layout_alignParentRight="false"
+            android:layout_alignParentLeft="false"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="12dp"
+            android:textStyle="italic"
+            android:padding="1dp"
+            android:layout_toLeftOf="@+id/dmFavorite"/>
 
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="9999/99/99 99:99"
-            android:id="@+id/textView2"
+            android:id="@+id/dmDate"
             android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"/>
+            android:layout_marginRight="10dp"
+            android:layout_alignParentRight="false"
+            android:layout_marginLeft="12dp"
+            android:gravity="center"
+            android:layout_alignParentLeft="true"
+            android:layout_marginTop="10dp"
+            android:padding="1dp"
+            />
 
-    <TextView
+    <ScrollView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="9999"
-            android:id="@+id/textView3"
+            android:id="@+id/scrollView2"
+            android:layout_marginLeft="12dp"
             android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"/>
+            android:layout_marginTop="25dp"
+            android:fillViewport="false"
+            android:layout_toLeftOf="@+id/dmFavorite"
+            android:layout_alignParentLeft="true"
+            >
 
-    <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Large Text"
-            android:id="@+id/textView4"
-            android:layout_below="@+id/textView2"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="10dp"/>
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:id="@+id/dmWord"
+                android:layout_below="@+id/dmDate"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:text="im the word im the word im the word im the word im the word im the word "
+                android:textStyle="italic"
+                android:textColor="#777577"
+                android:gravity="left"/>
+    </ScrollView>
+
+    <ImageView
+            android:layout_width="fill_parent"
+            android:layout_height="2dp"
+            android:background="#FFFFBB33"
+            android:id="@+id/imageView"
+            android:layout_below="@+id/scrollView2"
+            android:layout_marginTop="4dp"/>
 
     <ScrollView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:id="@+id/scrollView"
-            android:layout_below="@+id/textView4"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="5dp"
+            android:layout_below="@+id/imageView"
+            android:layout_marginTop="10dp"
             android:fillViewport="false"
-            >
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="12dp"
+            android:minHeight="50dp"
+            android:paddingBottom="15dp">
 
         <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:id="@+id/textView5"
-                android:text="These excellant intentions were strengthed when he enterd the Father Superior's diniing-room, though, stricttly speakin, it was not a dining-room, for the Father Superior had only two rooms alltogether; they were, however, much larger and more comfortable than Father Zossima's. But tehre was was no great luxury about the furnishng of these rooms eithar. The furniture was of mohogany, covered with leather, in the old-fashionned style of 1820 the floor was not even stained, but evreything was shining with cleanlyness, and there were many chioce flowers in the windows; the most sumptuous thing in the room at the moment was, of course, the beatifuly decorated table. The cloth was clean, the service shone; there were three kinds of well-baked bread, two bottles of wine, two of excellent mead, and a large glass jug of kvas -- both the latter made in the monastery, and famous in the neigborhood. There was no vodka. Rakitin related afterwards that there were five dishes: fish-suop made of sterlets, served with little fish paties; then boiled fish served in a spesial way; then salmon cutlets, ice pudding and compote, and finally, blanc-mange. Rakitin found out about all these good things, for he could not resist peeping into the kitchen, where he already had a footing. He had a footting everywhere, and got informaiton about everything. He was of an uneasy and envious temper. He was well aware of his own considerable abilities, and nervously exaggerated them in his self-conceit. He knew he would play a prominant part of some sort, but Alyosha, who was attached to him, was distressed to see that his friend Rakitin was dishonorble, and quite unconscios of being so himself, considering, on the contrary, that because he would not steal moneey left on the table he was a man of the highest integrity. Neither Alyosha nor anyone else could have infleunced him in "/>
+                android:id="@+id/dmMeaning"
+                android:text="and im the meaning and im the meaning and im the meaning and im the meaning"
+                android:textIsSelectable="false"
+                android:textSize="24dp"
+                android:textColor="#363636"/>
     </ScrollView>
+
+    <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/dmFavorite"
+            android:src="@drawable/fav1"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"/>
 
 </RelativeLayout>

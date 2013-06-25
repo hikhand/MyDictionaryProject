@@ -66,6 +66,6 @@
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="55dp"
             android:onClick="btnCheck"
-            android:visibility="gone"/>
+            android:visibility="visible"/>
 
 </RelativeLayout>

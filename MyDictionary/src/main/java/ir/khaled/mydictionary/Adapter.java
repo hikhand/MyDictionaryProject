@@ -52,11 +52,17 @@ public class Adapter extends ArrayAdapter<Custom>{
         final Custom custom = entries.get(position);
         if (custom != null) {
             holder.item1.setText(custom.getWord());
-            holder.item2.setText(custom.getDate());
+            String meaning = custom.getMeaning();
+//            meaning = meaning.length() > 75 ? meaning.substring(0, 75) : meaning;
+            if (meaning.length() > 40) {
+                meaning = meaning.substring(0, 40);
+                meaning+= "...";
+            }
+            holder.item2.setText(meaning);
+            holder.item2.setVisibility(custom.isMeaningVisible() ? View.VISIBLE : View.INVISIBLE);
             holder.item3.setChecked(custom.isChChecked());
             holder.item3.setVisibility(custom.isChVisible() ? View.VISIBLE : View.INVISIBLE);
         }
         return v;
     }
-
 }

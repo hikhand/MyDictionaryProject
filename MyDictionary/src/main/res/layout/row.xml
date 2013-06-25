@@ -14,8 +14,8 @@
               android:layout_height="wrap_content"
               android:paddingLeft="5dp"
               android:paddingRight="5dp"
-              android:paddingTop="17dp"
-              android:paddingBottom="17dp"
+              android:paddingTop="14dp"
+              android:paddingBottom="16dp"
               android:gravity="center_vertical|center_horizontal|left"
               android:textSize="18dp"
               tools:ignore="NewApi"
@@ -26,14 +26,17 @@
             android:layout_height="wrap_content"
             android:paddingTop="2dp"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Small Text"
+            android:text="text view small"
             android:id="@+id/text2"
             android:layout_alignParentRight="true"
             android:textColor="#010101"
             tools:ignore="NewApi"
-            android:layout_marginRight="35dp"
-            android:textSize="11dp"
-            android:layout_alignBottom="@+id/text1"/>
+            android:layout_marginRight="47dp"
+            android:textSize="12dp"
+            android:layout_alignBottom="@+id/text1"
+            android:visibility="visible"
+            android:layout_marginBottom="5dp"
+            android:gravity="right"/>
 
     <CheckBox
             android:layout_width="wrap_content"
@@ -43,6 +46,6 @@
             android:layout_alignParentRight="true"
             android:checked="false"
             android:layout_alignBaseline="@+id/text1"
-            android:layout_marginRight="2dp"/>
+            android:layout_marginRight="10dp"/>
 
 </RelativeLayout>
