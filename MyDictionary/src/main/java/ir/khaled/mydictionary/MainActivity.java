@@ -74,16 +74,17 @@ public class MainActivity extends Activity {
     public AlertDialog dialogAddNew;
     public AlertDialog dialogMeaning;
     public AlertDialog dialogEdit;
-//    public AlertDialog dialogMeaning;
+    //    public AlertDialog dialogMeaning;
     public AlertDialog dialogAskDelete;
 
     boolean dialogAddNewIsOpen = false;
 
-//    boolean dialogMeaningIsOpen = false;
+    //    boolean dialogMeaningIsOpen = false;
     boolean dialogMeaningIsOpen = false;
     int dialogMeaningWordPosition = 0;
 
-    int positionForAskDelete = 0;//position for edit and delete dialog
+    int dialogMeaningShoeingItemCount;
+
     boolean dialogEditIsOpen = false;
     boolean dialogAskDeleteIsOpen = false;
 
@@ -101,7 +102,7 @@ public class MainActivity extends Activity {
 
     ArrayList<Integer> checkedPositionsInt;
 
-    boolean isMark = true;
+    boolean isToMarkAll = true;
 
 
     SimpleDateFormat simpleDateFormat;
@@ -109,7 +110,7 @@ public class MainActivity extends Activity {
 
     private boolean doubleBackToExitPressedOnce = false;
 
-    boolean isFromDeleteMark = false;
+//    boolean isFromDeleteMark = false;
 
     boolean isLongClick = false;//for check items long click
 
@@ -119,7 +120,7 @@ public class MainActivity extends Activity {
             adapterWords1 = new Adapter(MainActivity.this, R.layout.row, arrayItemsToShow);
             markSeveral = false;
             setElementsId();
-            refreshListViewData();
+            refreshListViewData(false);
             clearMarks();
         } else {
             if (doubleBackToExitPressedOnce) {
@@ -139,14 +140,13 @@ public class MainActivity extends Activity {
     }
 
 
-
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         setContentView(R.layout.activity_main);
 
         setElementsId();
-        refreshListViewData();
+        refreshListViewData(false);
         getPrefs();
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
@@ -185,9 +185,10 @@ public class MainActivity extends Activity {
                         adapterWords1.notifyDataSetChanged();
                         notifyCheckedPositionsInt();
                     }
-                } else {
+                } else if (!(arrayItemsToShow.get(position).getWord().equals("   Nothing found") &&
+                        arrayItemsToShow.get(position).getMeaning().equals("My Dictionary") && arrayItemsToShow.get(position).getDate().equals("KHaledBLack73"))){
                     refreshItemsCount(getPosition(position));
-                    dialogMeaning(isFromSearch, getPosition(position));
+                    dialogMeaning(getPosition(position));
                 }
             }
         });
@@ -200,12 +201,12 @@ public class MainActivity extends Activity {
                     openOptionsMenu();
                 } else {
                     markSeveral = true;
-                    int currentApi  = android.os.Build.VERSION.SDK_INT;
-                    if (currentApi >= Build.VERSION_CODES.HONEYCOMB){
+                    int currentApi = android.os.Build.VERSION.SDK_INT;
+                    if (currentApi >= Build.VERSION_CODES.HONEYCOMB) {
                         invalidateOptionsMenu();
                     }
                     setElementsId();
-                    refreshListViewData();
+                    refreshListViewData(false);
                     if (isFromSearch) {
                         search(etSearch.getText().toString());
                     }
@@ -246,7 +247,7 @@ public class MainActivity extends Activity {
             public void afterTextChanged(Editable editable) {
                 if (etSearch.getText().length() == 0) {
                     isFromSearch = false;
-                    refreshListViewData();
+                    refreshListViewData(false);
                 } else {
                     search(etSearch.getText().toString());
                 }
@@ -352,7 +353,7 @@ public class MainActivity extends Activity {
 
         @Override
         public void onClick(View v) {
-            if (isReadyToAddNew(dialog)) {
+            if (isReadyToAddNew()) {
                 etNewWord = (EditText) dialog.findViewById(R.id.word);
                 etNewMeaning = (EditText) dialog.findViewById(R.id.meaning);
                 newWord = etNewWord.getText().toString();
@@ -362,7 +363,7 @@ public class MainActivity extends Activity {
                 currentDateAndTime = simpleDateFormat.format(new Date());
                 newDate = currentDateAndTime;
                 saveNewWord();
-                refreshListViewData();
+                refreshListViewData(false);
                 dialog.dismiss();
                 Toast.makeText(MainActivity.this, "Successfully added.", Toast.LENGTH_SHORT).show();
             }
@@ -410,7 +411,7 @@ public class MainActivity extends Activity {
 
                     String iStr = Integer.toString(i);
 
-                    arrayItemsToShow.add(new Custom(showItemNumber ? i + 1 + ". " + Words.getString("word" + iStr, i + 1 + ". " + "word" + iStr) : Words.getString("word" + iStr, "word" + iStr),
+                    arrayItemsToShow.add(new Custom(showItemNumber ? found + 1 + ". " + Words.getString("word" + iStr, found + 1 + ". " + "word" + iStr) : Words.getString("word" + iStr, "word" + iStr),
                             Meanings.getString("meaning" + iStr, "meaning" + iStr),
                             Dates.getString("date" + iStr, "date" + iStr),
                             Counts.getInt("count" + iStr, 0),
@@ -423,13 +424,19 @@ public class MainActivity extends Activity {
                 adapterWords1.notifyDataSetChanged();
                 items.setAdapter(adapterWords1);
             }
-        }
-
-        if (count > 0) {
-            for (int i =0; i < arrayItemsToShow.size(); i++) {
-                arrayItemsToShow.get(i).setMeaningVisible(showItemMeaning);
+            else {
+                arrayItemsToShow.add(new Custom("   Nothing found",
+                        "My Dictionary",
+                        "KHaledBLack73",
+                        0,
+                        false,
+                        false));
             }
         }
+
+            for (int i = 0; i < arrayItemsToShow.size(); i++) {
+                arrayItemsToShow.get(i).setMeaningVisible(showItemMeaning);
+            }
 
         isFromSearch = true;
 
@@ -465,7 +472,7 @@ public class MainActivity extends Activity {
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        dialogMeaning(isFromSearch, positionToSendToDialogDelete);
+                        dialogMeaning(positionToSendToDialogDelete);
                     }
                 });
 
@@ -492,6 +499,7 @@ public class MainActivity extends Activity {
         Button theButton = dialogEdit.getButton(DialogInterface.BUTTON_POSITIVE);
         theButton.setOnClickListener(new CustomListenerEdit(dialogEdit));
     }
+
     class CustomListenerEdit implements View.OnClickListener {
         private final Dialog dialog;
 
@@ -501,7 +509,7 @@ public class MainActivity extends Activity {
 
         @Override
         public void onClick(View v) {
-            if (isReadyEdit(dialog)) {
+            if (isReadyEdit()) {
                 etNewWord = (EditText) dialog.findViewById(R.id.word);
                 etNewMeaning = (EditText) dialog.findViewById(R.id.meaning);
                 newWordEdit = etNewWord.getText().toString();
@@ -512,8 +520,7 @@ public class MainActivity extends Activity {
                 editorWords.commit();
                 editorMeanings.commit();
 
-                refreshListViewData();
-                refreshListViewData();
+                refreshListViewData(false);
                 dialog.dismiss();
                 Toast.makeText(MainActivity.this, "Successfully edited.", Toast.LENGTH_SHORT).show();
             }
@@ -554,7 +561,6 @@ public class MainActivity extends Activity {
         dialogAskDelete.show();
         dialogAskDelete.setCanceledOnTouchOutside(false);
 
-        positionForAskDelete = position;
     }
 
 
@@ -585,17 +591,14 @@ public class MainActivity extends Activity {
     }
 
 
-
-
     void refreshItemsCount(int position) {
-        int count = arrayItems.get(getPosition(position)).getCount();
-        editorCounts.putInt("count" + position, arrayItems.get(position).getCount());
+        int count = arrayItems.get(position).getCount();
+        editorCounts.putInt("count" + position, count + 1);
         editorCounts.commit();
 
-        arrayItems.get(getPosition(position)).setCount(count + 1);
-        arrayItemsToShow.get(getPosition(position)).setCount(count + 1);
+        arrayItems.get(position).setCount(count + 1);
+        arrayItemsToShow.get(position).setCount(count + 1);
     }
-
 
 
     //Delete
@@ -605,8 +608,8 @@ public class MainActivity extends Activity {
         editorWords.remove("word" + positionReal);
         editorMeanings.remove("meaning" + positionReal);
         editorDates.remove("date" + positionReal);
-        editorCounts.remove("date" + positionReal);
-        editorIsFavorite.remove("date" + positionReal);
+        editorCounts.remove("count" + positionReal);
+        editorIsFavorite.remove("isFavorite" + positionReal);
         arrayItems.remove(positionReal);
         arrayItemsToShow.remove(positionShow);
 
@@ -623,18 +626,41 @@ public class MainActivity extends Activity {
         }
 
         refreshData();
-        refreshListViewData();
+        refreshListViewData(false);
 
         if (isFromSearch && arrayItemsToShow.size() == 0) {
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         }
     }
 
+    void delete(int positionReal, int positionShow, boolean isFromDeleteMark) {
+        editorWords.remove("word" + positionReal);
+        editorMeanings.remove("meaning" + positionReal);
+        editorDates.remove("date" + positionReal);
+        editorCounts.remove("count" + positionReal);
+        editorIsFavorite.remove("isFavorite" + positionReal);
+        arrayItems.remove(positionReal);
+        arrayItemsToShow.remove(positionShow);
+
+        count--;
+
+        editorWords.commit();
+        editorMeanings.commit();
+        editorDates.commit();
+        editorCounts.commit();
+        editorIsFavorite.commit();
+
+        if (!isFromSearch) {
+            setImgAddVisibility();
+        }
+
+        refreshData();
+    }
 
     //Refresh List View's Data
     //
     //
-    void refreshListViewData() {
+    void refreshListViewData(boolean isFromDeleteMark) {
         if (count > 0) {
             arrayItems.clear();
             arrayItemsToShow.clear();
@@ -667,11 +693,11 @@ public class MainActivity extends Activity {
             search(etSearch.getText().toString());
         }
 
-        if (markSeveral && checkedPositionsInt.size() > 0 && !isFromDeleteMark) {
+        if (markSeveral && checkedPositionsInt.size() > 0 & isFromDeleteMark) {
             for (int i = 0; i < checkedPositionsInt.size(); i++) {
                 arrayItemsToShow.get(i).setChChecked(checkedPositionsInt.get(i) == 0);
             }
-            isFromDeleteMark = false;
+//            isFromDeleteMark = false;
             adapterWords1.notifyDataSetChanged();
         }
     }
@@ -723,17 +749,17 @@ public class MainActivity extends Activity {
     //Check Is EveryThing's Ready To Add New Word
     //
     //
-    public boolean isReadyToAddNew(Dialog dialog) {
-        etNewWord = (EditText) dialog.findViewById(R.id.word);
-        etNewMeaning = (EditText) dialog.findViewById(R.id.meaning);
+    public boolean isReadyToAddNew() {
+        etNewWord = (EditText) dialogAddNew.findViewById(R.id.word);
+        etNewMeaning = (EditText) dialogAddNew.findViewById(R.id.meaning);
         String newWord = etNewWord.getText().toString();
         String newMeaning = etNewMeaning.getText().toString();
 
-        if (newWord.equals("")) {
+        if (isStringJustSpace(newWord)) {
             Toast.makeText(this, "The Word's Name is missing.", Toast.LENGTH_SHORT).show();
             return false;
         }
-        if (newMeaning.equals("")) {
+        if (isStringJustSpace(newMeaning)) {
             Toast.makeText(this, "The Word's Meaning is missing.", Toast.LENGTH_SHORT).show();
             return false;
         }
@@ -750,22 +776,22 @@ public class MainActivity extends Activity {
     //Check if EveryThing's Ready To Edit A Word
     //
     //
-    public boolean isReadyEdit(Dialog dialog) {
+    public boolean isReadyEdit() {
         etNewWord = (EditText) dialogEdit.findViewById(R.id.word);
         etNewMeaning = (EditText) dialogEdit.findViewById(R.id.meaning);
         String newWord = etNewWord.getText().toString();
         String newMeaning = etNewMeaning.getText().toString();
 
-        if (newWord.equals("")) {
+        if (isStringJustSpace(newWord)) {
             Toast.makeText(this, "The Word's Name is missing.", Toast.LENGTH_SHORT).show();
             return false;
         }
-        if (newMeaning.equals("")) {
+        if (isStringJustSpace(newMeaning)) {
             Toast.makeText(this, "The Word's Meaning is missing.", Toast.LENGTH_SHORT).show();
             return false;
         }
 
-        if (arrayItems.get(positionForAskDelete).getWord().equals(newWord) && arrayItems.get(positionForAskDelete).getMeaning().equals(newWord)) {
+        if (arrayItems.get(dialogMeaningWordPosition).getWord().equals(newWord) && arrayItems.get(dialogMeaningWordPosition).getMeaning().equals(newMeaning)) {
             Toast.makeText(this, "every Thing's the same.", Toast.LENGTH_SHORT).show();
             return false;
         }
@@ -780,6 +806,14 @@ public class MainActivity extends Activity {
         return true;
     }
 
+    boolean isStringJustSpace(String str) {
+        for (int i = 0; i < str.length(); i++) {
+            char ch = str.charAt(i);
+            if (ch != ' ') return false;
+        }
+        return true;
+    }
+
 
     void restore(Bundle icicle) {
         if (icicle != null) {
@@ -789,6 +823,8 @@ public class MainActivity extends Activity {
             dialogAskDeleteIsOpen = icicle.getBoolean("dialogAskDeleteIsOpen");
             listViewPosition = icicle.getParcelable("listViewPosition");
             markSeveral = icicle.getBoolean("markSeveral");
+            isFromSearch = icicle.getBoolean("isFromSearch");
+
 
         }
         if (dialogAddNewIsOpen) {
@@ -799,13 +835,13 @@ public class MainActivity extends Activity {
             meaningAddNew.setText(icicle.getString("editTextMeaningAddNew"));
         }
         if (dialogMeaningIsOpen) {
+            refreshListViewData(false);
             dialogMeaningWordPosition = icicle.getInt("dialogMeaningWordPosition");
-            isFromSearch = icicle.getBoolean("dialogMeaningIsFromSearch");
-            dialogMeaning(isFromSearch, dialogMeaningWordPosition);
+            dialogMeaning(dialogMeaningWordPosition);
+            dialogMeaningShoeingItemCount = icicle.getInt("dialogMeaningShoeingItemCount");
         }
         if (dialogEditIsOpen) {
             dialogMeaningWordPosition = icicle.getInt("dialogMeaningWordPosition");
-            isFromSearch = icicle.getBoolean("dialogMeaningIsFromSearch");
             dialogEdit(isFromSearch, dialogMeaningWordPosition);
             EditText wordAddNew = (EditText) dialogEdit.findViewById(R.id.word);
             EditText meaningAddNew = (EditText) dialogEdit.findViewById(R.id.meaning);
@@ -813,8 +849,8 @@ public class MainActivity extends Activity {
             meaningAddNew.setText(icicle.getString("dialogEditMeaningText"));
         }
         if (dialogAskDeleteIsOpen) {
-            positionForAskDelete = icicle.getInt("positionForAskDelete");
-            dialogAskDelete(positionForAskDelete);
+            dialogMeaningWordPosition = icicle.getInt("dialogMeaningWordPosition");
+            dialogAskDelete(dialogMeaningWordPosition);
             newWordEdit = icicle.getString("dialogEditWordText");
             newMeaningEdit = icicle.getString("dialogEditMeaningText");
 
@@ -823,10 +859,9 @@ public class MainActivity extends Activity {
         if (markSeveral) {
             listViewPosition = icicle.getParcelable("listViewPosition");
             checkedPositionsInt = icicle.getIntegerArrayList("checkedPositionsInt");
-            refreshListViewData();
+            refreshListViewData(false);
         }
     }
-
 
 
     void clearMarks() {
@@ -852,6 +887,7 @@ public class MainActivity extends Activity {
 
 
         icicle.putParcelable("listViewPosition", items.onSaveInstanceState());
+        icicle.putBoolean("isFromSearch", isFromSearch);
 
         if (dialogAddNew.isShowing()) {
             icicle.putBoolean("dialogAddNewIsOpen", dialogAddNew.isShowing());
@@ -862,7 +898,8 @@ public class MainActivity extends Activity {
         if (dialogMeaning.isShowing()) {
             icicle.putBoolean("dialogMeaningIsOpen", dialogMeaning.isShowing());
             icicle.putInt("dialogMeaningWordPosition", dialogMeaningWordPosition);
-            icicle.putBoolean("dialogMeaningIsFromSearch", isFromSearch);
+            icicle.putBoolean("isFromSearch", isFromSearch);
+            icicle.putInt("dialogMeaningShoeingItemCount", dialogMeaningShoeingItemCount);
         }
 
         if (dialogEdit.isShowing()) {
@@ -871,17 +908,15 @@ public class MainActivity extends Activity {
 
             icicle.putBoolean("dialogEditIsOpen", dialogEdit.isShowing());
             icicle.putInt("dialogMeaningWordPosition", dialogMeaningWordPosition);
-            icicle.putBoolean("dialogMeaningIsFromSearch", isFromSearch);
             icicle.putString("dialogEditWordText", dialogEditWord.getText().toString());
             icicle.putString("dialogEditMeaningText", dialogEditMeaning.getText().toString());
         }
 
         if (dialogAskDelete.isShowing()) {
-            icicle.putInt("positionForAskDelete", positionForAskDelete);
+            icicle.putInt("dialogMeaningWordPosition", dialogMeaningWordPosition);
+
             icicle.putBoolean("dialogAskDeleteIsOpen", dialogAskDelete.isShowing());
 
-            icicle.putInt("dialogMeaningWordPosition", dialogMeaningWordPosition);
-            icicle.putBoolean("dialogMeaningIsFromSearch", isFromSearch);
             icicle.putString("dialogEditWordText", newWordEdit);
             icicle.putString("dialogEditMeaningText", newMeaningEdit);
         }
@@ -914,17 +949,21 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
+
                 int i = 0;
                 while (checkedPositionsInt.contains(0)) {
                     if (checkedPositionsInt.get(i) == 0) {
-                        delete(getPosition(i), i);
+                        delete(getPosition(i), i, true);
                         checkedPositionsInt.remove(i);
                         i = 0;
                         continue;
                     }
                     i++;
                 }
-                isFromDeleteMark = true;
+                refreshListViewData(true);
+                if (isFromSearch && arrayItemsToShow.size() == 0) {
+                    MainActivity.this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+                }
                 Toast.makeText(MainActivity.this, "Successfully deleted.", Toast.LENGTH_SHORT).show();
             }
         });
@@ -942,11 +981,7 @@ public class MainActivity extends Activity {
 
     void menu_Delete() {
 
-        boolean arrayItemsCheckedIsEmpty = true;
-        if (checkedPositionsInt.contains(0))
-            arrayItemsCheckedIsEmpty = false;
-        else
-            arrayItemsCheckedIsEmpty = true;
+        boolean arrayItemsCheckedIsEmpty = !checkedPositionsInt.contains(0);
 
         if (arrayItemsCheckedIsEmpty) {
             Toast.makeText(MainActivity.this, "You haven't selected any item.", Toast.LENGTH_SHORT).show();
@@ -964,22 +999,27 @@ public class MainActivity extends Activity {
     @Override
     public void onStop() {
         super.onStop();
-        dialogAddNew.dismiss();
-        dialogEdit.dismiss();
-        dialogMeaning.dismiss();
-    }
 
+    }
 
 
     @Override
     public void onResume() {
         super.onResume();
         getPrefs();
-        refreshListViewData();
+        refreshListViewData(false);
         items.onRestoreInstanceState(listViewPosition);
 
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        dialogAddNew.dismiss();
+        dialogEdit.dismiss();
+        dialogMeaning.dismiss();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -992,12 +1032,36 @@ public class MainActivity extends Activity {
         if (menu != null) {
             menu.clear();
         }
-        if (markSeveral) {
+        if (markSeveral ) {
             getMenuInflater().inflate(R.menu.on_delete, menu);
             MenuItem itemMarkAll = menu.findItem(R.id.action_markAll);
 
-            if (isMark) itemMarkAll.setTitle(R.string.action_markAll);
-            else itemMarkAll.setTitle(R.string.action_unmarkAll);
+            boolean isAllMarked = true;
+            boolean isAllUnmark = true;
+
+            notifyCheckedPositionsInt();
+            for (int i = 0; i < arrayItemsToShow.size(); i++) {
+                if (checkedPositionsInt.get(i).equals(1)) {
+                    isAllMarked = false;
+                }
+                if (checkedPositionsInt.get(i).equals(0)) {
+                    isAllUnmark = false;
+                }
+            }
+
+            if ((isToMarkAll && isAllMarked) || (!isToMarkAll && isAllMarked) || (!isToMarkAll && !isAllMarked && !isAllUnmark) || isAllMarked) {
+                isToMarkAll = false;
+            }
+            else if ((isToMarkAll && !isAllMarked) || (!isToMarkAll && !isAllMarked && isAllUnmark) || isAllUnmark) {
+                isToMarkAll = true;
+            }
+
+            if (isToMarkAll){
+                itemMarkAll.setTitle(R.string.action_markAll);
+            }
+            else {
+                itemMarkAll.setTitle(R.string.action_unmarkAll);
+            }
         } else {
             getMenuInflater().inflate(R.menu.main, menu);
         }
@@ -1017,11 +1081,15 @@ public class MainActivity extends Activity {
 
 
             case R.id.action_mark:
-                markSeveral = true;
-                setElementsId();
-                refreshListViewData();
-                if (isFromSearch) {
-                    search(etSearch.getText().toString());
+                if (arrayItemsToShow.size() > 0) {
+                    markSeveral = true;
+                    setElementsId();
+                    refreshListViewData(false);
+                    if (isFromSearch) {
+                        search(etSearch.getText().toString());
+                    }
+                } else {
+                    Toast.makeText(MainActivity.this, "There is nothing to select!", Toast.LENGTH_SHORT).show();
                 }
                 return true;
 
@@ -1032,18 +1100,18 @@ public class MainActivity extends Activity {
 
 
             case R.id.action_markAll:
-                if (isMark) {
-                    for (int i = 0; i < items.getCount(); i++) {
+                if (isToMarkAll) {
+                    for (int i = 0; i < arrayItemsToShow.size(); i++) {
                         arrayItemsToShow.get(i).setChChecked(true);
                         notifyCheckedPositionsInt();
                     }
-                    isMark = false;
+                    isToMarkAll = false;
                 } else {
-                    for (int i = 0; i < items.getCount(); i++) {
+                    for (int i = 0; i < arrayItemsToShow.size(); i++) {
                         arrayItemsToShow.get(i).setChChecked(false);
                         notifyCheckedPositionsInt();
                     }
-                    isMark = true;
+                    isToMarkAll = true;
                 }
                 adapterWords1.notifyDataSetChanged();
                 return true;
@@ -1053,7 +1121,7 @@ public class MainActivity extends Activity {
                 markSeveral = false;
                 clearMarks();
                 setElementsId();
-                refreshListViewData();
+                refreshListViewData(false);
                 if (isFromSearch) {
                     search(etSearch.getText().toString());
                 }
@@ -1063,12 +1131,7 @@ public class MainActivity extends Activity {
     }
 
 
-
-
-
-
-
-    void dialogMeaning(boolean fromSearch, int position) {
+    void dialogMeaning(int position) {
         LayoutInflater inflater = this.getLayoutInflater();
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setView(inflater.inflate(R.layout.dialog_meaning, null));
@@ -1080,11 +1143,11 @@ public class MainActivity extends Activity {
             }
         });
         builder.setNegativeButton(R.string.close, null);
-        int currentApi  = android.os.Build.VERSION.SDK_INT;
+        int currentApi = android.os.Build.VERSION.SDK_INT;
 //        if (currentApi >= Build.VERSION_CODES.HONEYCOMB){
 //            builder.setIconAttribute(android.R.drawable.ic_dialog_info);
 //        }else {
-            builder.setIcon(android.R.drawable.ic_dialog_info);
+        builder.setIcon(android.R.drawable.ic_dialog_info);
 //        }
         dialogMeaning = builder.create();
         dialogMeaning.show();
@@ -1095,17 +1158,14 @@ public class MainActivity extends Activity {
         TextView tvCount = (TextView) dialogMeaning.findViewById(R.id.dmCount);
         ImageButton tvFavorite = (ImageButton) dialogMeaning.findViewById(R.id.dmFavorite);
 
-        final boolean isFromSearchForEdit = fromSearch;
         dialogMeaningWordPosition = position;
 
 
-        tvMeaning.setText(arrayItemsToShow.get(position).getMeaning());
+        tvMeaning.setText(arrayItems.get(position).getMeaning());
         tvWord.setText(arrayItems.get(position).getWord());
-        tvCount.setText(Integer.toString(arrayItemsToShow.get(position).getCount()));
-        tvDate.setText(arrayItemsToShow.get(position).getDate());
+        tvCount.setText(Integer.toString(arrayItems.get(position).getCount()));
+        tvDate.setText(arrayItems.get(position).getDate());
 
-        int x =0;
-        int x1 =0;
 
 
         dialogMeaning.setCanceledOnTouchOutside(true);
@@ -1113,32 +1173,4 @@ public class MainActivity extends Activity {
 
 
 
-
-
-
-
-
-
-
-    void dialogMeaning2() {
-        LayoutInflater inflater = this.getLayoutInflater();
-        dialogAddNew = new AlertDialog.Builder(this)
-                .setView(inflater.inflate(R.layout.dialog_meaning, null))
-                .setPositiveButton(R.string.save, new Dialog.OnClickListener() {
-                            public void onClick(DialogInterface d, int which) {
-
-                            }
-                        })
-                .setNegativeButton(R.string.cancel, null)
-                .create();
-        dialogAddNew.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-        dialogAddNew.show();
-        dialogAddNew.setCanceledOnTouchOutside(false);
-    }
-
-
-    public void btnCheck(View view) {
-//        MainActivity.this.startActivity(new Intent(MainActivity.this, DialogMeaning.class));
-        dialogMeaning2();
-    }
 }

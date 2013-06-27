@@ -13,13 +13,12 @@
             android:text="9999"
             android:id="@+id/dmCount"
             android:layout_alignParentTop="true"
-            android:layout_alignParentRight="false"
+            android:layout_alignParentRight="true"
             android:layout_alignParentLeft="false"
             android:layout_marginTop="10dp"
             android:layout_marginRight="12dp"
-            android:textStyle="italic"
             android:padding="1dp"
-            android:layout_toLeftOf="@+id/dmFavorite"/>
+            />
 
     <TextView
             android:layout_width="wrap_content"
@@ -45,9 +44,8 @@
             android:layout_alignParentTop="true"
             android:layout_marginTop="25dp"
             android:fillViewport="false"
-            android:layout_toLeftOf="@+id/dmFavorite"
             android:layout_alignParentLeft="true"
-            >
+            android:layout_marginRight="10dp">
 
         <TextView
                 android:layout_width="wrap_content"
@@ -100,6 +98,7 @@
             android:id="@+id/dmFavorite"
             android:src="@drawable/fav1"
             android:layout_alignParentTop="true"
-            android:layout_alignParentRight="true"/>
+            android:layout_alignParentRight="true"
+            android:visibility="invisible"/>
 
 </RelativeLayout>

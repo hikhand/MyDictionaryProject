@@ -46,6 +46,8 @@
             android:layout_alignParentRight="true"
             android:checked="false"
             android:layout_alignBaseline="@+id/text1"
-            android:layout_marginRight="10dp"/>
+            android:layout_marginRight="10dp"
+            android:clickable="false"
+            android:enabled="true"/>
 
 </RelativeLayout>

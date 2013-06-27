@@ -46,20 +46,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="580e2a24-1665-43c2-908b-48f29593f7ab" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/Adapter.java" afterPath="$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/Adapter.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MyDictionary/src/main/AndroidManifest.xml" afterPath="$PROJECT_DIR$/MyDictionary/src/main/AndroidManifest.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/Custom.java" afterPath="$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/Custom.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/MainActivity.java" afterPath="$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/MainActivity.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MyDictionary/src/main/res/layout/activity_main.xml" afterPath="$PROJECT_DIR$/MyDictionary/src/main/res/layout/activity_main.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MyDictionary/src/main/res/layout/dialog_addnew.xml" afterPath="$PROJECT_DIR$/MyDictionary/src/main/res/layout/dialog_addnew.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MyDictionary/src/main/res/layout/dialog_meaning.xml" afterPath="$PROJECT_DIR$/MyDictionary/src/main/res/layout/dialog_meaning.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MyDictionary/src/main/res/layout/preferences.xml" afterPath="$PROJECT_DIR$/MyDictionary/src/main/res/layout/preferences.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MyDictionary/src/main/res/layout/row.xml" afterPath="$PROJECT_DIR$/MyDictionary/src/main/res/layout/row.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MyDictionary/src/main/res/values/styles.xml" afterPath="$PROJECT_DIR$/MyDictionary/src/main/res/values/styles.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MyDictionary/src/main/res/values-v11/styles.xml" afterPath="$PROJECT_DIR$/MyDictionary/src/main/res/values-v11/styles.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MyDictionary/src/main/res/values-v14/styles.xml" afterPath="$PROJECT_DIR$/MyDictionary/src/main/res/values-v14/styles.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/vcs.xml" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="MyDictionary.iws" />
@@ -79,6 +70,7 @@
   </component>
   <component name="DebuggerManager">
     <ui_properties default_suspend_policy="SuspendAll" default_condition_enabled="true" />
+    <line_breakpoints default_suspend_policy="SuspendAll" default_condition_enabled="true" />
     <breakpoint_any default_suspend_policy="SuspendAll" default_condition_enabled="true">
       <breakpoint>
         <option name="NOTIFY_CAUGHT" value="true" />
@@ -127,28 +119,30 @@
       <file leaf-file-name="MainActivity.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/MainActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="1134" column="28" selection-start="40571" selection-end="40571" vertical-scroll-proportion="0.0" vertical-offset="4709" max-vertical-offset="5565">
+            <state line="708" column="1" selection-start="25332" selection-end="25332" vertical-scroll-proportion="0.0" vertical-offset="2053" max-vertical-offset="3675">
               <folding>
+                <element signature="method#onBackPressed#0;class#MainActivity#0" expanded="false" />
                 <element signature="method#onCreate#0;class#MainActivity#0" expanded="false" />
                 <element signature="method#listeners#0;class#MainActivity#0" expanded="false" />
-                <element signature="class#7451:8077" expanded="false" />
-                <element signature="method#beforeTextChanged#0;class#7451:8077" expanded="false" />
-                <element signature="method#onTextChanged#0;class#7451:8077" expanded="false" />
-                <element signature="method#afterTextChanged#0;class#7451:8077" expanded="false" />
+                <element signature="class#7673:8304" expanded="false" />
+                <element signature="method#beforeTextChanged#0;class#7673:8304" expanded="false" />
+                <element signature="method#onTextChanged#0;class#7673:8304" expanded="false" />
+                <element signature="method#afterTextChanged#0;class#7673:8304" expanded="false" />
                 <element signature="method#notifyCheckedPositionsInt#0;class#MainActivity#0" expanded="false" />
                 <element signature="method#getPrefs#0;class#MainActivity#0" expanded="false" />
                 <element signature="method#setElementsId#0;class#MainActivity#0" expanded="false" />
                 <element signature="method#dialogAddNew#0;class#MainActivity#0" expanded="false" />
-                <element signature="class#10704:10866" expanded="false" />
-                <element signature="method#onClick#0;class#10704:10866" expanded="false" />
+                <element signature="class#10931:11093" expanded="false" />
+                <element signature="method#onClick#0;class#10931:11093" expanded="false" />
                 <element signature="class#CustomListenerAddNew#0;class#MainActivity#0" expanded="false" />
                 <element signature="method#CustomListenerAddNew#0;class#CustomListenerAddNew#0;class#MainActivity#0" expanded="false" />
                 <element signature="method#onClick#0;class#CustomListenerAddNew#0;class#MainActivity#0" expanded="false" />
                 <element signature="method#saveNewWord#0;class#MainActivity#0" expanded="false" />
-                <element signature="e#13011#13027#0" expanded="false" />
+                <element signature="e#13237#13253#0" expanded="false" />
                 <element signature="method#search#0;class#MainActivity#0" expanded="false" />
-                <element signature="class#15193:15331" expanded="false" />
-                <element signature="method#onClick#0;class#15193:15331" expanded="false" />
+                <element signature="method#dialogEdit#0;class#MainActivity#0" expanded="false" />
+                <element signature="class#15667:15805" expanded="false" />
+                <element signature="method#onClick#0;class#15667:15805" expanded="false" />
                 <element signature="class#CustomListenerEdit#0;class#MainActivity#0" expanded="false" />
                 <element signature="method#CustomListenerEdit#0;class#CustomListenerEdit#0;class#MainActivity#0" expanded="false" />
                 <element signature="method#onClick#0;class#CustomListenerEdit#0;class#MainActivity#0" expanded="false" />
@@ -156,54 +150,32 @@
                 <element signature="method#refreshData#0;class#MainActivity#0" expanded="false" />
                 <element signature="method#refreshItemsCount#0;class#MainActivity#0" expanded="false" />
                 <element signature="method#delete#0;class#MainActivity#0" expanded="false" />
+                <element signature="method#delete#1;class#MainActivity#0" expanded="false" />
                 <element signature="method#refreshListViewData#0;class#MainActivity#0" expanded="false" />
                 <element signature="method#setImgAddVisibility#0;class#MainActivity#0" expanded="false" />
                 <element signature="method#getPosition#0;class#MainActivity#0" expanded="false" />
                 <element signature="method#isReadyToAddNew#0;class#MainActivity#0" expanded="false" />
                 <element signature="method#isReadyEdit#0;class#MainActivity#0" expanded="false" />
+                <element signature="method#isStringJustSpace#0;class#MainActivity#0" expanded="false" />
                 <element signature="method#restore#0;class#MainActivity#0" expanded="false" />
                 <element signature="method#clearMarks#0;class#MainActivity#0" expanded="false" />
                 <element signature="method#AddNew#0;class#MainActivity#0" expanded="false" />
                 <element signature="method#onSaveInstanceState#0;class#MainActivity#0" expanded="false" />
-                <element signature="e#32601#32679#0" expanded="false" />
+                <element signature="e#33879#33957#0" expanded="false" />
                 <element signature="method#dialogAskDeleteByMark#0;class#MainActivity#0" expanded="false" />
-                <element signature="class#34211:34361" expanded="false" />
-                <element signature="method#onClick#0;class#34211:34361" expanded="false" />
+                <element signature="class#35705:35855" expanded="false" />
+                <element signature="method#onClick#0;class#35705:35855" expanded="false" />
                 <element signature="method#menu_Delete#0;class#MainActivity#0" expanded="false" />
                 <element signature="method#onPause#0;class#MainActivity#0" expanded="false" />
+                <element signature="method#onStop#0;class#MainActivity#0" expanded="false" />
                 <element signature="method#onResume#0;class#MainActivity#0" expanded="false" />
+                <element signature="method#onDestroy#0;class#MainActivity#0" expanded="false" />
                 <element signature="method#onCreateOptionsMenu#0;class#MainActivity#0" expanded="false" />
                 <element signature="method#onPrepareOptionsMenu#0;class#MainActivity#0" expanded="false" />
                 <element signature="method#onMenuItemSelected#0;class#MainActivity#0" expanded="false" />
-                <element signature="e#38699#38758#0" expanded="false" />
-                <element signature="class#40182:40345" expanded="false" />
-                <element signature="method#onClick#0;class#40182:40345" expanded="false" />
-                <element signature="method#btnCheck#0;class#MainActivity#0" expanded="false" />
+                <element signature="method#dialogMeaning#0;class#MainActivity#0" expanded="false" />
+                <element signature="e#41273#41332#0" expanded="false" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="activity_main.xml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/res/layout/activity_main.xml">
-          <provider selected="true" editor-type-id="android-designer">
-            <state />
-          </provider>
-          <provider editor-type-id="text-editor">
-            <state line="54" column="30" selection-start="2160" selection-end="2160" vertical-scroll-proportion="0.0" vertical-offset="349" max-vertical-offset="1140">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="row.xml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/res/layout/row.xml">
-          <provider selected="true" editor-type-id="android-designer">
-            <state />
-          </provider>
-          <provider editor-type-id="text-editor">
-            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="840">
-              <folding />
             </state>
           </provider>
         </entry>
@@ -211,7 +183,7 @@
       <file leaf-file-name="AndroidManifest.xml" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/AndroidManifest.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="38" column="19" selection-start="1044" selection-end="1044" vertical-scroll-proportion="1.0555556" vertical-offset="0" max-vertical-offset="660">
+            <state line="37" column="0" selection-start="1024" selection-end="1024" vertical-scroll-proportion="0.67191285" vertical-offset="0" max-vertical-offset="826">
               <folding />
             </state>
           </provider>
@@ -270,17 +242,17 @@
         <option value="$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/Preferences.java" />
         <option value="$PROJECT_DIR$/MyDictionary/src/main/res/layout/dialogMeaning.xml" />
         <option value="$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/DialogMeaning.java" />
-        <option value="$PROJECT_DIR$/MyDictionary/src/main/res/layout/activity_main.xml" />
         <option value="$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/Adapter.java" />
         <option value="$PROJECT_DIR$/MyDictionary/src/main/res/layout/preferences.xml" />
         <option value="$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/Custom.java" />
-        <option value="$PROJECT_DIR$/MyDictionary/src/main/res/layout/dialog_meaning.xml" />
-        <option value="$PROJECT_DIR$/MyDictionary/src/main/res/layout/row.xml" />
-        <option value="$PROJECT_DIR$/MyDictionary/src/main/res/layout/dialog_addnew.xml" />
         <option value="$PROJECT_DIR$/MyDictionary/src/main/res/values/styles.xml" />
         <option value="$PROJECT_DIR$/MyDictionary/src/main/res/values-v14/styles.xml" />
-        <option value="$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/MainActivity.java" />
         <option value="$PROJECT_DIR$/MyDictionary/src/main/res/values-v11/styles.xml" />
+        <option value="$PROJECT_DIR$/MyDictionary/src/main/res/layout/dialog_meaning.xml" />
+        <option value="$PROJECT_DIR$/MyDictionary/src/main/res/layout/row.xml" />
+        <option value="$PROJECT_DIR$/MyDictionary/src/main/res/layout/activity_main.xml" />
+        <option value="$PROJECT_DIR$/MyDictionary/src/main/res/layout/dialog_addnew.xml" />
+        <option value="$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/MainActivity.java" />
         <option value="$PROJECT_DIR$/MyDictionary/src/main/AndroidManifest.xml" />
       </list>
     </option>
@@ -289,7 +261,7 @@
     <option name="x" value="-4" />
     <option name="y" value="-4" />
     <option name="width" value="1288" />
-    <option name="height" value="992" />
+    <option name="height" value="1002" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <OptionsSetting value="true" id="Add" />
@@ -317,6 +289,8 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="PackagesPane" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -396,186 +370,6 @@
               <option name="myItemId" value="res" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="values-v14" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MyDictionary" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MyDictionaryProject" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MyDictionary" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="res" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="values-v11" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MyDictionary" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MyDictionaryProject" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MyDictionary" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="res" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="values-sw720dp-land" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MyDictionary" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MyDictionaryProject" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MyDictionary" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="res" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="values-sw600dp" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MyDictionary" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MyDictionaryProject" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MyDictionary" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="res" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="values-fa" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MyDictionary" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MyDictionaryProject" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MyDictionary" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="res" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="values" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MyDictionary" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MyDictionaryProject" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MyDictionary" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="res" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
           </PATH>
           <PATH>
             <PATH_ELEMENT>
@@ -609,8 +403,6 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -622,20 +414,20 @@
     <property name="UI_DESIGNER_EDITOR_MODE.PaletteToolWindowManager.SHOW" value="false" />
     <property name="MemberChooser.sorted" value="false" />
     <property name="recentsLimit" value="5" />
-    <property name="options.lastSelected" value="project.propVCSSupport.Mappings" />
+    <property name="options.lastSelected" value="project.propCompiler" />
     <property name="UI_DESIGNER_EDITOR_MODE.PaletteToolWindowManager.WIDTH" value="441" />
-    <property name="last_opened_file_path" value="D:/Programming/workplace/Android/2013/06/ChangeFormatProject" />
+    <property name="last_opened_file_path" value="D:/Programming/workplace/Android/2013/06/TestProject" />
     <property name="project.structure.side.proportion" value="0.0" />
-    <property name="ANDROID_EXTENDED_DEVICE_CHOOSER_SERIALS" value="SH17EV802157 emulator-5554 emulator-5556" />
+    <property name="ANDROID_EXTENDED_DEVICE_CHOOSER_SERIALS" value="SH17EV802157" />
     <property name="MemberChooser.copyJavadoc" value="false" />
     <property name="GoToClass.toSaveIncludeLibraries" value="false" />
-    <property name="ANDROID_EXTENDED_DEVICE_CHOOSER_AVD" value="2.1" />
-    <property name="FullScreen" value="false" />
+    <property name="ANDROID_EXTENDED_DEVICE_CHOOSER_AVD" value="2.3.1" />
     <property name="MemberChooser.showClasses" value="true" />
+    <property name="FullScreen" value="false" />
     <property name="UI_DESIGNER_EDITOR_MODE.UIDesignerToolWindowManager2.SHOW" value="true" />
     <property name="GoToClass.includeLibraries" value="false" />
-    <property name="options.splitter.details.proportions" value="0.2" />
     <property name="options.searchVisible" value="true" />
+    <property name="options.splitter.details.proportions" value="0.2" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -819,49 +611,49 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-4" y="-4" width="1288" height="992" extended-state="6" />
-    <editor active="false" />
+    <frame x="-4" y="-4" width="1288" height="1002" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3298217" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.34085512" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.49524942" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.34037557" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.49413145" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3298217" sideWeight="0.6596244" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32897863" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.49524942" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.5375587" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32897863" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24959481" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24959481" sideWeight="0.672209" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32779098" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24959481" sideWeight="0.6710214" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3274648" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Documentation" active="false" anchor="right" auto_hide="true" internal_type="DOCKED" type="FLOATING" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" x="96" y="96" width="1088" height="792" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3298217" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
     <layout-to-restore>
-      <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Documentation" active="false" anchor="right" auto_hide="true" internal_type="DOCKED" type="FLOATING" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" x="96" y="96" width="1088" height="792" />
+      <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.49524942" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
-      <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32897863" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24959481" sideWeight="0.672209" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32779098" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32779098" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -873,8 +665,8 @@
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32897863" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.49524942" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24959481" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout-to-restore>
   </component>
@@ -939,16 +731,6 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/res/layout/row.xml">
-      <provider selected="true" editor-type-id="android-designer">
-        <state />
-      </provider>
-      <provider editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="840">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/res/layout/dialog_addnew.xml">
       <provider selected="true" editor-type-id="android-designer">
         <state />
@@ -957,26 +739,6 @@
         <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="600">
           <folding />
         </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/Adapter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="34" column="74" selection-start="1046" selection-end="1046" vertical-scroll-proportion="0.0" vertical-offset="495" max-vertical-offset="1095" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/res/layout/dialog_meaning.xml">
-      <provider selected="true" editor-type-id="android-designer">
-        <state />
-      </provider>
-      <provider editor-type-id="text-editor">
-        <state line="51" column="17" selection-start="2048" selection-end="2048" vertical-scroll-proportion="0.0" vertical-offset="525" max-vertical-offset="1635">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/Custom.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="69" column="21" selection-start="1500" selection-end="1500" vertical-scroll-proportion="0.3382353" vertical-offset="759" max-vertical-offset="1575" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/res/values-sw600dp/dimens.xml">
@@ -1021,80 +783,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/MainActivity.java">
+    <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/Custom.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="1134" column="28" selection-start="40571" selection-end="40571" vertical-scroll-proportion="0.0" vertical-offset="4709" max-vertical-offset="5565">
-          <folding>
-            <element signature="method#onCreate#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#listeners#0;class#MainActivity#0" expanded="false" />
-            <element signature="class#7451:8077" expanded="false" />
-            <element signature="method#beforeTextChanged#0;class#7451:8077" expanded="false" />
-            <element signature="method#onTextChanged#0;class#7451:8077" expanded="false" />
-            <element signature="method#afterTextChanged#0;class#7451:8077" expanded="false" />
-            <element signature="method#notifyCheckedPositionsInt#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#getPrefs#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#setElementsId#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#dialogAddNew#0;class#MainActivity#0" expanded="false" />
-            <element signature="class#10704:10866" expanded="false" />
-            <element signature="method#onClick#0;class#10704:10866" expanded="false" />
-            <element signature="class#CustomListenerAddNew#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#CustomListenerAddNew#0;class#CustomListenerAddNew#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#onClick#0;class#CustomListenerAddNew#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#saveNewWord#0;class#MainActivity#0" expanded="false" />
-            <element signature="e#13011#13027#0" expanded="false" />
-            <element signature="method#search#0;class#MainActivity#0" expanded="false" />
-            <element signature="class#15193:15331" expanded="false" />
-            <element signature="method#onClick#0;class#15193:15331" expanded="false" />
-            <element signature="class#CustomListenerEdit#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#CustomListenerEdit#0;class#CustomListenerEdit#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#onClick#0;class#CustomListenerEdit#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#dialogAskDelete#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#refreshData#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#refreshItemsCount#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#delete#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#refreshListViewData#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#setImgAddVisibility#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#getPosition#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#isReadyToAddNew#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#isReadyEdit#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#restore#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#clearMarks#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#AddNew#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#onSaveInstanceState#0;class#MainActivity#0" expanded="false" />
-            <element signature="e#32601#32679#0" expanded="false" />
-            <element signature="method#dialogAskDeleteByMark#0;class#MainActivity#0" expanded="false" />
-            <element signature="class#34211:34361" expanded="false" />
-            <element signature="method#onClick#0;class#34211:34361" expanded="false" />
-            <element signature="method#menu_Delete#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#onPause#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#onResume#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#onCreateOptionsMenu#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#onPrepareOptionsMenu#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#onMenuItemSelected#0;class#MainActivity#0" expanded="false" />
-            <element signature="e#38699#38758#0" expanded="false" />
-            <element signature="class#40182:40345" expanded="false" />
-            <element signature="method#onClick#0;class#40182:40345" expanded="false" />
-            <element signature="method#btnCheck#0;class#MainActivity#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/res/layout/activity_main.xml">
-      <provider selected="true" editor-type-id="android-designer">
-        <state />
-      </provider>
-      <provider editor-type-id="text-editor">
-        <state line="54" column="30" selection-start="2160" selection-end="2160" vertical-scroll-proportion="0.0" vertical-offset="349" max-vertical-offset="1140">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/res/layout/dialog_addnew.xml">
-      <provider selected="true" editor-type-id="android-designer">
-        <state />
-      </provider>
-      <provider editor-type-id="text-editor">
-        <state line="21" column="37" selection-start="909" selection-end="909" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="630">
+        <state line="69" column="21" selection-start="1500" selection-end="1500" vertical-scroll-proportion="0.0" vertical-offset="749" max-vertical-offset="1575">
           <folding />
         </state>
       </provider>
@@ -1104,14 +795,122 @@
         <state />
       </provider>
       <provider editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="840">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="69" max-vertical-offset="870">
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/Adapter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="63" column="20" selection-start="2274" selection-end="2274" vertical-scroll-proportion="0.81840193" vertical-offset="269" max-vertical-offset="1095">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/res/layout/dialog_meaning.xml">
+      <provider selected="true" editor-type-id="android-designer">
+        <state />
+      </provider>
+      <provider editor-type-id="text-editor">
+        <state line="49" column="17" selection-start="1946" selection-end="1946" vertical-scroll-proportion="0.0" vertical-offset="720" max-vertical-offset="1635">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_HOME_DIR$/sdk/sources/android-17/android/app/Activity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="5206" column="0" selection-start="218849" selection-end="218849" vertical-scroll-proportion="0.33208954" vertical-offset="76712" max-vertical-offset="78405">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/res/layout/activity_main.xml">
+      <provider selected="true" editor-type-id="android-designer">
+        <state />
+      </provider>
+      <provider editor-type-id="text-editor">
+        <state line="54" column="30" selection-start="2160" selection-end="2160" vertical-scroll-proportion="0.0" vertical-offset="369" max-vertical-offset="1170">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/res/layout/dialog_addnew.xml">
+      <provider selected="true" editor-type-id="android-designer">
+        <state />
+      </provider>
+      <provider editor-type-id="text-editor">
+        <state line="25" column="13" selection-start="1032" selection-end="1032" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="660">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/MainActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="708" column="1" selection-start="25332" selection-end="25332" vertical-scroll-proportion="0.0" vertical-offset="2053" max-vertical-offset="3675">
+          <folding>
+            <element signature="method#onBackPressed#0;class#MainActivity#0" expanded="false" />
+            <element signature="method#onCreate#0;class#MainActivity#0" expanded="false" />
+            <element signature="method#listeners#0;class#MainActivity#0" expanded="false" />
+            <element signature="class#7673:8304" expanded="false" />
+            <element signature="method#beforeTextChanged#0;class#7673:8304" expanded="false" />
+            <element signature="method#onTextChanged#0;class#7673:8304" expanded="false" />
+            <element signature="method#afterTextChanged#0;class#7673:8304" expanded="false" />
+            <element signature="method#notifyCheckedPositionsInt#0;class#MainActivity#0" expanded="false" />
+            <element signature="method#getPrefs#0;class#MainActivity#0" expanded="false" />
+            <element signature="method#setElementsId#0;class#MainActivity#0" expanded="false" />
+            <element signature="method#dialogAddNew#0;class#MainActivity#0" expanded="false" />
+            <element signature="class#10931:11093" expanded="false" />
+            <element signature="method#onClick#0;class#10931:11093" expanded="false" />
+            <element signature="class#CustomListenerAddNew#0;class#MainActivity#0" expanded="false" />
+            <element signature="method#CustomListenerAddNew#0;class#CustomListenerAddNew#0;class#MainActivity#0" expanded="false" />
+            <element signature="method#onClick#0;class#CustomListenerAddNew#0;class#MainActivity#0" expanded="false" />
+            <element signature="method#saveNewWord#0;class#MainActivity#0" expanded="false" />
+            <element signature="e#13237#13253#0" expanded="false" />
+            <element signature="method#search#0;class#MainActivity#0" expanded="false" />
+            <element signature="method#dialogEdit#0;class#MainActivity#0" expanded="false" />
+            <element signature="class#15667:15805" expanded="false" />
+            <element signature="method#onClick#0;class#15667:15805" expanded="false" />
+            <element signature="class#CustomListenerEdit#0;class#MainActivity#0" expanded="false" />
+            <element signature="method#CustomListenerEdit#0;class#CustomListenerEdit#0;class#MainActivity#0" expanded="false" />
+            <element signature="method#onClick#0;class#CustomListenerEdit#0;class#MainActivity#0" expanded="false" />
+            <element signature="method#dialogAskDelete#0;class#MainActivity#0" expanded="false" />
+            <element signature="method#refreshData#0;class#MainActivity#0" expanded="false" />
+            <element signature="method#refreshItemsCount#0;class#MainActivity#0" expanded="false" />
+            <element signature="method#delete#0;class#MainActivity#0" expanded="false" />
+            <element signature="method#delete#1;class#MainActivity#0" expanded="false" />
+            <element signature="method#refreshListViewData#0;class#MainActivity#0" expanded="false" />
+            <element signature="method#setImgAddVisibility#0;class#MainActivity#0" expanded="false" />
+            <element signature="method#getPosition#0;class#MainActivity#0" expanded="false" />
+            <element signature="method#isReadyToAddNew#0;class#MainActivity#0" expanded="false" />
+            <element signature="method#isReadyEdit#0;class#MainActivity#0" expanded="false" />
+            <element signature="method#isStringJustSpace#0;class#MainActivity#0" expanded="false" />
+            <element signature="method#restore#0;class#MainActivity#0" expanded="false" />
+            <element signature="method#clearMarks#0;class#MainActivity#0" expanded="false" />
+            <element signature="method#AddNew#0;class#MainActivity#0" expanded="false" />
+            <element signature="method#onSaveInstanceState#0;class#MainActivity#0" expanded="false" />
+            <element signature="e#33879#33957#0" expanded="false" />
+            <element signature="method#dialogAskDeleteByMark#0;class#MainActivity#0" expanded="false" />
+            <element signature="class#35705:35855" expanded="false" />
+            <element signature="method#onClick#0;class#35705:35855" expanded="false" />
+            <element signature="method#menu_Delete#0;class#MainActivity#0" expanded="false" />
+            <element signature="method#onPause#0;class#MainActivity#0" expanded="false" />
+            <element signature="method#onStop#0;class#MainActivity#0" expanded="false" />
+            <element signature="method#onResume#0;class#MainActivity#0" expanded="false" />
+            <element signature="method#onDestroy#0;class#MainActivity#0" expanded="false" />
+            <element signature="method#onCreateOptionsMenu#0;class#MainActivity#0" expanded="false" />
+            <element signature="method#onPrepareOptionsMenu#0;class#MainActivity#0" expanded="false" />
+            <element signature="method#onMenuItemSelected#0;class#MainActivity#0" expanded="false" />
+            <element signature="method#dialogMeaning#0;class#MainActivity#0" expanded="false" />
+            <element signature="e#41273#41332#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/AndroidManifest.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="38" column="19" selection-start="1044" selection-end="1044" vertical-scroll-proportion="1.0555556" vertical-offset="0" max-vertical-offset="660">
+        <state line="37" column="0" selection-start="1024" selection-end="1024" vertical-scroll-proportion="0.67191285" vertical-offset="0" max-vertical-offset="826">
           <folding />
         </state>
       </provider>
