@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 
 package="ir.khaled.mydictionary"
-android:versionCode="12"
-android:versionName="2.2.0"
+android:versionCode="14"
+android:versionName="2.2.2"
         android:installLocation="auto">
 
 <uses-sdk
@@ -35,5 +35,6 @@ android:theme="@style/AppBaseTheme" >
             android:label="meaning"/>
 
 </application>
-
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
         </manifest>

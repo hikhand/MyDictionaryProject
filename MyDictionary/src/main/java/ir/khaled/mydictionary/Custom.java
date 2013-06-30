@@ -6,6 +6,7 @@ package ir.khaled.mydictionary;
  */
 
 public class Custom {
+    private int id;
     private String word;
     private String meaning;
     private String date;
@@ -13,26 +14,32 @@ public class Custom {
 
     private boolean chChecked;
     private boolean chVisible;
-    private boolean isFavorite;
     private boolean isMeaningVisible;
 
     public Custom(){
     }
 
-    public Custom(String word, String meaning, String date, int count, boolean chVisible, boolean isFavorite){
+    public Custom(int id, String word, String meaning, String date, int count){
+        this.id = id;
         this.word = word;
         this.meaning = meaning;
         this.date = date;
         this.count = count;
-        this.chVisible = chVisible;
-        this.isFavorite = isFavorite;
     }
 
-//    public Custom(String word, String meaning,  boolean chVisible){
-//        this.word = word;
-//        this.meaning = meaning;
-//        this.chVisible = chVisible;
-//    }
+    public Custom(String word, String meaning, String date, int count){
+        this.word = word;
+        this.meaning = meaning;
+        this.date = date;
+        this.count = count;
+    }
+
+    public Custom(String word, String meaning, String date, boolean chVisible){
+        this.word = word;
+        this.meaning = meaning;
+        this.date = date;
+        this.chVisible = chVisible;
+    }
 
     public String getWord() {
         return word;
@@ -74,6 +81,14 @@ public class Custom {
         this.count = count;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int count) {
+        this.id = id;
+    }
+
     public boolean isChChecked() {
         return chChecked;
     }
@@ -90,11 +105,4 @@ public class Custom {
         this.chVisible = selected;
     }
 
-    public void setFavorite(boolean isFavorite) {
-        this.isFavorite = isFavorite;
-    }
-
-    public boolean isFavorite() {
-        return this.isFavorite;
-    }
 }

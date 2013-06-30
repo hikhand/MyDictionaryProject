@@ -9,11 +9,14 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.app.Activity;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Parcelable;
+import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,36 +27,29 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.view.inputmethod.EditorInfo;
 import android.view.KeyEvent;
 
+import org.apache.commons.net.ftp.FTPClient;
+
+import java.io.File;
+import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
 public class MainActivity extends Activity {
-    public SharedPreferences Words;
-    public SharedPreferences Meanings;
-    public SharedPreferences Dates;
-    public SharedPreferences Counts;
-    public SharedPreferences IsFavorite;
 
-    public SharedPreferences Settings;
-    SharedPreferences.Editor editorWords;
-    SharedPreferences.Editor editorMeanings;
-    SharedPreferences.Editor editorDates;
-    SharedPreferences.Editor editorCounts;
-    SharedPreferences.Editor editorIsFavorite;
-    SharedPreferences.Editor editorSettings;
 
-    public String newWord;
-    public String newMeaning;
-    public String newDate;
+    DatabaseHandler database;
+    SharedPreferences prefs;
+
+
     public String newWordEdit;
     public String newMeaningEdit;
 
@@ -61,7 +57,7 @@ public class MainActivity extends Activity {
     public EditText etNewMeaning;
     public EditText etSearch;
     public ListView items;
-    public int count = 0;
+    ImageView imgAdd;
     public boolean isFromSearch;
 
     ArrayList<Custom> arrayItems;
@@ -74,27 +70,19 @@ public class MainActivity extends Activity {
     public AlertDialog dialogAddNew;
     public AlertDialog dialogMeaning;
     public AlertDialog dialogEdit;
-    //    public AlertDialog dialogMeaning;
     public AlertDialog dialogAskDelete;
 
     boolean dialogAddNewIsOpen = false;
-
-    //    boolean dialogMeaningIsOpen = false;
     boolean dialogMeaningIsOpen = false;
     int dialogMeaningWordPosition = 0;
-
-    int dialogMeaningShoeingItemCount;
-
     boolean dialogEditIsOpen = false;
     boolean dialogAskDeleteIsOpen = false;
 
-    ImageView imgAdd;
 
     String searchMethod;
     boolean showItemNumber = true;
     boolean showItemMeaning = false;
-
-    SharedPreferences prefs;
+    String isDistance;
 
 
     private boolean markSeveral = false;
@@ -105,12 +93,8 @@ public class MainActivity extends Activity {
     boolean isToMarkAll = true;
 
 
-    SimpleDateFormat simpleDateFormat;
-    String currentDateAndTime;
 
     private boolean doubleBackToExitPressedOnce = false;
-
-//    boolean isFromDeleteMark = false;
 
     boolean isLongClick = false;//for check items long click
 
@@ -122,6 +106,11 @@ public class MainActivity extends Activity {
             setElementsId();
             refreshListViewData(false);
             clearMarks();
+        } else if (isFromSearch) {
+            etSearch.setText("");
+            isFromSearch = false;
+            refreshListViewData(false);
+
         } else {
             if (doubleBackToExitPressedOnce) {
                 super.onBackPressed();
@@ -154,6 +143,9 @@ public class MainActivity extends Activity {
         restore(icicle);
 
         listeners();
+
+        if (database.getItemsCount() > 0)
+            database.getItemId("Hello", "Salam");
     }
 
 
@@ -186,9 +178,9 @@ public class MainActivity extends Activity {
                         notifyCheckedPositionsInt();
                     }
                 } else if (!(arrayItemsToShow.get(position).getWord().equals("   Nothing found") &&
-                        arrayItemsToShow.get(position).getMeaning().equals("My Dictionary") && arrayItemsToShow.get(position).getDate().equals("KHaledBLack73"))){
-                    refreshItemsCount(getPosition(position));
-                    dialogMeaning(getPosition(position));
+                        arrayItemsToShow.get(position).getMeaning().equals("My Dictionary") && arrayItemsToShow.get(position).getDate().equals("KHaledBLack73"))) {
+                    refreshItemsCount(position, getPosition(position));
+                    dialogMeaning(position, getPosition(position));
                 }
             }
         });
@@ -255,6 +247,7 @@ public class MainActivity extends Activity {
         });
     }
 
+
     void notifyCheckedPositionsInt() {
         checkedPositionsInt.clear();
         for (int i = 0; i < arrayItemsToShow.size(); i++) {
@@ -271,6 +264,7 @@ public class MainActivity extends Activity {
         searchMethod = prefs.getString("searchMethod", "wordsAndMeanings");
         showItemNumber = prefs.getBoolean("showItemNumber", true);
         showItemMeaning = prefs.getBoolean("showItemMeaning", false);
+        isDistance = prefs.getString("timeMethod", "distance");
     }
 
 
@@ -279,19 +273,7 @@ public class MainActivity extends Activity {
     //
     public void setElementsId() {
 
-        Words = getSharedPreferences("Words", 0);
-        Meanings = getSharedPreferences("Meanings", 0);
-        Dates = getSharedPreferences("Dates", 0);
-        Counts = getSharedPreferences("Count", 0);
-        IsFavorite = getSharedPreferences("IsFavorite", 0);
-        Settings = getSharedPreferences("Settings", 0);
-
-        editorWords = Words.edit();
-        editorMeanings = Meanings.edit();
-        editorDates = Dates.edit();
-        editorCounts = Counts.edit();
-        editorIsFavorite = IsFavorite.edit();
-        editorSettings = Settings.edit();
+        database = new DatabaseHandler(this);
 
         items = (ListView) findViewById(R.id.listView);
         etSearch = (EditText) findViewById(R.id.etSearch);
@@ -299,15 +281,7 @@ public class MainActivity extends Activity {
         arrayItems = new ArrayList<Custom>();
         arrayItemsToShow = new ArrayList<Custom>();
 
-        if (markSeveral) {
-            adapterWords1 = new Adapter(MainActivity.this, R.layout.row, arrayItemsToShow);
-        } else {
-            adapterWords1 = new Adapter(MainActivity.this, R.layout.row, arrayItemsToShow);
-        }
-
-
-        String countStr = Words.getString("count", "0");
-        count = Integer.parseInt(countStr);
+        adapterWords1 = new Adapter(MainActivity.this, R.layout.row, arrayItemsToShow);
 
         dialogAddNew = new AlertDialog.Builder(this).create();
         dialogMeaning = new AlertDialog.Builder(this).create();
@@ -356,13 +330,15 @@ public class MainActivity extends Activity {
             if (isReadyToAddNew()) {
                 etNewWord = (EditText) dialog.findViewById(R.id.word);
                 etNewMeaning = (EditText) dialog.findViewById(R.id.meaning);
-                newWord = etNewWord.getText().toString();
-                newMeaning = etNewMeaning.getText().toString();
+                String newWord = etNewWord.getText().toString();
+                String newMeaning = etNewMeaning.getText().toString();
 
-                simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
-                currentDateAndTime = simpleDateFormat.format(new Date());
-                newDate = currentDateAndTime;
-                saveNewWord();
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+                String currentDateAndTime = simpleDateFormat.format(new Date());
+
+                database.addItem(new Custom(newWord, newMeaning, currentDateAndTime, 0));
+
+                setImgAddVisibility();
                 refreshListViewData(false);
                 dialog.dismiss();
                 Toast.makeText(MainActivity.this, "Successfully added.", Toast.LENGTH_SHORT).show();
@@ -370,22 +346,7 @@ public class MainActivity extends Activity {
         }
     }
 
-    void saveNewWord() {
-        editorWords.putString("word" + Integer.toString(count), newWord);
-        editorMeanings.putString("meaning" + Integer.toString(count), newMeaning);
-        editorDates.putString("date" + Integer.toString(count), newDate);
-        editorCounts.putInt("count" + Integer.toString(count), 0);
-        editorIsFavorite.putBoolean("date" + Integer.toString(count), false);
-        editorWords.putString("count", Integer.toString(count + 1));
 
-        editorWords.commit();
-        editorMeanings.commit();
-        editorDates.commit();
-        editorCounts.commit();
-        editorIsFavorite.commit();
-        count++;
-        setImgAddVisibility();
-    }
 
 
     //Dialog Meaning
@@ -398,9 +359,9 @@ public class MainActivity extends Activity {
     //
     public void search(String key) {
         int found = 0;
-        if (count > 0) {
+        if (database.getItemsCount() > 0) {
             arrayItemsToShow.clear();
-            for (int i = 0; i < count; i++) {
+            for (int i = 0; i < database.getItemsCount(); i++) {
                 key = key.toUpperCase();
                 String word = arrayItems.get(i).getWord().toUpperCase();
                 String meaning = arrayItems.get(i).getMeaning().toUpperCase();
@@ -409,46 +370,45 @@ public class MainActivity extends Activity {
                         searchMethod.equals("justWords") ? word.contains(key) :
                                 meaning.contains(key)) {
 
-                    String iStr = Integer.toString(i);
-
-                    arrayItemsToShow.add(new Custom(showItemNumber ? found + 1 + ". " + Words.getString("word" + iStr, found + 1 + ". " + "word" + iStr) : Words.getString("word" + iStr, "word" + iStr),
-                            Meanings.getString("meaning" + iStr, "meaning" + iStr),
-                            Dates.getString("date" + iStr, "date" + iStr),
-                            Counts.getInt("count" + iStr, 0),
-                            markSeveral,
-                            IsFavorite.getBoolean("isFavorite" + iStr, false)));
+                    arrayItemsToShow.add(database.getItem(database.getItemId(arrayItems.get(i).getWord(), arrayItems.get(i).getMeaning())));
                     found++;
                 }
             }
             if (found > 0) {
                 adapterWords1.notifyDataSetChanged();
                 items.setAdapter(adapterWords1);
-            }
-            else {
-                arrayItemsToShow.add(new Custom("   Nothing found",
-                        "My Dictionary",
-                        "KHaledBLack73",
-                        0,
-                        false,
-                        false));
+            } else {
+                arrayItemsToShow.add(new Custom("   Nothing found", "My Dictionary", "KHaledBLack73", false));
+                adapterWords1.notifyDataSetChanged();
             }
         }
 
-            for (int i = 0; i < arrayItemsToShow.size(); i++) {
-                arrayItemsToShow.get(i).setMeaningVisible(showItemMeaning);
-            }
-
         isFromSearch = true;
 
-        notifyCheckedPositionsInt();
+        if (arrayItemsToShow.size() > 0) {
+            for (int i = 0; i < arrayItemsToShow.size(); i++) {
+                if (!(arrayItemsToShow.get(i).getWord().equals("   Nothing found") &&
+                        arrayItemsToShow.get(i).getMeaning().equals("My Dictionary") && arrayItemsToShow.get(i).getDate().equals("KHaledBLack73"))) {
+                    arrayItemsToShow.get(i).setChVisible(markSeveral);
+                    //whether show item's number or not
+                    if (!(arrayItemsToShow.get(i).getWord().equals("   Nothing found") && arrayItemsToShow.get(i).getMeaning().equals("My Dictionary") && arrayItemsToShow.get(i).getDate().equals("KHaledBLack73")))
+                        arrayItemsToShow.get(i).setWord(showItemNumber ? i + 1 + ". " + arrayItemsToShow.get(i).getWord() : arrayItemsToShow.get(i).getWord());
+                    //whether show item's meaning or not
+                    arrayItemsToShow.get(i).setMeaningVisible(showItemMeaning);
+                }
+            }
+
+            notifyCheckedPositionsInt();
+        }
     }
 
 
     //Dialog Edit
     //
     //
-    void dialogEdit(boolean fromSearch, int position) {
-        final int positionToSendToDialogDelete = position;
+    void dialogEdit(boolean fromSearch, int fakePosition, int realPosition) {
+        final int fakPositionToSendToDialogDelete = fakePosition;
+        final int realPositionToSendToDialogDelete = realPosition;
         LayoutInflater inflater = this.getLayoutInflater();
         final View layout = inflater.inflate(R.layout.dialog_addnew, null);
         final AlertDialog.Builder d = new AlertDialog.Builder(this)
@@ -466,13 +426,13 @@ public class MainActivity extends Activity {
                         newMeaningEdit = dialogEditMeaning.getText().toString();
                         dialogEdit.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
-                        dialogAskDelete(positionToSendToDialogDelete);
+                        dialogAskDelete(fakPositionToSendToDialogDelete);
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        dialogMeaning(positionToSendToDialogDelete);
+                        dialogMeaning(fakPositionToSendToDialogDelete, realPositionToSendToDialogDelete);
                     }
                 });
 
@@ -481,30 +441,34 @@ public class MainActivity extends Activity {
 
         dialogEdit.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
-        etNewWord = (EditText) layout.findViewById(R.id.word);
-        etNewMeaning = (EditText) layout.findViewById(R.id.meaning);
+        etNewWord = (EditText) dialogEdit.findViewById(R.id.word);
+        etNewMeaning = (EditText) dialogEdit.findViewById(R.id.meaning);
         if (fromSearch) {
-            int realPosition = getPosition(position);
+            etNewMeaning.setText(arrayItemsToShow.get(fakePosition).getMeaning());
             etNewWord.setText(arrayItems.get(realPosition).getWord());
-            etNewMeaning.setText(arrayItems.get(realPosition).getMeaning());
 
         } else {
-            etNewWord.setText(Words.getString("word" + Integer.toString(position), "word" + Integer.toString(position)));
-            etNewMeaning.setText(arrayItems.get(position).getMeaning());
+            etNewWord.setText(arrayItems.get(realPosition).getWord());
+            etNewMeaning.setText(arrayItemsToShow.get(fakePosition).getMeaning());
         }
 
         dialogEdit.setCanceledOnTouchOutside(false);
 
 
         Button theButton = dialogEdit.getButton(DialogInterface.BUTTON_POSITIVE);
-        theButton.setOnClickListener(new CustomListenerEdit(dialogEdit));
+        theButton.setOnClickListener(new CustomListenerEdit(dialogEdit, arrayItems.get(realPosition).getWord(), arrayItemsToShow.get(fakePosition).getMeaning()));
     }
 
     class CustomListenerEdit implements View.OnClickListener {
         private final Dialog dialog;
+        private String word;
+        private String meaning;
 
-        public CustomListenerEdit(Dialog dialog) {
+
+        public CustomListenerEdit(Dialog dialog, String word, String meaning) {
             this.dialog = dialog;
+            this.word = word;
+            this.meaning = meaning;
         }
 
         @Override
@@ -515,11 +479,11 @@ public class MainActivity extends Activity {
                 newWordEdit = etNewWord.getText().toString();
                 newMeaningEdit = etNewMeaning.getText().toString();
 
-                editorWords.putString("word" + dialogMeaningWordPosition, newWordEdit);
-                editorMeanings.putString("meaning" + dialogMeaningWordPosition, newMeaningEdit);
-                editorWords.commit();
-                editorMeanings.commit();
-
+                Custom current = database.getItem(database.getItemId(word, meaning));
+                Log.i("current item", current.getWord() + "  " + current.getMeaning() + " " + current.getDate() + " " + current.getCount() + " " + current.getId());
+                int x = database.updateItem(new Custom(database.getItemId(word, meaning), newWordEdit, newMeaningEdit, current.getDate(), current.getCount()));
+                Log.i("after edit", x + " rows were effected");
+                Log.i("after edit", "word for edit: " + word + "  meaning: " + meaning);
                 refreshListViewData(false);
                 dialog.dismiss();
                 Toast.makeText(MainActivity.this, "Successfully edited.", Toast.LENGTH_SHORT).show();
@@ -531,8 +495,7 @@ public class MainActivity extends Activity {
     //Dialog Ask To Delete
     //
     //
-    void dialogAskDelete(int position) {
-        final int positionAsFinal = position;
+    void dialogAskDelete(final int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Ask To Delete");
         builder.setMessage("Are you sure you want to delete this word ?");
@@ -540,7 +503,7 @@ public class MainActivity extends Activity {
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                delete(getPosition(positionAsFinal), positionAsFinal);
+                delete(getPosition(position), position);
 
 
                 Toast.makeText(MainActivity.this, "Successfully deleted.", Toast.LENGTH_SHORT).show();
@@ -550,7 +513,7 @@ public class MainActivity extends Activity {
         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                dialogEdit(isFromSearch, getPosition(positionAsFinal));
+                dialogEdit(isFromSearch, position, getPosition(position));
                 EditText dialogEditWord = (EditText) dialogEdit.findViewById(R.id.word);
                 EditText dialogEditMeaning = (EditText) dialogEdit.findViewById(R.id.meaning);
                 dialogEditWord.setText(newWordEdit);
@@ -564,39 +527,13 @@ public class MainActivity extends Activity {
     }
 
 
-    //Refresh Data
-    //
-    //
-    void refreshData() {
-        editorWords.clear();
-        editorMeanings.clear();
-        editorDates.clear();
-        editorCounts.clear();
-        editorIsFavorite.clear();
+    void refreshItemsCount(int position, int realPosition) {
+        int count = arrayItems.get(realPosition).getCount();
+        int id = database.getItemId(arrayItems.get(realPosition).getWord(), arrayItems.get(realPosition).getMeaning());
+        Custom current = database.getItem(id);
+        database.updateItem(new Custom(id, current.getWord(), current.getMeaning(), current.getDate(), current.getCount() + 1));
 
-        editorWords.putString("count", Integer.toString(count));
-
-        for (int i = 0; i < count; i++) {
-            editorWords.putString("word" + Integer.toString(i), arrayItems.get(i).getWord());
-            editorMeanings.putString("meaning" + Integer.toString(i), arrayItems.get(i).getMeaning());
-            editorDates.putString("date" + Integer.toString(i), arrayItems.get(i).getDate());
-            editorCounts.putInt("count" + Integer.toString(i), arrayItems.get(i).getCount());
-            editorIsFavorite.putBoolean("isFavorite" + Integer.toString(i), arrayItems.get(i).isFavorite());
-        }
-        editorWords.commit();
-        editorMeanings.commit();
-        editorDates.commit();
-        editorCounts.commit();
-        editorIsFavorite.commit();
-    }
-
-
-    void refreshItemsCount(int position) {
-        int count = arrayItems.get(position).getCount();
-        editorCounts.putInt("count" + position, count + 1);
-        editorCounts.commit();
-
-        arrayItems.get(position).setCount(count + 1);
+        arrayItems.get(realPosition).setCount(count + 1);
         arrayItemsToShow.get(position).setCount(count + 1);
     }
 
@@ -604,28 +541,16 @@ public class MainActivity extends Activity {
     //Delete
     //
     //
-    void delete(int positionReal, int positionShow) {
-        editorWords.remove("word" + positionReal);
-        editorMeanings.remove("meaning" + positionReal);
-        editorDates.remove("date" + positionReal);
-        editorCounts.remove("count" + positionReal);
-        editorIsFavorite.remove("isFavorite" + positionReal);
-        arrayItems.remove(positionReal);
-        arrayItemsToShow.remove(positionShow);
-
-        count--;
-
-        editorWords.commit();
-        editorMeanings.commit();
-        editorDates.commit();
-        editorCounts.commit();
-        editorIsFavorite.commit();
+    void delete(int realPosition, int showPosition) {
+        database.deleteItem(database.getItemId(arrayItems.get(realPosition).getWord(), arrayItems.get(realPosition).getMeaning()));
+        Log.i("void delete", Integer.toString(database.getItemId(arrayItems.get(realPosition).getWord(), arrayItems.get(realPosition).getMeaning())));
+        arrayItems.remove(realPosition);
+        arrayItemsToShow.remove(showPosition);
 
         if (!isFromSearch) {
             setImgAddVisibility();
         }
 
-        refreshData();
         refreshListViewData(false);
 
         if (isFromSearch && arrayItemsToShow.size() == 0) {
@@ -633,73 +558,43 @@ public class MainActivity extends Activity {
         }
     }
 
-    void delete(int positionReal, int positionShow, boolean isFromDeleteMark) {
-        editorWords.remove("word" + positionReal);
-        editorMeanings.remove("meaning" + positionReal);
-        editorDates.remove("date" + positionReal);
-        editorCounts.remove("count" + positionReal);
-        editorIsFavorite.remove("isFavorite" + positionReal);
-        arrayItems.remove(positionReal);
-        arrayItemsToShow.remove(positionShow);
-
-        count--;
-
-        editorWords.commit();
-        editorMeanings.commit();
-        editorDates.commit();
-        editorCounts.commit();
-        editorIsFavorite.commit();
-
-        if (!isFromSearch) {
-            setImgAddVisibility();
-        }
-
-        refreshData();
-    }
 
     //Refresh List View's Data
     //
     //
     void refreshListViewData(boolean isFromDeleteMark) {
-        if (count > 0) {
-            arrayItems.clear();
-            arrayItemsToShow.clear();
+        arrayItems.clear();
+        arrayItemsToShow.clear();
+        if (database.getItemsCount() > 0) {
+            arrayItems.addAll(database.getAllItems());
+            arrayItemsToShow.addAll(database.getAllItems());
 
-            for (int i = 0; i < count; i++) {
-                String iStr = Integer.toString(i);
+            for (int i = 0; i < arrayItems.size(); i++) {
 
-                arrayItems.add(new Custom(Words.getString("word" + iStr, i + 1 + ". " + "word" + iStr),
-                        Meanings.getString("meaning" + iStr, "meaning" + iStr),
-                        Dates.getString("date" + iStr, "date" + iStr),
-                        Counts.getInt("count" + iStr, 0),
-                        markSeveral,
-                        IsFavorite.getBoolean("isFavorite" + iStr, false)));
+            }
 
 
-                arrayItemsToShow.add(new Custom(showItemNumber ? i + 1 + ". " + Words.getString("word" + iStr, i + 1 + ". " + "word" + iStr) : Words.getString("word" + iStr, "word" + iStr),
-                        Meanings.getString("meaning" + iStr, "meaning" + iStr),
-                        Dates.getString("date" + iStr, "date" + iStr),
-                        Counts.getInt("count" + iStr, 0),
-                        markSeveral,
-                        IsFavorite.getBoolean("isFavorite" + iStr, false)));
-                arrayItemsToShow.get(i).setMeaningVisible(showItemMeaning);
+            if (arrayItemsToShow.size() > 0) {
+                for (int i = 0; i < arrayItemsToShow.size(); i++) {
+                    arrayItemsToShow.get(i).setChVisible(markSeveral);
+                    //whether show item's number or not
+                    arrayItemsToShow.get(i).setWord(showItemNumber ? i + 1 + ". " + arrayItemsToShow.get(i).getWord() : arrayItemsToShow.get(i).getWord());
+                    //whether show item's meaning or not
+                    arrayItemsToShow.get(i).setMeaningVisible(showItemMeaning);
+                }
             }
         }
+
         adapterWords1.notifyDataSetChanged();
         items.setAdapter(adapterWords1);
         items.onRestoreInstanceState(listViewPosition);
 
         if (isFromSearch) {
             search(etSearch.getText().toString());
+        } else {
+            setImgAddVisibility();
         }
 
-        if (markSeveral && checkedPositionsInt.size() > 0 & isFromDeleteMark) {
-            for (int i = 0; i < checkedPositionsInt.size(); i++) {
-                arrayItemsToShow.get(i).setChChecked(checkedPositionsInt.get(i) == 0);
-            }
-//            isFromDeleteMark = false;
-            adapterWords1.notifyDataSetChanged();
-        }
     }
 
 
@@ -709,7 +604,7 @@ public class MainActivity extends Activity {
     void setImgAddVisibility() {
         imgAdd = (ImageView) findViewById(R.id.imgAdd);
         imgAdd.setVisibility(View.GONE);
-        if (count == 0) {
+        if (database.getItemsCount() == 0) {
             imgAdd.setVisibility(View.VISIBLE);
         } else {
             imgAdd.setVisibility(View.GONE);
@@ -721,6 +616,16 @@ public class MainActivity extends Activity {
     //Get An Item's Real Position
     //
     //
+
+//    int getPosition(final int position) {
+//        for (int i = 0; i < database.getItemsCount(); i++) {
+//            if (arrayItems.get(i).getId() == arrayItemsToShow.get(position).getId()) {
+//                return i;
+//            }
+//        }
+//        return 0;
+//    }
+
     int getPosition(int position) {
         int realPosition = 0;
         boolean found = false;
@@ -745,6 +650,16 @@ public class MainActivity extends Activity {
         return realPosition;
     }
 
+    int getPosition(String word, String meaning) {
+        for (int i = 0; i < database.getItemsCount(); i++) {
+            if (arrayItems.get(i).getWord().toUpperCase().equals(word) &&
+                    arrayItems.get(i).getMeaning().toUpperCase().equals(meaning)) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
 
     //Check Is EveryThing's Ready To Add New Word
     //
@@ -763,8 +678,8 @@ public class MainActivity extends Activity {
             Toast.makeText(this, "The Word's Meaning is missing.", Toast.LENGTH_SHORT).show();
             return false;
         }
-        for (int i = 0; i < count; i++) {
-            if (newWord.equals(arrayItems.get(i)) && newMeaning.equals(arrayItems.get(i).getMeaning())) {
+        for (int i = 0; i < database.getItemsCount(); i++) {
+            if (newWord.equals(arrayItems.get(i).getWord()) && newMeaning.equals(arrayItems.get(i).getMeaning())) {
                 Toast.makeText(this, "The Word exists in the database", Toast.LENGTH_SHORT).show();
                 return false;
             }
@@ -791,13 +706,13 @@ public class MainActivity extends Activity {
             return false;
         }
 
-        if (arrayItems.get(dialogMeaningWordPosition).getWord().equals(newWord) && arrayItems.get(dialogMeaningWordPosition).getMeaning().equals(newMeaning)) {
+        if (arrayItems.get(getPosition(dialogMeaningWordPosition)).getWord().equals(newWord) && arrayItems.get(getPosition(dialogMeaningWordPosition)).getMeaning().equals(newMeaning)) {
             Toast.makeText(this, "every Thing's the same.", Toast.LENGTH_SHORT).show();
             return false;
         }
 
-        for (int i = 0; i < count; i++) {
-            if (newWord.equals(arrayItems.get(i)) && newMeaning.equals(arrayItems.get(i).getMeaning())) {
+        for (int i = 0; i < database.getItemsCount(); i++) {
+            if (newWord.equals(arrayItems.get(i).getWord()) && newMeaning.equals(arrayItems.get(i).getMeaning())) {
                 Toast.makeText(this, "The Word exists in the database", Toast.LENGTH_SHORT).show();
                 return false;
             }
@@ -837,12 +752,11 @@ public class MainActivity extends Activity {
         if (dialogMeaningIsOpen) {
             refreshListViewData(false);
             dialogMeaningWordPosition = icicle.getInt("dialogMeaningWordPosition");
-            dialogMeaning(dialogMeaningWordPosition);
-            dialogMeaningShoeingItemCount = icicle.getInt("dialogMeaningShoeingItemCount");
+            dialogMeaning(dialogMeaningWordPosition, getPosition(dialogMeaningWordPosition));
         }
         if (dialogEditIsOpen) {
             dialogMeaningWordPosition = icicle.getInt("dialogMeaningWordPosition");
-            dialogEdit(isFromSearch, dialogMeaningWordPosition);
+            dialogEdit(isFromSearch, dialogMeaningWordPosition, getPosition(dialogMeaningWordPosition));
             EditText wordAddNew = (EditText) dialogEdit.findViewById(R.id.word);
             EditText meaningAddNew = (EditText) dialogEdit.findViewById(R.id.meaning);
             wordAddNew.setText(icicle.getString("dialogEditWordText"));
@@ -899,7 +813,6 @@ public class MainActivity extends Activity {
             icicle.putBoolean("dialogMeaningIsOpen", dialogMeaning.isShowing());
             icicle.putInt("dialogMeaningWordPosition", dialogMeaningWordPosition);
             icicle.putBoolean("isFromSearch", isFromSearch);
-            icicle.putInt("dialogMeaningShoeingItemCount", dialogMeaningShoeingItemCount);
         }
 
         if (dialogEdit.isShowing()) {
@@ -920,10 +833,6 @@ public class MainActivity extends Activity {
             icicle.putString("dialogEditWordText", newWordEdit);
             icicle.putString("dialogEditMeaningText", newMeaningEdit);
         }
-
-//        icicle.putBoolean("dialogMeaningIsOpen", dialogMeaning.isShowing());
-//        icicle.putBoolean("dialogEditIsOpen", dialogEdit.isShowing());
-
 
         if (markSeveral) {
             icicle.putBoolean("markSeveral", markSeveral);
@@ -949,18 +858,25 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
-
                 int i = 0;
                 while (checkedPositionsInt.contains(0)) {
-                    if (checkedPositionsInt.get(i) == 0) {
-                        delete(getPosition(i), i, true);
-                        checkedPositionsInt.remove(i);
+                    if (arrayItemsToShow.get(i).isChChecked()) {
+                        int rPosition = getPosition(i);
+                        arrayItemsToShow.get(i).setChChecked(false);
+                        database.deleteItem(database.getItemId(arrayItems.get(rPosition).getWord(), arrayItems.get(rPosition).getMeaning()));
+                        checkedPositionsInt.set(i, 1);
                         i = 0;
                         continue;
                     }
                     i++;
                 }
+
+                if (database.getItemsCount() < 1) {
+                    markSeveral = false;
+                }
+
                 refreshListViewData(true);
+                notifyCheckedPositionsInt();
                 if (isFromSearch && arrayItemsToShow.size() == 0) {
                     MainActivity.this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
                 }
@@ -978,11 +894,14 @@ public class MainActivity extends Activity {
         dialogAskDelete.setCanceledOnTouchOutside(false);
     }
 
+    void doDeleteByMark() {
+
+    }
+
 
     void menu_Delete() {
 
         boolean arrayItemsCheckedIsEmpty = !checkedPositionsInt.contains(0);
-
         if (arrayItemsCheckedIsEmpty) {
             Toast.makeText(MainActivity.this, "You haven't selected any item.", Toast.LENGTH_SHORT).show();
         } else {
@@ -1032,7 +951,7 @@ public class MainActivity extends Activity {
         if (menu != null) {
             menu.clear();
         }
-        if (markSeveral ) {
+        if (markSeveral && database.getItemsCount() > 0) {
             getMenuInflater().inflate(R.menu.on_delete, menu);
             MenuItem itemMarkAll = menu.findItem(R.id.action_markAll);
 
@@ -1051,15 +970,13 @@ public class MainActivity extends Activity {
 
             if ((isToMarkAll && isAllMarked) || (!isToMarkAll && isAllMarked) || (!isToMarkAll && !isAllMarked && !isAllUnmark) || isAllMarked) {
                 isToMarkAll = false;
-            }
-            else if ((isToMarkAll && !isAllMarked) || (!isToMarkAll && !isAllMarked && isAllUnmark) || isAllUnmark) {
+            } else if ((isToMarkAll && !isAllMarked) || (!isToMarkAll && !isAllMarked && isAllUnmark) || isAllUnmark) {
                 isToMarkAll = true;
             }
 
-            if (isToMarkAll){
+            if (isToMarkAll) {
                 itemMarkAll.setTitle(R.string.action_markAll);
-            }
-            else {
+            } else {
                 itemMarkAll.setTitle(R.string.action_unmarkAll);
             }
         } else {
@@ -1085,9 +1002,7 @@ public class MainActivity extends Activity {
                     markSeveral = true;
                     setElementsId();
                     refreshListViewData(false);
-                    if (isFromSearch) {
-                        search(etSearch.getText().toString());
-                    }
+
                 } else {
                     Toast.makeText(MainActivity.this, "There is nothing to select!", Toast.LENGTH_SHORT).show();
                 }
@@ -1131,15 +1046,14 @@ public class MainActivity extends Activity {
     }
 
 
-    void dialogMeaning(int position) {
+    void dialogMeaning(final int position, final int realPosition) {
         LayoutInflater inflater = this.getLayoutInflater();
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setView(inflater.inflate(R.layout.dialog_meaning, null));
-        final int positionForEdit = position;
         builder.setPositiveButton(R.string.edit, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                dialogEdit(isFromSearch, positionForEdit);
+                dialogEdit(isFromSearch, position, realPosition);
             }
         });
         builder.setNegativeButton(R.string.close, null);
@@ -1156,21 +1070,249 @@ public class MainActivity extends Activity {
         TextView tvWord = (TextView) dialogMeaning.findViewById(R.id.dmWord);
         TextView tvMeaning = (TextView) dialogMeaning.findViewById(R.id.dmMeaning);
         TextView tvCount = (TextView) dialogMeaning.findViewById(R.id.dmCount);
-        ImageButton tvFavorite = (ImageButton) dialogMeaning.findViewById(R.id.dmFavorite);
+//        ImageButton tvFavorite = (ImageButton) dialogMeaning.findViewById(R.id.dmFavorite);
 
         dialogMeaningWordPosition = position;
 
 
-        tvMeaning.setText(arrayItems.get(position).getMeaning());
-        tvWord.setText(arrayItems.get(position).getWord());
-        tvCount.setText(Integer.toString(arrayItems.get(position).getCount()));
-        tvDate.setText(arrayItems.get(position).getDate());
+        tvMeaning.setText(arrayItemsToShow.get(position).getMeaning());
+        tvWord.setText(arrayItems.get(realPosition).getWord());
+        tvCount.setText(Integer.toString(arrayItemsToShow.get(position).getCount()));
 
-
+        if (isDistance.equals("distance")) {
+            changeDateToDistance();
+        } else {
+            tvDate.setText(arrayItemsToShow.get(position).getDate());
+        }
 
         dialogMeaning.setCanceledOnTouchOutside(true);
     }
 
 
+    public void upload() {
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
 
+        FTPClient con;
+
+        try {
+            File sdCard = Environment.getExternalStorageDirectory();
+            File dir = new File(sdCard.toString());
+
+            con = new FTPClient();
+            con.connect(InetAddress.getByName("ftp.khaled.ir"));
+
+            if (con.login("windowsp", "KHaledBLack73")) {
+//                try {
+//                    File sd = Environment.getExternalStorageDirectory();
+//                    File data = Environment.getDataDirectory();
+//
+//                    if (sd.canWrite()) {
+//                        String currentDBPath = "//data//ir.khaled.mydictionary//shared_prefs//Words.xml";
+//                        String backupDBPath = "{database name}";
+//                        File currentDB = new File(data, currentDBPath);
+//                        File backupDB = new File(sd, backupDBPath);
+//
+//                        if (currentDB.exists()) {
+//                            FileChannel src = new FileInputStream(currentDB).getChannel();
+//                            FileChannel dst = new FileOutputStream(backupDB).getChannel();
+//                            dst.transferFrom(src, 0, src.size());
+//                            src.close();
+//                            dst.close();
+//                        }
+//                    }
+//                } catch (Exception e) {
+//                }
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+//        TelephonyManager tm = (TelephonyManager)getBaseContext().getSystemService(Context.TELEPHONY_SERVICE);
+//        final String DeviceId, SerialNum, androidId;
+//        DeviceId = tm.getDeviceId();
+//        SerialNum = tm.getSimSerialNumber();
+//        androidId = Secure.getString(getContentResolver(),Secure.ANDROID_ID);
+//
+//        UUID deviceUuid = new UUID(androidId.hashCode(), ((long)DeviceId.hashCode() << 32) | SerialNum.hashCode());
+//        String mydeviceId = deviceUuid.toString();
+//        Log.v("My Id", "Android DeviceId is: " +DeviceId);
+//        Log.v("My Id", "Android SerialNum is: " +SerialNum);
+//        Log.v("My Id", "Android androidId is: " +androidId);
+//        Log.v("My Id", "Android androidId is: " +mydeviceId);
+    }
+
+
+    public void tvDateOnClick(View view) {
+        changeDateToDistanceOnClick();
+    }
+
+
+    void changeDateToDistance() {
+        TextView etDate = (TextView) dialogMeaning.findViewById(R.id.dmDate);
+            boolean thisHour = false;
+            boolean today = false;
+            boolean thisMonth = false;
+            boolean thisYear = false;
+
+            String originalDate = arrayItems.get(getPosition(dialogMeaningWordPosition)).getDate();
+            String completeDate[] = originalDate.split(" ");
+            String justDate[] = completeDate[0].split("/");
+            String justTime[] = completeDate[1].split(":");
+            int year = Integer.parseInt(justDate[0]);
+            int month = Integer.parseInt(justDate[1]);
+            int day = Integer.parseInt(justDate[2]);
+            int hour = Integer.parseInt(justTime[0]);
+            int minute = Integer.parseInt(justTime[1]);
+
+
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+            String currentDateAndTime = simpleDateFormat.format(new Date());
+            String cCompleteDate[] = currentDateAndTime.split(" ");
+            String cJustDate[] = cCompleteDate[0].split("/");
+            String cJustTime[] = cCompleteDate[1].split(":");
+            int cYear = Integer.parseInt(cJustDate[0]);
+            int cMonth = Integer.parseInt(cJustDate[1]);
+            int cDay = Integer.parseInt(cJustDate[2]);
+            int cHour = Integer.parseInt(cJustTime[0]);
+            int cMinute = Integer.parseInt(cJustTime[1]);
+
+            if (year == cYear && month == cMonth && day == cDay && hour == cHour) {
+                thisHour = true;
+            } else if (year == cYear && month == cMonth && day == cDay) {
+                today = true;
+            } else if (year == cYear && month == cMonth) {
+                thisMonth = true;
+            } else if (year == cYear) {
+                thisYear = true;
+            }
+
+            if (thisHour) {
+                int distanceMin = cMinute - minute;
+                etDate.setText(distanceMin == 0 ? "just now" : distanceMin < 2 ? Integer.toString(distanceMin) + " minute ago" : Integer.toString(distanceMin) + " minutes ago");
+
+            } else if (today) {
+                int distanceHour = cHour - hour;
+                etDate.setText(distanceHour < 2 ? Integer.toString(distanceHour) + " hour ago" : Integer.toString(distanceHour) + " hours ago");
+
+            } else if (thisMonth) {
+                int distanceDay = cDay - day;
+                int distanceHour = cHour - hour;
+                String strDistance;
+                strDistance = distanceDay < 2 ? Integer.toString(distanceDay) + " day" : Integer.toString(distanceDay) + " days";
+                strDistance += (distanceHour == 0 ? " ago"
+                        : distanceHour < 2 ? " and " + Integer.toString(distanceHour) + " hour ago"
+                        : " and " + Integer.toString(distanceHour) + " hours ago");
+
+                etDate.setText(strDistance);
+
+            } else if (thisYear) {
+                int distanceYear = cYear - year;
+                int distanceMonth = cMonth - month;
+                int distanceDay = cDay - day;
+                String strDistance;
+
+                if (distanceYear == 0) {
+                    strDistance = distanceMonth < 2 ? Integer.toString(distanceMonth) + " month" : Integer.toString(distanceMonth) + " months";
+                    strDistance += (distanceDay == 0 ? " ago"
+                            : distanceDay < 2 ? " and " + Integer.toString(distanceDay) + " day ago"
+                            : " and " + Integer.toString(distanceDay) + " days ago");
+                } else {
+                    strDistance = distanceYear < 2 ? Integer.toString(distanceYear) + " year" : Integer.toString(distanceYear) + " years";
+                    strDistance += (distanceMonth == 0 ? " ago"
+                            : distanceMonth < 2 ? " and " + Integer.toString(distanceMonth) + " month ago"
+                            : " and " + Integer.toString(distanceMonth) + " months ago");
+                }
+                etDate.setText(strDistance);
+            }
+    }
+
+
+    void changeDateToDistanceOnClick() {
+        TextView etDate = (TextView) dialogMeaning.findViewById(R.id.dmDate);
+        if (isDistance == "date") {
+            boolean thisHour = false;
+            boolean today = false;
+            boolean thisMonth = false;
+            boolean thisYear = false;
+
+            String originalDate = arrayItems.get(getPosition(dialogMeaningWordPosition)).getDate();
+            String completeDate[] = originalDate.split(" ");
+            String justDate[] = completeDate[0].split("/");
+            String justTime[] = completeDate[1].split(":");
+            int year = Integer.parseInt(justDate[0]);
+            int month = Integer.parseInt(justDate[1]);
+            int day = Integer.parseInt(justDate[2]);
+            int hour = Integer.parseInt(justTime[0]);
+            int minute = Integer.parseInt(justTime[1]);
+
+
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+            String currentDateAndTime = simpleDateFormat.format(new Date());
+            String cCompleteDate[] = currentDateAndTime.split(" ");
+            String cJustDate[] = cCompleteDate[0].split("/");
+            String cJustTime[] = cCompleteDate[1].split(":");
+            int cYear = Integer.parseInt(cJustDate[0]);
+            int cMonth = Integer.parseInt(cJustDate[1]);
+            int cDay = Integer.parseInt(cJustDate[2]);
+            int cHour = Integer.parseInt(cJustTime[0]);
+            int cMinute = Integer.parseInt(cJustTime[1]);
+
+            if (year == cYear && month == cMonth && day == cDay && hour == cHour) {
+                thisHour = true;
+            } else if (year == cYear && month == cMonth && day == cDay) {
+                today = true;
+            } else if (year == cYear && month == cMonth) {
+                thisMonth = true;
+            } else if (year == cYear) {
+                thisYear = true;
+            }
+
+            if (thisHour) {
+                int distanceMin = cMinute - minute;
+                etDate.setText(distanceMin == 0 ? "just now" : distanceMin < 2 ? Integer.toString(distanceMin) + " minute ago" : Integer.toString(distanceMin) + " minutes ago");
+
+            } else if (today) {
+                int distanceHour = cHour - hour;
+                etDate.setText(distanceHour < 2 ? Integer.toString(distanceHour) + " hour ago" : Integer.toString(distanceHour) + " hours ago");
+
+            } else if (thisMonth) {
+                int distanceDay = cDay - day;
+                int distanceHour = cHour - hour;
+                String strDistance;
+                strDistance = distanceDay < 2 ? Integer.toString(distanceDay) + " day" : Integer.toString(distanceDay) + " days";
+                strDistance += (distanceHour == 0 ? " ago"
+                        : distanceHour < 2 ? " and " + Integer.toString(distanceHour) + " hour ago"
+                        : " and " + Integer.toString(distanceHour) + " hours ago");
+
+                etDate.setText(strDistance);
+
+            } else if (thisYear) {
+                int distanceYear = cYear - year;
+                int distanceMonth = cMonth - month;
+                int distanceDay = cDay - day;
+                String strDistance;
+
+                if (distanceYear == 0) {
+                    strDistance = distanceMonth < 2 ? Integer.toString(distanceMonth) + " month" : Integer.toString(distanceMonth) + " months";
+                    strDistance += (distanceDay == 0 ? " ago"
+                            : distanceDay < 2 ? " and " + Integer.toString(distanceDay) + " day ago"
+                            : " and " + Integer.toString(distanceDay) + " days ago");
+                } else {
+                    strDistance = distanceYear < 2 ? Integer.toString(distanceYear) + " year" : Integer.toString(distanceYear) + " years";
+                    strDistance += (distanceMonth == 0 ? " ago"
+                            : distanceMonth < 2 ? " and " + Integer.toString(distanceMonth) + " month ago"
+                            : " and " + Integer.toString(distanceMonth) + " months ago");
+                }
+                etDate.setText(strDistance);
+            }
+            isDistance = "distance";
+        } else {
+            etDate.setText(arrayItems.get(getPosition(dialogMeaningWordPosition)).getDate());
+            isDistance = "date";
+        }
+    }
+
+
+;
 }

@@ -29,5 +29,14 @@
     <string name="action_markAll">Mark All</string>
     <string name="action_unmarkAll">UnMark All</string>
 
+    <array name="timeMethodItems">
+        <item>Show exact date</item>
+        <item>Show the distance</item>
+    </array>
+
+    <array name="timeMethodValues">
+        <item>date</item>
+        <item>distance</item>
+    </array>
 
 </resources>

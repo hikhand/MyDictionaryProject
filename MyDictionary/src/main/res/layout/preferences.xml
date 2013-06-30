@@ -13,6 +13,12 @@
                 android:defaultValue="wordsAndMeanings"
                 android:entries="@array/searchMethodItems"
                 android:entryValues="@array/searchMethodValues" />
+        <ListPreference
+                android:title="Showing Time Method"
+                android:key="timeMethod"
+                android:defaultValue="distance"
+                android:entries="@array/timeMethodItems"
+                android:entryValues="@array/timeMethodValues" />
         <CheckBoxPreference
                 android:title = "Show the number"
                 android:key="showItemNumber"
