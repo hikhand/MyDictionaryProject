@@ -22,7 +22,7 @@ import java.util.List;
     private static final int DATABASE_VERSION = 1;
 
     // Database Name
-    private static final String DATABASE_NAME = "itemsManager";
+    public static final String DATABASE_NAME = "items.db";
 
     // Contacts table name
     private static final String TABLE_WORDS = "words";

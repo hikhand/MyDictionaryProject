@@ -1,40 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="ir.khaled.mydictionary"
+    android:installLocation="auto"
+    android:versionCode="15"
+    android:versionName="2.2.3" >
 
-package="ir.khaled.mydictionary"
-android:versionCode="14"
-android:versionName="2.2.2"
-        android:installLocation="auto">
+    <uses-sdk
+        android:minSdkVersion="9"
+        android:targetSdkVersion="17" />
 
-<uses-sdk
-android:minSdkVersion="9"
-android:targetSdkVersion="17" />
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppBaseTheme" >
+        <activity
+            android:name="ir.khaled.mydictionary.MainActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-<application
-android:allowBackup="true"
-android:icon="@drawable/ic_launcher"
-android:label="@string/app_name"
-android:theme="@style/AppBaseTheme" >
-<activity
-        android:name="ir.khaled.mydictionary.MainActivity"
-        android:label="@string/app_name" >
-    <intent-filter>
-        <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="ir.khaled.mydictionary.Preferences"
+            android:label="Preferences" />
+        <activity
+            android:name="ir.khaled.mydictionary.AboutActivity"
+            android:label="About" />
+        <activity
+            android:name="ir.khaled.mydictionary.DialogMeaning"
+            android:label="meaning" />
+        <activity
+            android:name="ir.khaled.mydictionary.Backup"
+            android:screenOrientation="portrait"
+            android:label="@string/title_activity_backup">
+            <intent-filter>
+                <action android:name="ir.khaled.mydictionary.Backup" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+    </application>
 
-        <category android:name="android.intent.category.LAUNCHER" />
-    </intent-filter>
-</activity>
-<activity
-        android:name=".Preferences"
-        android:label="Preferences"/>
-<activity
-        android:name=".AboutActivity"
-        android:label="About"/>
-    <activity
-            android:name=".DialogMeaning"
-            android:label="meaning"/>
-
-</application>
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-        </manifest>
+
+</manifest>

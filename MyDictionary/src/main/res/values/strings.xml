@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name" >My Dictionary</string>
-    <string name="action_settings" >Settings</string>
-    <string name="hello_world" >Hello world!</string>
+    <string name="app_name">My Dictionary</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
     <string name="word">Enter The Word</string>
     <string name="meaning">Enter The Meaning</string>
     <string name="save">Save</string>
@@ -11,17 +11,29 @@
     <string name="edit">Edit</string>
     <string name="close">Close</string>
     <string name="delete">Delete</string>
+    <string name="login">Login</string>
+    <string name="signUp">SingUp</string>
+    <string name="create">Create</string>
 
     <array name="searchMethodItems">
         <item>In words and meanings</item>
         <item>just in words</item>
         <item>just in meanings</item>
     </array>
-
     <array name="searchMethodValues">
         <item>wordsAndMeanings</item>
         <item>justWords</item>
         <item>justInMeanings</item>
+    </array>
+    <array name="sortMethodItems">
+        <item>Name</item>
+        <item>Date</item>
+        <item>Views</item>
+    </array>
+    <array name="sortMethodValues">
+        <item>name</item>
+        <item>date</item>
+        <item>view</item>
     </array>
 
     <string name="action_mark">Mark Several</string>
@@ -33,10 +45,21 @@
         <item>Show exact date</item>
         <item>Show the distance</item>
     </array>
-
     <array name="timeMethodValues">
         <item>date</item>
         <item>distance</item>
     </array>
+
+    <string-array name="sortBy">
+        <item>name</item>
+        <item>date</item>
+        <item>views</item>
+    </string-array>
+    <string-array name="sortWay">
+        <item>ascending</item>
+        <item>descending</item>
+    </string-array>
+
+    <string name="title_activity_backup">Backup</string>
 
 </resources>

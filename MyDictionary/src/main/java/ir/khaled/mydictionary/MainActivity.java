@@ -13,6 +13,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.os.StrictMode;
+import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -25,11 +26,14 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.view.inputmethod.EditorInfo;
@@ -38,9 +42,14 @@ import android.view.KeyEvent;
 import org.apache.commons.net.ftp.FTPClient;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.net.InetAddress;
+import java.nio.channels.FileChannel;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 
 public class MainActivity extends Activity {
@@ -49,7 +58,6 @@ public class MainActivity extends Activity {
     DatabaseHandler database;
     SharedPreferences prefs;
 
-
     public String newWordEdit;
     public String newMeaningEdit;
 
@@ -57,16 +65,15 @@ public class MainActivity extends Activity {
     public EditText etNewMeaning;
     public EditText etSearch;
     public ListView items;
+    public Spinner sortBy;
+    public Spinner sortWay;
     ImageView imgAdd;
     public boolean isFromSearch;
 
     ArrayList<Custom> arrayItems;
     ArrayList<Custom> arrayItemsToShow;
 
-
     public Adapter adapterWords1;
-
-
     public AlertDialog dialogAddNew;
     public AlertDialog dialogMeaning;
     public AlertDialog dialogEdit;
@@ -77,25 +84,17 @@ public class MainActivity extends Activity {
     int dialogMeaningWordPosition = 0;
     boolean dialogEditIsOpen = false;
     boolean dialogAskDeleteIsOpen = false;
-
-
     String searchMethod;
     boolean showItemNumber = true;
     boolean showItemMeaning = false;
     String isDistance;
-
-
+    String isDistanceTemp;
+    String sortMethod;
     private boolean markSeveral = false;
     Parcelable listViewPosition = null;
-
     ArrayList<Integer> checkedPositionsInt;
-
     boolean isToMarkAll = true;
-
-
-
     private boolean doubleBackToExitPressedOnce = false;
-
     boolean isLongClick = false;//for check items long click
 
     @Override
@@ -135,8 +134,12 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         setElementsId();
-        refreshListViewData(false);
         getPrefs();
+
+        header();
+
+        refreshListViewData(false);
+        sortByName();
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         setImgAddVisibility();
@@ -144,10 +147,48 @@ public class MainActivity extends Activity {
 
         listeners();
 
-        if (database.getItemsCount() > 0)
-            database.getItemId("Hello", "Salam");
     }
 
+    void header() {
+//        final View view = getLayoutInflater().inflate(R.layout.row_header, items, false);
+//        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+//                R.array.sortBy, android.R.layout.simple_spinner_item);
+//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//        sortBy = (Spinner) view.findViewById(R.id.sortBy);
+//        sortBy.setAdapter(adapter);
+//        ArrayAdapter<CharSequence> adapter1 = ArrayAdapter.createFromResource(this,
+//                R.array.sortWay, android.R.layout.simple_spinner_item);
+//        adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//        sortWay = (Spinner) view.findViewById(R.id.sortWay);
+//        sortWay.setAdapter(adapter1);
+//        items.addHeaderView(view, null, true);
+//
+//        sortBySelectedItem();
+    }
+
+    void sortBySelectedItem() {
+//        sortBy.setSelection(sortMethod.equals("name") ? 0 : sortMethod.equals("date") ? 1 : 2);
+    }
+
+    void sortByName() {
+//        if (sortBy.getSelectedItem().toString().equals("name")) {
+//            ArrayList<String> words = new ArrayList<String>();
+//            for (int i = 0; i < arrayItemsToShow.size(); i++) {
+//                words.add(arrayItems.get(getPosition(i)).getWord());
+//            }
+//            Collections.sort(words);
+//
+//            for (int i = 0; i < arrayItemsToShow.size(); i++) {
+//                arrayItemsToShow.get(i).setWord(words.get(i));
+//                arrayItemsToShow.get(i).setChVisible(markSeveral);
+//                arrayItemsToShow.get(i).setWord(showItemNumber ? i + 1 + ". " + arrayItemsToShow.get(i).getWord() : arrayItemsToShow.get(i).getWord());
+//                arrayItemsToShow.get(i).setMeaningVisible(showItemMeaning);
+//            }
+//
+//            adapterWords1.notifyDataSetChanged();
+//            items.setAdapter(adapterWords1);
+//        }
+    }
 
     //
     //
@@ -155,9 +196,9 @@ public class MainActivity extends Activity {
     //
     //
     void listeners() {
-
         items.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                int position = position1 - 1;
                 //if keyboard was up puts it down !!
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(etSearch.getWindowToken(), 0);
@@ -178,7 +219,8 @@ public class MainActivity extends Activity {
                         notifyCheckedPositionsInt();
                     }
                 } else if (!(arrayItemsToShow.get(position).getWord().equals("   Nothing found") &&
-                        arrayItemsToShow.get(position).getMeaning().equals("My Dictionary") && arrayItemsToShow.get(position).getDate().equals("KHaledBLack73"))) {
+                        arrayItemsToShow.get(position).getMeaning().equals("My Dictionary") &&
+                        arrayItemsToShow.get(position).getDate().equals("KHaledBLack73")) /*&& position1 != 0*/) {
                     refreshItemsCount(position, getPosition(position));
                     dialogMeaning(position, getPosition(position));
                 }
@@ -188,8 +230,11 @@ public class MainActivity extends Activity {
         items.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+//                int position = position1 - 1;
                 isLongClick = true;
-                if (markSeveral) {
+                if (position == 0) {
+
+                } else if (markSeveral) {
                     openOptionsMenu();
                 } else {
                     markSeveral = true;
@@ -245,6 +290,30 @@ public class MainActivity extends Activity {
                 }
             }
         });
+
+//        sortBy.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                Toast.makeText(MainActivity.this, "Wowww", Toast.LENGTH_SHORT).show();
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> parent) {
+//                Toast.makeText(MainActivity.this, "noWOW", Toast.LENGTH_SHORT).show();
+//            }
+//        });
+//
+//        sortWay.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> parent) {
+//
+//            }
+//        });
     }
 
 
@@ -265,6 +334,7 @@ public class MainActivity extends Activity {
         showItemNumber = prefs.getBoolean("showItemNumber", true);
         showItemMeaning = prefs.getBoolean("showItemMeaning", false);
         isDistance = prefs.getString("timeMethod", "distance");
+        sortMethod = prefs.getString("sortMethod", "date");
     }
 
 
@@ -277,6 +347,7 @@ public class MainActivity extends Activity {
 
         items = (ListView) findViewById(R.id.listView);
         etSearch = (EditText) findViewById(R.id.etSearch);
+
 
         arrayItems = new ArrayList<Custom>();
         arrayItemsToShow = new ArrayList<Custom>();
@@ -313,6 +384,12 @@ public class MainActivity extends Activity {
                 .create();
         dialogAddNew.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         dialogAddNew.show();
+        TextView tvTotalCount = (TextView) dialogAddNew.findViewById(R.id.tvTotalCount);
+        TextView tvHeader = (TextView) dialogAddNew.findViewById(R.id.tvHeader);
+        tvTotalCount.setText(Integer.toString(arrayItems.size()));
+        tvHeader.setText("Add An Item");
+
+
         dialogAddNew.setCanceledOnTouchOutside(false);
         Button theButton = dialogAddNew.getButton(DialogInterface.BUTTON_POSITIVE);
         theButton.setOnClickListener(new CustomListenerAddNew(dialogAddNew));
@@ -328,8 +405,8 @@ public class MainActivity extends Activity {
         @Override
         public void onClick(View v) {
             if (isReadyToAddNew()) {
-                etNewWord = (EditText) dialog.findViewById(R.id.word);
-                etNewMeaning = (EditText) dialog.findViewById(R.id.meaning);
+                etNewWord = (EditText) dialog.findViewById(R.id.etWord);
+                etNewMeaning = (EditText) dialog.findViewById(R.id.etMeaning);
                 String newWord = etNewWord.getText().toString();
                 String newMeaning = etNewMeaning.getText().toString();
 
@@ -345,9 +422,6 @@ public class MainActivity extends Activity {
             }
         }
     }
-
-
-
 
     //Dialog Meaning
     //
@@ -420,8 +494,8 @@ public class MainActivity extends Activity {
                 .setNeutralButton(R.string.delete, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        EditText dialogEditWord = (EditText) dialogEdit.findViewById(R.id.word);
-                        EditText dialogEditMeaning = (EditText) dialogEdit.findViewById(R.id.meaning);
+                        EditText dialogEditWord = (EditText) dialogEdit.findViewById(R.id.etWord);
+                        EditText dialogEditMeaning = (EditText) dialogEdit.findViewById(R.id.etMeaning);
                         newWordEdit = dialogEditWord.getText().toString();
                         newMeaningEdit = dialogEditMeaning.getText().toString();
                         dialogEdit.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
@@ -441,8 +515,8 @@ public class MainActivity extends Activity {
 
         dialogEdit.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
-        etNewWord = (EditText) dialogEdit.findViewById(R.id.word);
-        etNewMeaning = (EditText) dialogEdit.findViewById(R.id.meaning);
+        etNewWord = (EditText) dialogEdit.findViewById(R.id.etWord);
+        etNewMeaning = (EditText) dialogEdit.findViewById(R.id.etMeaning);
         if (fromSearch) {
             etNewMeaning.setText(arrayItemsToShow.get(fakePosition).getMeaning());
             etNewWord.setText(arrayItems.get(realPosition).getWord());
@@ -451,6 +525,12 @@ public class MainActivity extends Activity {
             etNewWord.setText(arrayItems.get(realPosition).getWord());
             etNewMeaning.setText(arrayItemsToShow.get(fakePosition).getMeaning());
         }
+
+        TextView tvTotalCount = (TextView) dialogEdit.findViewById(R.id.tvTotalCount);
+        TextView tvHeader = (TextView) dialogEdit.findViewById(R.id.tvHeader);
+        tvTotalCount.setVisibility(View.INVISIBLE);
+        tvHeader.setText("Edit An Item");
+
 
         dialogEdit.setCanceledOnTouchOutside(false);
 
@@ -474,8 +554,8 @@ public class MainActivity extends Activity {
         @Override
         public void onClick(View v) {
             if (isReadyEdit()) {
-                etNewWord = (EditText) dialog.findViewById(R.id.word);
-                etNewMeaning = (EditText) dialog.findViewById(R.id.meaning);
+                etNewWord = (EditText) dialog.findViewById(R.id.etWord);
+                etNewMeaning = (EditText) dialog.findViewById(R.id.etMeaning);
                 newWordEdit = etNewWord.getText().toString();
                 newMeaningEdit = etNewMeaning.getText().toString();
 
@@ -514,8 +594,8 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialogEdit(isFromSearch, position, getPosition(position));
-                EditText dialogEditWord = (EditText) dialogEdit.findViewById(R.id.word);
-                EditText dialogEditMeaning = (EditText) dialogEdit.findViewById(R.id.meaning);
+                EditText dialogEditWord = (EditText) dialogEdit.findViewById(R.id.etWord);
+                EditText dialogEditMeaning = (EditText) dialogEdit.findViewById(R.id.etMeaning);
                 dialogEditWord.setText(newWordEdit);
                 dialogEditMeaning.setText(newMeaningEdit);
             }
@@ -569,11 +649,6 @@ public class MainActivity extends Activity {
             arrayItems.addAll(database.getAllItems());
             arrayItemsToShow.addAll(database.getAllItems());
 
-            for (int i = 0; i < arrayItems.size(); i++) {
-
-            }
-
-
             if (arrayItemsToShow.size() > 0) {
                 for (int i = 0; i < arrayItemsToShow.size(); i++) {
                     arrayItemsToShow.get(i).setChVisible(markSeveral);
@@ -584,7 +659,6 @@ public class MainActivity extends Activity {
                 }
             }
         }
-
         adapterWords1.notifyDataSetChanged();
         items.setAdapter(adapterWords1);
         items.onRestoreInstanceState(listViewPosition);
@@ -665,8 +739,8 @@ public class MainActivity extends Activity {
     //
     //
     public boolean isReadyToAddNew() {
-        etNewWord = (EditText) dialogAddNew.findViewById(R.id.word);
-        etNewMeaning = (EditText) dialogAddNew.findViewById(R.id.meaning);
+        etNewWord = (EditText) dialogAddNew.findViewById(R.id.etWord);
+        etNewMeaning = (EditText) dialogAddNew.findViewById(R.id.etMeaning);
         String newWord = etNewWord.getText().toString();
         String newMeaning = etNewMeaning.getText().toString();
 
@@ -692,8 +766,8 @@ public class MainActivity extends Activity {
     //
     //
     public boolean isReadyEdit() {
-        etNewWord = (EditText) dialogEdit.findViewById(R.id.word);
-        etNewMeaning = (EditText) dialogEdit.findViewById(R.id.meaning);
+        etNewWord = (EditText) dialogEdit.findViewById(R.id.etWord);
+        etNewMeaning = (EditText) dialogEdit.findViewById(R.id.etMeaning);
         String newWord = etNewWord.getText().toString();
         String newMeaning = etNewMeaning.getText().toString();
 
@@ -707,7 +781,7 @@ public class MainActivity extends Activity {
         }
 
         if (arrayItems.get(getPosition(dialogMeaningWordPosition)).getWord().equals(newWord) && arrayItems.get(getPosition(dialogMeaningWordPosition)).getMeaning().equals(newMeaning)) {
-            Toast.makeText(this, "every Thing's the same.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Nothing has changed", Toast.LENGTH_SHORT).show();
             return false;
         }
 
@@ -744,8 +818,8 @@ public class MainActivity extends Activity {
         }
         if (dialogAddNewIsOpen) {
             dialogAddNew();
-            EditText wordAddNew = (EditText) dialogAddNew.findViewById(R.id.word);
-            EditText meaningAddNew = (EditText) dialogAddNew.findViewById(R.id.meaning);
+            EditText wordAddNew = (EditText) dialogAddNew.findViewById(R.id.etWord);
+            EditText meaningAddNew = (EditText) dialogAddNew.findViewById(R.id.etMeaning);
             wordAddNew.setText(icicle.getString("editTextWordAddNew"));
             meaningAddNew.setText(icicle.getString("editTextMeaningAddNew"));
         }
@@ -757,8 +831,8 @@ public class MainActivity extends Activity {
         if (dialogEditIsOpen) {
             dialogMeaningWordPosition = icicle.getInt("dialogMeaningWordPosition");
             dialogEdit(isFromSearch, dialogMeaningWordPosition, getPosition(dialogMeaningWordPosition));
-            EditText wordAddNew = (EditText) dialogEdit.findViewById(R.id.word);
-            EditText meaningAddNew = (EditText) dialogEdit.findViewById(R.id.meaning);
+            EditText wordAddNew = (EditText) dialogEdit.findViewById(R.id.etWord);
+            EditText meaningAddNew = (EditText) dialogEdit.findViewById(R.id.etMeaning);
             wordAddNew.setText(icicle.getString("dialogEditWordText"));
             meaningAddNew.setText(icicle.getString("dialogEditMeaningText"));
         }
@@ -796,8 +870,8 @@ public class MainActivity extends Activity {
     protected void onSaveInstanceState(Bundle icicle) {
         super.onSaveInstanceState(icicle);
 
-        EditText wordAddNew = (EditText) dialogAddNew.findViewById(R.id.word);
-        EditText meaningAddNew = (EditText) dialogAddNew.findViewById(R.id.meaning);
+        EditText wordAddNew = (EditText) dialogAddNew.findViewById(R.id.etWord);
+        EditText meaningAddNew = (EditText) dialogAddNew.findViewById(R.id.etMeaning);
 
 
         icicle.putParcelable("listViewPosition", items.onSaveInstanceState());
@@ -816,8 +890,8 @@ public class MainActivity extends Activity {
         }
 
         if (dialogEdit.isShowing()) {
-            EditText dialogEditWord = (EditText) dialogEdit.findViewById(R.id.word);
-            EditText dialogEditMeaning = (EditText) dialogEdit.findViewById(R.id.meaning);
+            EditText dialogEditWord = (EditText) dialogEdit.findViewById(R.id.etWord);
+            EditText dialogEditMeaning = (EditText) dialogEdit.findViewById(R.id.etMeaning);
 
             icicle.putBoolean("dialogEditIsOpen", dialogEdit.isShowing());
             icicle.putInt("dialogMeaningWordPosition", dialogMeaningWordPosition);
@@ -918,6 +992,8 @@ public class MainActivity extends Activity {
     @Override
     public void onStop() {
         super.onStop();
+        final View view = getLayoutInflater().inflate(R.layout.row_header, items, false);
+        items.removeHeaderView(view);
 
     }
 
@@ -926,6 +1002,7 @@ public class MainActivity extends Activity {
     public void onResume() {
         super.onResume();
         getPrefs();
+        sortBySelectedItem();
         refreshListViewData(false);
         items.onRestoreInstanceState(listViewPosition);
 
@@ -1079,6 +1156,7 @@ public class MainActivity extends Activity {
         tvWord.setText(arrayItems.get(realPosition).getWord());
         tvCount.setText(Integer.toString(arrayItemsToShow.get(position).getCount()));
 
+        isDistanceTemp = isDistance;
         if (isDistance.equals("distance")) {
             changeDateToDistance();
         } else {
@@ -1088,6 +1166,252 @@ public class MainActivity extends Activity {
         dialogMeaning.setCanceledOnTouchOutside(true);
     }
 
+
+
+
+
+    public void tvDateOnClick(View view) {
+        changeDateToDistanceOnClick();
+    }
+
+    void changeDateToDistance() {
+        TextView etDate = (TextView) dialogMeaning.findViewById(R.id.dmDate);
+        boolean thisHour = false;
+        boolean today = false;
+        boolean thisMonth = false;
+        boolean thisYear = false;
+        String originalDate = arrayItems.get(getPosition(dialogMeaningWordPosition)).getDate();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+        String currentDateAndTime = simpleDateFormat.format(new Date());
+
+        Date d1 = null;
+        Date d2 = null;
+        try {
+            d1 = simpleDateFormat.parse(originalDate);
+            d2 = simpleDateFormat.parse(currentDateAndTime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        final long diff = d2.getTime() - d1.getTime();
+        final long diffSeconds = diff / 1000;
+        final long diffMinutes = diff / (60 * 1000);
+        final long diffHours = diff / (60 * 60 * 1000);
+        final long diffDays = diff / (60 * 60 * 1000 * 24);
+        final Long diffMonth = diff / (60 * 60 * 1000 * 24 * 30);
+        final Long diffYear = diff / (60 * 60 * 1000 * 24 * 30 * 365);
+
+
+        if (diffYear == 0 && diffMonth == 0 && diffDays == 0 && diffHours == 0) {
+            thisHour = true;
+        } else if (diffYear == 0 && diffMonth == 0 && diffDays == 0) {
+            today = true;
+        } else if (diffYear == 0 && diffMonth == 0) {
+            thisMonth = true;
+        } else if (diffYear == 0) {
+            thisYear = true;
+        }
+
+
+        if (thisHour) {
+            etDate.setText(diffMinutes == 0 ? "just now" : diffMinutes < 2 ? Long.toString(diffMinutes) + " minute ago" : Long.toString(diffMinutes) + " minutes ago");
+
+        } else if (today) {
+            etDate.setText(diffHours < 2 ? Long.toString(diffHours) + " hour ago" : Long.toString(diffHours) + " hours ago");
+
+        } else if (thisMonth) {
+            Long difDay = diffDays;
+            Long difHour = diffHours;
+            String strDistance;
+
+            if (diffHours > 24) {
+                difHour = diffHours - 24;
+            } else {
+                difDay--;
+                difHour = (difHour + 24) - difHour;
+            }
+
+            strDistance = difDay < 2 ? Long.toString(difDay) + " day" : Long.toString(difDay) + " days";
+            strDistance += (difHour == 0 ? " ago"
+                    : difHour < 2 ? " and " + Long.toString(difHour) + " hour ago"
+                    : " and " + Long.toString(difHour) + " hours ago");
+
+            if (difHour == 24) {
+                strDistance = "1 day and 0 hour ago";
+            }
+            etDate.setText(strDistance);
+
+        } else if (thisYear) {
+            Long difDay = diffDays;
+            Long difMonth = diffMonth;
+            Long difYear = diffYear;
+            String strDistance = "";
+
+            if (difDay > 30) {
+                difDay = difDay - 30;
+            } {
+                difMonth--;
+                difDay = (difDay + 30) - difDay;
+            }
+            if (difMonth > 12) {
+                difMonth = difMonth - 12;
+            } else {
+                difYear--;
+                difMonth = (difMonth + 12) - difMonth;
+            }
+
+            if (diffYear == 0) {
+                if (difMonth > 0) {
+                    strDistance = difMonth < 2 ? Long.toString(difMonth) + " month" : Long.toString(difMonth) + " months";
+                    if (difDay == 0) {
+                        strDistance += " and " + Long.toString(difDay) + " day ago";
+                    }
+                }
+                strDistance += difDay < 2 ? " and " + Long.toString(difDay) + " day ago"
+                        : " and " + Long.toString(difDay) + " days ago";
+            } else {
+                strDistance = difYear < 2 ? Long.toString(difYear) + " year" : Long.toString(difYear) + " years";
+                strDistance += (difMonth == 0 ? " ago"
+                        : difMonth < 2 ? " and " + Long.toString(difMonth) + " month ago"
+                        : " and " + Long.toString(difMonth) + " months ago");
+            }
+            etDate.setText(strDistance);
+        }
+    }
+
+    void changeDateToDistanceOnClick() {
+        TextView etDate = (TextView) dialogMeaning.findViewById(R.id.dmDate);
+        if (isDistanceTemp.equals("date")) {
+            boolean thisHour = false;
+            boolean today = false;
+            boolean thisMonth = false;
+            boolean thisYear = false;
+            String originalDate = arrayItems.get(getPosition(dialogMeaningWordPosition)).getDate();
+//            String originalDate = "2000/02/24 20:25";
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+            String currentDateAndTime = simpleDateFormat.format(new Date());
+
+            Date d1 = null;
+            Date d2 = null;
+            try {
+                d1 = simpleDateFormat.parse(originalDate);
+                d2 = simpleDateFormat.parse(currentDateAndTime);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            long diff = d2.getTime() - d1.getTime();
+            long diffSeconds = diff / 1000;
+            long diffMinutes = diff / (60 * 1000);
+            long diffHours = diff / (60 * 60 * 1000);
+            long diffDays = diff / (60 * 60 * 1000 * 24);
+            Long diffMonth = diff / (60 * 60 * 1000 * 24 * 30);
+            Long diffYear = diff / (60 * 60 * 1000 * 24 * 30 * 365);
+
+
+            if (diffYear == 0 && diffMonth == 0 && diffDays == 0 && diffHours == 0) {
+                thisHour = true;
+            } else if (diffYear == 0 && diffMonth == 0 && diffDays == 0) {
+                today = true;
+            } else if (diffYear == 0 && diffMonth == 0) {
+                thisMonth = true;
+            } else if (diffYear == 0) {
+                thisYear = true;
+            }
+
+            if (thisHour) {
+                etDate.setText(diffMinutes == 0 ? "just now" : diffMinutes < 2 ? Long.toString(diffMinutes) + " minute ago" : Long.toString(diffMinutes) + " minutes ago");
+
+            } else if (today) {
+                etDate.setText(diffHours < 2 ? Long.toString(diffHours) + " hour ago" : Long.toString(diffHours) + " hours ago");
+
+            } else if (thisMonth) {
+                Long difDay = diffDays;
+                Long difHour = diffHours;
+                String strDistance;
+
+                if (diffHours > 24) {
+                    difHour = diffHours - 24;
+                } else {
+                    difDay--;
+                    difHour = (difHour + 24) - difHour;
+                }
+
+                strDistance = difDay < 2 ? Long.toString(difDay) + " day" : Long.toString(difDay) + " days";
+                strDistance += (difHour == 0 ? " ago"
+                        : difHour < 2 ? " and " + Long.toString(difHour) + " hour ago"
+                        : " and " + Long.toString(difHour) + " hours ago");
+
+                if (difHour == 24) {
+                    strDistance = "1 day and 0 hour ago";
+                }
+                etDate.setText(strDistance);
+
+            } else if (thisYear) {
+                Long difDay = diffDays;
+                Long difMonth = diffMonth;
+                Long difYear = diffYear;
+                String strDistance = "";
+
+                if (difDay > 30) {
+                    difDay = difDay - 30;
+                } {
+                    difMonth--;
+                    difDay = (difDay + 30) - difDay;
+                }
+                if (difMonth > 12) {
+                    difMonth = difMonth - 12;
+                } else {
+                    difYear--;
+                    difMonth = (difMonth + 12) - difMonth;
+                }
+
+                if (diffYear == 0) {
+                    if (difMonth > 0) {
+                        strDistance = difMonth < 2 ? Long.toString(difMonth) + " month" : Long.toString(difMonth) + " months";
+                        if (difDay == 0) {
+                            strDistance += " and " + Long.toString(difDay) + " day ago";
+                        }
+                    }
+                    strDistance += difDay < 2 ? " and " + Long.toString(difDay) + " day ago"
+                            : " and " + Long.toString(difDay) + " days ago";
+                } else {
+                    strDistance = difYear < 2 ? Long.toString(difYear) + " year" : Long.toString(difYear) + " years";
+                    strDistance += (difMonth == 0 ? " ago"
+                            : difMonth < 2 ? " and " + Long.toString(difMonth) + " month ago"
+                            : " and " + Long.toString(difMonth) + " months ago");
+                }
+                etDate.setText(strDistance);
+            }
+
+                isDistanceTemp = "distance";
+        } else {
+            etDate.setText(arrayItems.get(getPosition(dialogMeaningWordPosition)).getDate());
+                isDistanceTemp = "date";
+        }
+    }
+
+    void backup() {
+        try {
+            File sd = Environment.getExternalStorageDirectory();
+            File data = Environment.getDataDirectory();
+
+            if (sd.canWrite()) {
+                File currentDB = getDatabasePath(DatabaseHandler.DATABASE_NAME);
+                String backupDBPath = "//My Dictionary//backups";
+                File backupDB = new File(sd, backupDBPath);
+
+                if (currentDB.exists()) {
+                    FileChannel src = new FileInputStream(currentDB).getChannel();
+                    FileChannel dst = new FileOutputStream(backupDB).getChannel();
+                    dst.transferFrom(src, 0, src.size());
+                    src.close();
+                    dst.close();
+                }
+            }
+        } catch (Exception e) {
+        }
+    }
 
     public void upload() {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -1141,178 +1465,4 @@ public class MainActivity extends Activity {
 //        Log.v("My Id", "Android androidId is: " +androidId);
 //        Log.v("My Id", "Android androidId is: " +mydeviceId);
     }
-
-
-    public void tvDateOnClick(View view) {
-        changeDateToDistanceOnClick();
-    }
-
-
-    void changeDateToDistance() {
-        TextView etDate = (TextView) dialogMeaning.findViewById(R.id.dmDate);
-            boolean thisHour = false;
-            boolean today = false;
-            boolean thisMonth = false;
-            boolean thisYear = false;
-
-            String originalDate = arrayItems.get(getPosition(dialogMeaningWordPosition)).getDate();
-            String completeDate[] = originalDate.split(" ");
-            String justDate[] = completeDate[0].split("/");
-            String justTime[] = completeDate[1].split(":");
-            int year = Integer.parseInt(justDate[0]);
-            int month = Integer.parseInt(justDate[1]);
-            int day = Integer.parseInt(justDate[2]);
-            int hour = Integer.parseInt(justTime[0]);
-            int minute = Integer.parseInt(justTime[1]);
-
-
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
-            String currentDateAndTime = simpleDateFormat.format(new Date());
-            String cCompleteDate[] = currentDateAndTime.split(" ");
-            String cJustDate[] = cCompleteDate[0].split("/");
-            String cJustTime[] = cCompleteDate[1].split(":");
-            int cYear = Integer.parseInt(cJustDate[0]);
-            int cMonth = Integer.parseInt(cJustDate[1]);
-            int cDay = Integer.parseInt(cJustDate[2]);
-            int cHour = Integer.parseInt(cJustTime[0]);
-            int cMinute = Integer.parseInt(cJustTime[1]);
-
-            if (year == cYear && month == cMonth && day == cDay && hour == cHour) {
-                thisHour = true;
-            } else if (year == cYear && month == cMonth && day == cDay) {
-                today = true;
-            } else if (year == cYear && month == cMonth) {
-                thisMonth = true;
-            } else if (year == cYear) {
-                thisYear = true;
-            }
-
-            if (thisHour) {
-                int distanceMin = cMinute - minute;
-                etDate.setText(distanceMin == 0 ? "just now" : distanceMin < 2 ? Integer.toString(distanceMin) + " minute ago" : Integer.toString(distanceMin) + " minutes ago");
-
-            } else if (today) {
-                int distanceHour = cHour - hour;
-                etDate.setText(distanceHour < 2 ? Integer.toString(distanceHour) + " hour ago" : Integer.toString(distanceHour) + " hours ago");
-
-            } else if (thisMonth) {
-                int distanceDay = cDay - day;
-                int distanceHour = cHour - hour;
-                String strDistance;
-                strDistance = distanceDay < 2 ? Integer.toString(distanceDay) + " day" : Integer.toString(distanceDay) + " days";
-                strDistance += (distanceHour == 0 ? " ago"
-                        : distanceHour < 2 ? " and " + Integer.toString(distanceHour) + " hour ago"
-                        : " and " + Integer.toString(distanceHour) + " hours ago");
-
-                etDate.setText(strDistance);
-
-            } else if (thisYear) {
-                int distanceYear = cYear - year;
-                int distanceMonth = cMonth - month;
-                int distanceDay = cDay - day;
-                String strDistance;
-
-                if (distanceYear == 0) {
-                    strDistance = distanceMonth < 2 ? Integer.toString(distanceMonth) + " month" : Integer.toString(distanceMonth) + " months";
-                    strDistance += (distanceDay == 0 ? " ago"
-                            : distanceDay < 2 ? " and " + Integer.toString(distanceDay) + " day ago"
-                            : " and " + Integer.toString(distanceDay) + " days ago");
-                } else {
-                    strDistance = distanceYear < 2 ? Integer.toString(distanceYear) + " year" : Integer.toString(distanceYear) + " years";
-                    strDistance += (distanceMonth == 0 ? " ago"
-                            : distanceMonth < 2 ? " and " + Integer.toString(distanceMonth) + " month ago"
-                            : " and " + Integer.toString(distanceMonth) + " months ago");
-                }
-                etDate.setText(strDistance);
-            }
-    }
-
-
-    void changeDateToDistanceOnClick() {
-        TextView etDate = (TextView) dialogMeaning.findViewById(R.id.dmDate);
-        if (isDistance == "date") {
-            boolean thisHour = false;
-            boolean today = false;
-            boolean thisMonth = false;
-            boolean thisYear = false;
-
-            String originalDate = arrayItems.get(getPosition(dialogMeaningWordPosition)).getDate();
-            String completeDate[] = originalDate.split(" ");
-            String justDate[] = completeDate[0].split("/");
-            String justTime[] = completeDate[1].split(":");
-            int year = Integer.parseInt(justDate[0]);
-            int month = Integer.parseInt(justDate[1]);
-            int day = Integer.parseInt(justDate[2]);
-            int hour = Integer.parseInt(justTime[0]);
-            int minute = Integer.parseInt(justTime[1]);
-
-
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
-            String currentDateAndTime = simpleDateFormat.format(new Date());
-            String cCompleteDate[] = currentDateAndTime.split(" ");
-            String cJustDate[] = cCompleteDate[0].split("/");
-            String cJustTime[] = cCompleteDate[1].split(":");
-            int cYear = Integer.parseInt(cJustDate[0]);
-            int cMonth = Integer.parseInt(cJustDate[1]);
-            int cDay = Integer.parseInt(cJustDate[2]);
-            int cHour = Integer.parseInt(cJustTime[0]);
-            int cMinute = Integer.parseInt(cJustTime[1]);
-
-            if (year == cYear && month == cMonth && day == cDay && hour == cHour) {
-                thisHour = true;
-            } else if (year == cYear && month == cMonth && day == cDay) {
-                today = true;
-            } else if (year == cYear && month == cMonth) {
-                thisMonth = true;
-            } else if (year == cYear) {
-                thisYear = true;
-            }
-
-            if (thisHour) {
-                int distanceMin = cMinute - minute;
-                etDate.setText(distanceMin == 0 ? "just now" : distanceMin < 2 ? Integer.toString(distanceMin) + " minute ago" : Integer.toString(distanceMin) + " minutes ago");
-
-            } else if (today) {
-                int distanceHour = cHour - hour;
-                etDate.setText(distanceHour < 2 ? Integer.toString(distanceHour) + " hour ago" : Integer.toString(distanceHour) + " hours ago");
-
-            } else if (thisMonth) {
-                int distanceDay = cDay - day;
-                int distanceHour = cHour - hour;
-                String strDistance;
-                strDistance = distanceDay < 2 ? Integer.toString(distanceDay) + " day" : Integer.toString(distanceDay) + " days";
-                strDistance += (distanceHour == 0 ? " ago"
-                        : distanceHour < 2 ? " and " + Integer.toString(distanceHour) + " hour ago"
-                        : " and " + Integer.toString(distanceHour) + " hours ago");
-
-                etDate.setText(strDistance);
-
-            } else if (thisYear) {
-                int distanceYear = cYear - year;
-                int distanceMonth = cMonth - month;
-                int distanceDay = cDay - day;
-                String strDistance;
-
-                if (distanceYear == 0) {
-                    strDistance = distanceMonth < 2 ? Integer.toString(distanceMonth) + " month" : Integer.toString(distanceMonth) + " months";
-                    strDistance += (distanceDay == 0 ? " ago"
-                            : distanceDay < 2 ? " and " + Integer.toString(distanceDay) + " day ago"
-                            : " and " + Integer.toString(distanceDay) + " days ago");
-                } else {
-                    strDistance = distanceYear < 2 ? Integer.toString(distanceYear) + " year" : Integer.toString(distanceYear) + " years";
-                    strDistance += (distanceMonth == 0 ? " ago"
-                            : distanceMonth < 2 ? " and " + Integer.toString(distanceMonth) + " month ago"
-                            : " and " + Integer.toString(distanceMonth) + " months ago");
-                }
-                etDate.setText(strDistance);
-            }
-            isDistance = "distance";
-        } else {
-            etDate.setText(arrayItems.get(getPosition(dialogMeaningWordPosition)).getDate());
-            isDistance = "date";
-        }
-    }
-
-
-;
 }

@@ -1,0 +1,192 @@
+<RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/scrollView">
+
+        <RelativeLayout
+                tools:context=".Backup"
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin"
+                android:paddingTop="@dimen/activity_vertical_margin"
+                android:paddingBottom="@dimen/activity_vertical_margin"
+                android:id="@+id/relativeLayout">
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="username: -"
+                    android:id="@+id/tvUsername"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentLeft="false"
+                    android:layout_alignParentRight="false"
+                    android:layout_centerHorizontal="true"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="last backup: "
+                    android:id="@+id/tvLastServer"
+                    android:layout_below="@+id/imageView"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginLeft="2dp"
+                    android:layout_toLeftOf="@+id/btnCheckServer"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="distance: "
+                    android:id="@+id/tvDistanceServer"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginTop="8dp"
+                    android:layout_below="@+id/tvLastServer"
+                    android:layout_marginLeft="2dp"/>
+
+            <ImageView
+                    android:layout_width="fill_parent"
+                    android:layout_height="2dp"
+                    android:background="#FFFFBB33"
+                    android:id="@+id/imageView"
+                    android:layout_below="@+id/tvUsername"
+                    android:layout_marginTop="3dp"/>
+
+            <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Check"
+                    android:id="@+id/btnCheckServer"
+                    android:layout_alignParentRight="true"
+                    android:layout_above="@+id/imageView2"
+                    android:onClick="btnCheckServer_Click"/>
+
+            <ImageView
+                    android:layout_width="fill_parent"
+                    android:layout_height="2dp"
+                    android:background="#FFFFBB33"
+                    android:id="@+id/imageView2"
+                    android:layout_below="@+id/tvDistanceServer"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginTop="3dp"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="on server"
+                    android:id="@+id/textView2"
+                    android:layout_centerHorizontal="true"
+                    android:layout_below="@+id/imageView"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="local"
+                    android:id="@+id/textView4"
+                    android:layout_centerHorizontal="true"
+                    android:layout_below="@+id/imageView2"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="last backup"
+                    android:id="@+id/tvLastLocal"
+                    android:layout_below="@+id/imageView2"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginLeft="2dp"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="distance"
+                    android:id="@+id/tvDistanceLocal"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginTop="8dp"
+                    android:layout_below="@+id/tvLastLocal"
+                    android:layout_marginLeft="2dp"/>
+
+            <ImageView
+                    android:layout_width="fill_parent"
+                    android:layout_height="2dp"
+                    android:background="#FFFFBB33"
+                    android:id="@+id/imageView3"
+                    android:layout_below="@+id/tvDistanceLocal"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginTop="3dp"/>
+
+            <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Check"
+                    android:id="@+id/btnCheckLocal"
+                    android:layout_above="@+id/imageView3"
+                    android:layout_alignParentRight="true"
+                    android:onClick="btnCheckLocal_Click"/>
+
+            <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="create a backup on server"
+                    android:id="@+id/btnCreateOnServer"
+                    android:layout_below="@+id/imageView3"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="15dp"
+                    android:onClick="btnCreateBackupOnServer_Click"/>
+
+            <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="restore the last back up from server"
+                    android:id="@+id/btnRestoreFromServer"
+                    android:layout_below="@+id/btnCreateOnServer"
+                    android:layout_centerHorizontal="true"/>
+
+            <ImageView
+                    android:layout_width="fill_parent"
+                    android:layout_height="2dp"
+                    android:background="#FFFFBB33"
+                    android:id="@+id/imageView4"
+                    android:layout_below="@+id/btnRestoreFromServer"/>
+
+            <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="create a local backup"
+                    android:id="@+id/btnCreateLocal"
+                    android:layout_below="@+id/imageView4"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="15dp"/>
+
+            <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="restore last local backup"
+                    android:id="@+id/btnRestoreLocal"
+                    android:layout_below="@+id/btnCreateLocal"
+                    android:layout_centerHorizontal="true"/>
+
+            <ImageView
+                    android:layout_width="fill_parent"
+                    android:layout_height="2dp"
+                    android:background="#FFFFBB33"
+                    android:id="@+id/imageView5"
+                    android:layout_below="@+id/btnRestoreLocal"
+                    android:layout_centerHorizontal="true"/>
+        </RelativeLayout>
+    </ScrollView>
+</RelativeLayout>

@@ -59,7 +59,7 @@
                 android:layout_below="@+id/dmDate"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="10dp"
-                android:text="im the word im the word im the word im the word im the word im the word "
+                android:text="im the word im the word im the word"
                 android:textStyle="italic"
                 android:textColor="#777577"
                 android:gravity="left"/>

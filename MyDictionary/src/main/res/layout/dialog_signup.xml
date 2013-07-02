@@ -30,44 +30,44 @@
             android:layout_below="@+id/tvHeader"
             android:layout_marginTop="15dp"/>
 
-    <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="9999"
-            android:id="@+id/tvTotalCount"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentLeft="false"
-            android:layout_marginTop="10dp"
-            android:layout_marginRight="12dp"
-            android:padding="1dp"/>
-
     <EditText
-            android:id="@+id/etWord"
+            android:id="@+id/etEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
-            android:layout_marginBottom="10dp"
-            android:hint="@string/word"
+            android:hint="Enter your email address"
             android:singleLine="true"
             android:inputType="textCapSentences"
             android:textIsSelectable="false"
-            android:layout_below="@+id/imageView"/>
+            android:layout_below="@+id/imageView"
+            android:visibility="visible"/>
 
     <EditText
-            android:id="@+id/etMeaning"
+            android:id="@+id/etUsername"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
-            android:hint="@string/meaning"
+            android:hint="Enter an username"
             android:singleLine="false"
             android:inputType="textCapSentences"
             android:textIsSelectable="false"
-            android:layout_below="@+id/etWord"
-            />
+            android:layout_below="@+id/etEmail"
+            android:layout_marginTop="10dp"/>
+
+    <EditText
+            android:id="@+id/etPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:hint="Enter a password"
+            android:singleLine="false"
+            android:inputType="textCapSentences"
+            android:textIsSelectable="false"
+            android:layout_below="@+id/etUsername"
+            android:layout_marginTop="10dp"/>
 
 </RelativeLayout>

@@ -19,6 +19,12 @@
                 android:defaultValue="distance"
                 android:entries="@array/timeMethodItems"
                 android:entryValues="@array/timeMethodValues" />
+        <ListPreference
+                android:title="Default Sort Method"
+                android:key="sortMethod"
+                android:defaultValue="date"
+                android:entries="@array/sortMethodItems"
+                android:entryValues="@array/sortMethodValues" />
         <CheckBoxPreference
                 android:title = "Show the number"
                 android:key="showItemNumber"
@@ -28,8 +34,11 @@
                 android:title = "Show the meaning "
                 android:key="showItemMeaning"
                 android:summary="whether show the item's meaning in the list or not"
-                android:defaultValue="false"/>
+                android:defaultValue="true"/>
 
+        <Preference android:title="Backup" >
+            <intent android:action="ir.khaled.mydictionary.Backup" />
+        </Preference>
     </PreferenceCategory>
 
     <!--<PreferenceCategory-->
