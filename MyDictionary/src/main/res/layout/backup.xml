@@ -35,7 +35,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="last backup: "
+                    android:text="Last backup: "
                     android:id="@+id/tvLastServer"
                     android:layout_below="@+id/imageView"
                     android:layout_alignParentLeft="true"
@@ -47,7 +47,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="distance: "
+                    android:text="Distance: "
                     android:id="@+id/tvDistanceServer"
                     android:layout_alignParentLeft="true"
                     android:layout_marginTop="8dp"
@@ -102,18 +102,19 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="last backup"
+                    android:text="Last backup: "
                     android:id="@+id/tvLastLocal"
                     android:layout_below="@+id/imageView2"
                     android:layout_alignParentLeft="true"
                     android:layout_marginTop="30dp"
-                    android:layout_marginLeft="2dp"/>
+                    android:layout_marginLeft="2dp"
+                    android:layout_toLeftOf="@+id/btnCheckLocal"/>
 
             <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="distance"
+                    android:text="Distance: "
                     android:id="@+id/tvDistanceLocal"
                     android:layout_alignParentLeft="true"
                     android:layout_marginTop="8dp"
@@ -154,7 +155,8 @@
                     android:text="restore the last back up from server"
                     android:id="@+id/btnRestoreFromServer"
                     android:layout_below="@+id/btnCreateOnServer"
-                    android:layout_centerHorizontal="true"/>
+                    android:layout_centerHorizontal="true"
+                    android:onClick="btnRestoreBackupFromServer_Click"/>
 
             <ImageView
                     android:layout_width="fill_parent"
@@ -170,7 +172,8 @@
                     android:id="@+id/btnCreateLocal"
                     android:layout_below="@+id/imageView4"
                     android:layout_centerHorizontal="true"
-                    android:layout_marginTop="15dp"/>
+                    android:layout_marginTop="15dp"
+                    android:onClick="btnCreateLocalBackup_Click"/>
 
             <Button
                     android:layout_width="wrap_content"
@@ -178,7 +181,8 @@
                     android:text="restore last local backup"
                     android:id="@+id/btnRestoreLocal"
                     android:layout_below="@+id/btnCreateLocal"
-                    android:layout_centerHorizontal="true"/>
+                    android:layout_centerHorizontal="true"
+                    android:onClick="btnRestoreLocalBackup_Click"/>
 
             <ImageView
                     android:layout_width="fill_parent"

@@ -15,6 +15,14 @@ import android.os.Parcelable;
 import android.os.StrictMode;
 import android.preference.Preference;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -22,6 +30,8 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -42,8 +52,10 @@ import android.view.KeyEvent;
 import org.apache.commons.net.ftp.FTPClient;
 
 import java.io.File;
+import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.nio.channels.FileChannel;
 import java.text.ParseException;
@@ -51,8 +63,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Locale;
 
-public class MainActivity extends Activity {
+public class MainActivity extends FragmentActivity {
 
 
     DatabaseHandler database;
@@ -103,11 +116,13 @@ public class MainActivity extends Activity {
             adapterWords1 = new Adapter(MainActivity.this, R.layout.row, arrayItemsToShow);
             markSeveral = false;
             setElementsId();
+            listViewPosition = items.onSaveInstanceState();
             refreshListViewData(false);
             clearMarks();
         } else if (isFromSearch) {
             etSearch.setText("");
             isFromSearch = false;
+            listViewPosition = items.onSaveInstanceState();
             refreshListViewData(false);
 
         } else {
@@ -116,7 +131,7 @@ public class MainActivity extends Activity {
                 return;
             }
             this.doubleBackToExitPressedOnce = true;
-            Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Press again to exit", Toast.LENGTH_SHORT).show();
             new Handler().postDelayed(new Runnable() {
 
                 @Override
@@ -138,9 +153,9 @@ public class MainActivity extends Activity {
 
         header();
 
+        listViewPosition = items.onSaveInstanceState();
         refreshListViewData(false);
         sortByName();
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         setImgAddVisibility();
         restore(icicle);
@@ -232,7 +247,7 @@ public class MainActivity extends Activity {
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 //                int position = position1 - 1;
                 isLongClick = true;
-                if (position == 0) {
+                if (position == -1/*0*/) {
 
                 } else if (markSeveral) {
                     openOptionsMenu();
@@ -243,6 +258,7 @@ public class MainActivity extends Activity {
                         invalidateOptionsMenu();
                     }
                     setElementsId();
+                    listViewPosition = items.onSaveInstanceState();
                     refreshListViewData(false);
                     if (isFromSearch) {
                         search(etSearch.getText().toString());
@@ -284,6 +300,7 @@ public class MainActivity extends Activity {
             public void afterTextChanged(Editable editable) {
                 if (etSearch.getText().length() == 0) {
                     isFromSearch = false;
+                    listViewPosition = items.onSaveInstanceState();
                     refreshListViewData(false);
                 } else {
                     search(etSearch.getText().toString());
@@ -362,7 +379,6 @@ public class MainActivity extends Activity {
         if (checkedPositionsInt == null) {
             checkedPositionsInt = new ArrayList<Integer>();
         }
-
         listViewPosition = items.onSaveInstanceState();
 
     }
@@ -416,16 +432,13 @@ public class MainActivity extends Activity {
                 database.addItem(new Custom(newWord, newMeaning, currentDateAndTime, 0));
 
                 setImgAddVisibility();
+                listViewPosition = items.onSaveInstanceState();
                 refreshListViewData(false);
                 dialog.dismiss();
                 Toast.makeText(MainActivity.this, "Successfully added.", Toast.LENGTH_SHORT).show();
             }
         }
     }
-
-    //Dialog Meaning
-    //
-    //
 
 
     //Search
@@ -564,6 +577,7 @@ public class MainActivity extends Activity {
                 int x = database.updateItem(new Custom(database.getItemId(word, meaning), newWordEdit, newMeaningEdit, current.getDate(), current.getCount()));
                 Log.i("after edit", x + " rows were effected");
                 Log.i("after edit", "word for edit: " + word + "  meaning: " + meaning);
+                listViewPosition = items.onSaveInstanceState();
                 refreshListViewData(false);
                 dialog.dismiss();
                 Toast.makeText(MainActivity.this, "Successfully edited.", Toast.LENGTH_SHORT).show();
@@ -631,6 +645,7 @@ public class MainActivity extends Activity {
             setImgAddVisibility();
         }
 
+        listViewPosition = items.onSaveInstanceState();
         refreshListViewData(false);
 
         if (isFromSearch && arrayItemsToShow.size() == 0) {
@@ -669,6 +684,11 @@ public class MainActivity extends Activity {
             setImgAddVisibility();
         }
 
+        if (arrayItemsToShow.size() > 0 )
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
+        if (listViewPosition != null)
+            items.onRestoreInstanceState(listViewPosition);
     }
 
 
@@ -683,7 +703,6 @@ public class MainActivity extends Activity {
         } else {
             imgAdd.setVisibility(View.GONE);
         }
-
     }
 
 
@@ -845,7 +864,6 @@ public class MainActivity extends Activity {
         }
 
         if (markSeveral) {
-            listViewPosition = icicle.getParcelable("listViewPosition");
             checkedPositionsInt = icicle.getIntegerArrayList("checkedPositionsInt");
             refreshListViewData(false);
         }
@@ -949,6 +967,7 @@ public class MainActivity extends Activity {
                     markSeveral = false;
                 }
 
+                listViewPosition = items.onSaveInstanceState();
                 refreshListViewData(true);
                 notifyCheckedPositionsInt();
                 if (isFromSearch && arrayItemsToShow.size() == 0) {
@@ -1002,10 +1021,7 @@ public class MainActivity extends Activity {
     public void onResume() {
         super.onResume();
         getPrefs();
-        sortBySelectedItem();
         refreshListViewData(false);
-        items.onRestoreInstanceState(listViewPosition);
-
     }
 
     @Override
@@ -1060,6 +1076,10 @@ public class MainActivity extends Activity {
             getMenuInflater().inflate(R.menu.main, menu);
         }
 
+        MenuItem itemLeitner = menu.findItem(R.id.action_leitner);
+        if (itemLeitner != null) {
+            itemLeitner.setTitle("Leitner");
+        }
         return true;
     }
 
@@ -1078,6 +1098,7 @@ public class MainActivity extends Activity {
                 if (arrayItemsToShow.size() > 0) {
                     markSeveral = true;
                     setElementsId();
+                    listViewPosition = items.onSaveInstanceState();
                     refreshListViewData(false);
 
                 } else {
@@ -1113,11 +1134,17 @@ public class MainActivity extends Activity {
                 markSeveral = false;
                 clearMarks();
                 setElementsId();
+                listViewPosition = items.onSaveInstanceState();
                 refreshListViewData(false);
                 if (isFromSearch) {
                     search(etSearch.getText().toString());
                 }
                 return true;
+
+            case R.id.action_leitner:
+                MainActivity.this.startActivity(new Intent(MainActivity.this, LeitnerActivity.class));
+                return true;
+
         }
         return super.onMenuItemSelected(featureId, item);
     }
@@ -1169,7 +1196,6 @@ public class MainActivity extends Activity {
 
 
 
-
     public void tvDateOnClick(View view) {
         changeDateToDistanceOnClick();
     }
@@ -1198,8 +1224,8 @@ public class MainActivity extends Activity {
         final long diffMinutes = diff / (60 * 1000);
         final long diffHours = diff / (60 * 60 * 1000);
         final long diffDays = diff / (60 * 60 * 1000 * 24);
-        final Long diffMonth = diff / (60 * 60 * 1000 * 24 * 30);
-        final Long diffYear = diff / (60 * 60 * 1000 * 24 * 30 * 365);
+        final long diffMonth = diff / (60 * 60 * 1000 * 24 * 30);
+        final long diffYear = diff / (60 * 60 * 1000 * 24 * 30 * 365);
 
 
         if (diffYear == 0 && diffMonth == 0 && diffDays == 0 && diffHours == 0) {
@@ -1225,7 +1251,7 @@ public class MainActivity extends Activity {
             String strDistance;
 
             if (diffHours > 24) {
-                difHour = diffHours - 24;
+                difHour = diffHours % 24;
             } else {
                 difDay--;
                 difHour = (difHour + 24) - difHour;
@@ -1242,9 +1268,9 @@ public class MainActivity extends Activity {
             etDate.setText(strDistance);
 
         } else if (thisYear) {
-            Long difDay = diffDays;
-            Long difMonth = diffMonth;
-            Long difYear = diffYear;
+            long difDay = diffDays;
+            long difMonth = diffMonth;
+            long difYear = diffYear;
             String strDistance = "";
 
             if (difDay > 30) {
@@ -1305,8 +1331,8 @@ public class MainActivity extends Activity {
             long diffMinutes = diff / (60 * 1000);
             long diffHours = diff / (60 * 60 * 1000);
             long diffDays = diff / (60 * 60 * 1000 * 24);
-            Long diffMonth = diff / (60 * 60 * 1000 * 24 * 30);
-            Long diffYear = diff / (60 * 60 * 1000 * 24 * 30 * 365);
+            long diffMonth = diff / (60 * 60 * 1000 * 24 * 30);
+            long diffYear = diff / (60 * 60 * 1000 * 24 * 30 * 365);
 
 
             if (diffYear == 0 && diffMonth == 0 && diffDays == 0 && diffHours == 0) {
@@ -1326,12 +1352,12 @@ public class MainActivity extends Activity {
                 etDate.setText(diffHours < 2 ? Long.toString(diffHours) + " hour ago" : Long.toString(diffHours) + " hours ago");
 
             } else if (thisMonth) {
-                Long difDay = diffDays;
-                Long difHour = diffHours;
+                long difDay = diffDays;
+                long difHour = diffHours;
                 String strDistance;
 
                 if (diffHours > 24) {
-                    difHour = diffHours - 24;
+                    difHour = diffHours % 24;
                 } else {
                     difDay--;
                     difHour = (difHour + 24) - difHour;
@@ -1348,9 +1374,9 @@ public class MainActivity extends Activity {
                 etDate.setText(strDistance);
 
             } else if (thisYear) {
-                Long difDay = diffDays;
-                Long difMonth = diffMonth;
-                Long difYear = diffYear;
+                long difDay = diffDays;
+                long difMonth = diffMonth;
+                long difYear = diffYear;
                 String strDistance = "";
 
                 if (difDay > 30) {
@@ -1465,4 +1491,8 @@ public class MainActivity extends Activity {
 //        Log.v("My Id", "Android androidId is: " +androidId);
 //        Log.v("My Id", "Android androidId is: " +mydeviceId);
     }
+
+
+
+
 }

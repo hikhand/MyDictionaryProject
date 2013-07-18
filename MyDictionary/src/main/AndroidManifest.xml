@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ir.khaled.mydictionary"
     android:installLocation="auto"
-    android:versionCode="15"
-    android:versionName="2.2.3" >
+    android:versionCode="16"
+    android:versionName="2.2.4" >
 
     <uses-sdk
         android:minSdkVersion="9"
@@ -34,12 +34,17 @@
             android:label="meaning" />
         <activity
             android:name="ir.khaled.mydictionary.Backup"
-            android:screenOrientation="portrait"
-            android:label="@string/title_activity_backup">
+            android:label="@string/title_activity_backup"
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="ir.khaled.mydictionary.Backup" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name="ir.khaled.mydictionary.LeitnerActivity"
+            android:label="@string/title_activity_leitner" >
         </activity>
     </application>
 

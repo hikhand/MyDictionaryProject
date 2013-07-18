@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/dialog_meaning_leitner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#f2f2f2">
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="9999"
+            android:id="@+id/leitnerCountCorrect"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentLeft="false"
+            android:layout_marginRight="12dp"
+            android:padding="1dp"
+            android:textColor="#53cb47"
+            android:layout_alignBaseline="@+id/leitnerAddDate"
+            android:layout_marginTop="7dp"/>
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="9999"
+            android:id="@+id/leitnerCount"
+            android:layout_alignParentTop="false"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentLeft="false"
+            android:layout_marginRight="12dp"
+            android:padding="1dp"
+            android:layout_below="@+id/leitnerCountInCorrect"
+            android:layout_alignBaseline="@+id/leitnerLastDate"/>
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="9999"
+            android:id="@+id/leitnerCountInCorrect"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentLeft="false"
+            android:padding="1dp"
+            android:layout_alignBaseline="@+id/leitnerPosition"
+            android:textColor="#d33033"
+            android:layout_marginRight="12dp"/>
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="9999/99/99 99:99"
+            android:id="@+id/leitnerAddDate"
+            android:layout_alignParentTop="true"
+            android:layout_marginRight="0dp"
+            android:layout_alignParentRight="false"
+            android:layout_marginLeft="0dp"
+            android:gravity="center"
+            android:layout_alignParentLeft="true"
+            android:layout_marginTop="0dp"
+            android:clickable="true"
+            android:onClick="tvAddDateOnClick"
+            android:paddingLeft="13dp"
+            android:paddingRight="30dp"
+            android:paddingTop="7dp"
+            android:paddingBottom="2dp"/>
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="9999/99/99 99:99"
+            android:id="@+id/leitnerLastDate"
+            android:layout_alignParentTop="false"
+            android:layout_marginRight="0dp"
+            android:layout_alignParentRight="false"
+            android:layout_marginLeft="0dp"
+            android:gravity="center"
+            android:layout_alignParentLeft="true"
+            android:layout_marginTop="0dp"
+            android:clickable="true"
+            android:onClick="tvLastDateOnClick"
+            android:paddingLeft="13dp"
+            android:paddingRight="30dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="10dp"
+            android:layout_below="@+id/leitnerAddDate"/>
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/leitnerPosition"
+            android:layout_marginTop="57dp"
+            android:text="at deck '0', index '0'"
+            android:gravity="left"
+            android:textColor="#363636"
+            android:layout_alignParentLeft="false"
+            android:layout_marginRight="10dp"
+            android:layout_alignParentTop="false"
+            android:layout_alignParentBottom="false"
+            android:layout_alignWithParentIfMissing="false"
+            android:layout_marginLeft="25dp"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentRight="false"/>
+
+    <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="#FFFFBB33"
+            android:id="@+id/imageView"
+            android:layout_below="@+id/leitnerPosition"
+            android:layout_marginTop="5dp"/>
+
+    <ScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/scrollView"
+            android:layout_below="@+id/imageView"
+            android:fillViewport="false"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="12dp"
+            android:minHeight="50dp"
+            android:paddingBottom="15dp"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentTop="false"
+            android:layout_alignParentLeft="false"
+            android:clickable="true"
+            android:onClick="name_click"
+            android:paddingTop="3dp">
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:id="@+id/leitnerNameAndMeaning"
+                android:text="eaning and im the meaning and im th"
+                android:textIsSelectable="false"
+                android:textSize="24dp"
+                android:textColor="#363636"
+                android:editable="false"
+                android:clickable="true"
+                android:onClick="name_click"
+                android:layout_alignTop="@+id/scrollView"
+                android:layout_centerHorizontal="true"
+                android:minWidth="2000dp"
+                android:gravity="center"/>
+    </ScrollView>
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="word:"
+            android:id="@+id/leitnerPos"
+            android:layout_below="@+id/leitnerLastDate"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="13dp"
+            android:textColor="#928e87"/>
+
+</RelativeLayout>

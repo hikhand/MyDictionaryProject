@@ -59,10 +59,11 @@
                 android:layout_below="@+id/dmDate"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="10dp"
-                android:text="im the word im the word im the word"
+                android:text="im the word im the "
                 android:textStyle="italic"
                 android:textColor="#777577"
-                android:gravity="left"/>
+                android:gravity="left"
+                android:maxHeight="150dp"/>
     </ScrollView>
 
     <ImageView
@@ -95,14 +96,5 @@
                 android:textSize="24dp"
                 android:textColor="#363636"/>
     </ScrollView>
-
-    <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/dmFavorite"
-            android:src="@drawable/fav1"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentRight="true"
-            android:visibility="invisible"/>
 
 </RelativeLayout>

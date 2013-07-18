@@ -11,14 +11,14 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CheckedTextView;
 import android.widget.TextView;
-import ir.khaled.mydictionary.Custom;
+import ir.khaled.mydictionary.Item;
 import ir.khaled.mydictionary.R;
 
-public class Adapter extends ArrayAdapter<Custom>{
-    private ArrayList<Custom> entries;
+public class AdapterLeitner extends ArrayAdapter<Item>{
+    private ArrayList<Item> entries;
     private Activity activity;
 
-    public Adapter(Activity a, int textViewResourceId, ArrayList<Custom> entries) {
+    public AdapterLeitner(Activity a, int textViewResourceId, ArrayList<Item> entries) {
         super(a, textViewResourceId, entries);
         this.entries = entries;
         this.activity = a;
@@ -49,18 +49,18 @@ public class Adapter extends ArrayAdapter<Custom>{
         else
             holder=(ViewHolder)v.getTag();
 
-        final Custom custom = entries.get(position);
-        if (custom != null) {
-            holder.item1.setText(custom.getWord());
-            String meaning = custom.getMeaning();
+        final Item Item = entries.get(position);
+        if (Item != null) {
+            holder.item1.setText(Item.getName());
+            String meaning = Item.getMeaning();
             if (meaning.length() > 40) {
                 meaning = meaning.substring(0, 40);
                 meaning+= "...";
             }
             holder.item2.setText(meaning);
-            holder.item2.setVisibility(custom.isMeaningVisible() ? View.VISIBLE : View.INVISIBLE);
-            holder.item3.setChecked(custom.isChChecked());
-            holder.item3.setVisibility(custom.isChVisible() ? View.VISIBLE : View.INVISIBLE);
+            holder.item2.setVisibility(View.INVISIBLE);
+            holder.item3.setChecked(Item.isChChecked());
+            holder.item3.setVisibility(Item.isChVisible() ? View.VISIBLE : View.INVISIBLE);
         }
         return v;
     }

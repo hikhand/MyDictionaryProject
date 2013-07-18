@@ -57,14 +57,6 @@ public class Custom {
         this.meaning = meaning;
     }
 
-    public boolean isMeaningVisible() {
-        return isMeaningVisible;
-    }
-
-    public void setMeaningVisible(boolean isMeaningVisible) {
-        this.isMeaningVisible = isMeaningVisible;
-    }
-
     public String getDate() {
         return date;
     }
@@ -103,6 +95,14 @@ public class Custom {
 
     public void setChVisible(boolean selected) {
         this.chVisible = selected;
+    }
+
+    public boolean isMeaningVisible() {
+        return isMeaningVisible;
+    }
+
+    public void setMeaningVisible(boolean isMeaningVisible) {
+        this.isMeaningVisible = isMeaningVisible;
     }
 
 }

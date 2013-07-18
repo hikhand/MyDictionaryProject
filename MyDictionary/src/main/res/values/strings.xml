@@ -61,5 +61,10 @@
     </string-array>
 
     <string name="title_activity_backup">Backup</string>
+    <string name="title_activity_leitner">Leitner</string>
+
+    <string name="correct">Correct</string>
+    <string name="Incorrect">Incorrect</string>
+    <string name="action_leitner">Leitner</string>
 
 </resources>

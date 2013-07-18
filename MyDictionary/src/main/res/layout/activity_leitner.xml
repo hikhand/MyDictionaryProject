@@ -8,9 +8,9 @@
     <ListView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/listView"
+            android:id="@+id/leitnerListView"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="55dp"
+            android:layout_marginTop="90dp"
             android:layout_marginBottom="5dp"
             android:drawSelectorOnTop="false"
             android:choiceMode="multipleChoice"/>
@@ -19,7 +19,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Add New"
-            android:id="@+id/button"
+            android:id="@+id/leitnerAddNewBtn"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:onClick="AddNew"
@@ -32,30 +32,19 @@
     <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/etSearch"
+            android:id="@+id/leitnerSearchET"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="false"
             android:layout_marginTop="8dp"
             android:layout_marginLeft="5dp"
             android:singleLine="true"
-            android:layout_toRightOf="@+id/button"
+            android:layout_toRightOf="@+id/leitnerAddNewBtn"
             android:layout_alignParentRight="true"
             android:inputType="text"
             android:drawableRight="@android:drawable/ic_menu_search"
             android:imeOptions="actionSearch"
             android:layout_marginRight="5dp"
-            android:layout_alignBottom="@+id/button"
+            android:layout_alignBottom="@+id/leitnerAddNewBtn"
             android:hint="Search here"/>
-
-    <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/imgAdd"
-            android:src="@drawable/add"
-            android:layout_marginLeft="30dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_margin="65dp"
-            android:visibility="gone"/>
 
 </RelativeLayout>

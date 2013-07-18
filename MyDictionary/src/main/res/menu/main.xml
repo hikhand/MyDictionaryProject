@@ -3,6 +3,10 @@
           android:title="@string/action_mark"
           android:showAsAction="never"/>
 
+    <item android:id="@+id/action_leitner"
+          android:title="@string/action_leitner"
+          android:showAsAction="never"/>
+
     <item android:id="@+id/action_settings"
           android:title="@string/action_settings"
           android:showAsAction="never"/>

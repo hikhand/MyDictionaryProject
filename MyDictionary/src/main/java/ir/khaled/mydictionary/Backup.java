@@ -39,6 +39,8 @@ import java.nio.channels.FileChannel;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Backup extends Activity {
     SharedPreferences UserInfo;
@@ -90,6 +92,22 @@ public class Backup extends Activity {
         tvUsername = (TextView) findViewById(R.id.tvUsername);
         tvUsername.setText("Logged in as: " + userUsername);
     }
+
+    void setElementsValue() {
+        TextView tvLastDateServer = (TextView) findViewById(R.id.tvLastServer);
+        TextView tvDistanceServer = (TextView) findViewById(R.id.tvDistanceServer);
+
+        tvLastDateServer.setText(tvLastDateServer.getText().toString() + UserInfo.getString("lastDateServer", ""));
+        tvDistanceServer.setText(tvDistanceServer.getText().toString() + getDistance(UserInfo.getString("lastDateServer", "")));
+
+        getLastBackupDateOnLocal();
+
+    }
+
+    void loggedIn() {
+        setElementsId();
+    }
+
 
     void dialogAskLogin() {
         dialogAskLogin = new AlertDialog.Builder(this)
@@ -179,102 +197,127 @@ public class Backup extends Activity {
         public CustomListenerLogin(Dialog dialog) {
             this.dialog = dialog;
         }
-
         @Override
         public void onClick(View v) {
-            etUsername = (EditText) dialog.findViewById(R.id.etUsername);
-            etPassword = (EditText) dialog.findViewById(R.id.etPassword);
-            String strUsername = etUsername.getText().toString();
-            String strPassword = etPassword.getText().toString();
 
-            String canFind = canFindUser(strUsername);
-            if (canFind.equals("successful")) {
-                if (strPassword.equals(getPasswordFromServer(strUsername))) {
-                    EditorUserInfo.putString("userUsername", strUsername);
-                    EditorUserInfo.putString("userPassword", strPassword);
-                    EditorUserInfo.commit();
+            class FtpTask extends AsyncTask<Void, Integer, Void> {
+                EditText etUsernameL = (EditText) dialogLogin.findViewById(R.id.etUsername);
+                EditText etPasswordL = (EditText) dialogLogin.findViewById(R.id.etPassword);
+                String strUsername = etUsernameL.getText().toString();
+                String strPassword = etPasswordL.getText().toString();
+                String strEmail = "";
 
-                    dialog.dismiss();
-                    Toast.makeText(Backup.this, "you successfully logged in.", Toast.LENGTH_SHORT).show();
-                    loggedIn();
-                } else {
-                    Toast.makeText(Backup.this, "your password is wrong, try again", Toast.LENGTH_SHORT).show();
-                }
-            } else if (canFind.equals("no such user")) {
-                Toast.makeText(Backup.this, "your username is wrong, try again", Toast.LENGTH_SHORT).show();
+                boolean succeed = false;
+                String error = "";
+                ProgressDialog progressBar;
+                private Context context;
+                String canFind = "";
+                String password = "";
 
-            } else if (canFind.equals("unsuccessful")) {
-                Toast.makeText(Backup.this, "process ran into a problem.", Toast.LENGTH_SHORT).show();
-            }
+                public FtpTask(Context context) { this.context = context; }
 
-        }
-    }
-
-    String canFindUser(String username) {
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-
-        String status = "unsuccessful";
-        try {
-            con = new FTPClient();
-            con.connect(InetAddress.getByName("ftp.khaled.ir"));
-
-            if (con.login("windowsp", "KHaledBLack73")) {
-                con.enterLocalPassiveMode(); // important!
-
-                boolean canAdd = con.makeDirectory(File.separator+"MyDictionary"+File.separator+"backups"+File.separator+username);
-                if (canAdd) {
-                    con.removeDirectory(File.separator+"MyDictionary"+File.separator+"backups"+File.separator+username);
-                    status = "no such user";
-                } else {
-                    status = "successful";
+                protected void onPreExecute()
+                {
+                    progressBar = new ProgressDialog(context);
+                    progressBar.setCancelable(false);
+                    progressBar.setMessage("Connecting to server ...");
+                    progressBar.show();
                 }
 
-                con.logout();
-                con.disconnect();
-            } else {
-                Toast.makeText(Backup.this, "couldn't connect to server", Toast.LENGTH_SHORT).show();
+                protected Void doInBackground(Void... args) {
+                    try {
+                        con = new FTPClient();
+                        con.connect(InetAddress.getByName("5.9.0.183"));
+
+                        if (con.login("windowsp", "KHaledBLack73")) {
+                            con.enterLocalPassiveMode(); // important!
+
+                            publishProgress(0);
+                            boolean canAdd = con.makeDirectory(File.separator+"MyDictionary"+File.separator+"backups"+File.separator+strUsername);
+                            if (canAdd) {
+                                con.removeDirectory(File.separator + "MyDictionary" + File.separator + "backups" + File.separator + strUsername);
+                                canFind = "no such user";
+                            } else {
+                                canFind = "successful";
+
+                                InputStream inputStream = con.retrieveFileStream(File.separator + "MyDictionary" + File.separator + "backups" + File.separator + strUsername + File.separator + "userPassword");
+                                con.completePendingCommand();
+                                BufferedReader r = new BufferedReader(new InputStreamReader(inputStream));
+                                password = r.readLine();
+                                inputStream.close();
+                                r.close();
+
+                                inputStream = con.retrieveFileStream(File.separator + "MyDictionary" + File.separator + "backups" + File.separator + strUsername + File.separator + "userEmail");
+                                con.completePendingCommand();
+                                r = new BufferedReader(new InputStreamReader(inputStream));
+                                strEmail = r.readLine();
+                                inputStream.close();
+                                r.close();
+                            }
+                            succeed = true;
+                        } else {
+//                            Toast.makeText(Backup.this, "couldn't connect to server", Toast.LENGTH_SHORT).show();
+                        }
+
+                        con.logout();
+                        con.disconnect();
+
+                    } catch (Exception e) {
+                        error = e.toString();
+                        e.printStackTrace();
+                    }
+                    return null;
+                }
+
+                protected void onPostExecute(Void result) {
+                    Log.v("FTPTask", "FTP connection complete");
+                    if (canFind.equals("successful")) {
+                        if (strPassword.equals(password)) {
+                            EditorUserInfo.putString("userUsername", strUsername);
+                            EditorUserInfo.putString("userPassword", strPassword);
+                            EditorUserInfo.putString("userEmail", strEmail);
+                            EditorUserInfo.commit();
+                            try {
+                                FileOutputStream outputStream;
+                                outputStream = openFileOutput("userUsername", Context.MODE_PRIVATE);
+                                outputStream.write(strUsername.getBytes());
+                                outputStream.close();
+
+                                outputStream = openFileOutput("userPassword", Context.MODE_PRIVATE);
+                                outputStream.write(strPassword.getBytes());
+                                outputStream.close();
+
+                                outputStream = openFileOutput("userEmail", Context.MODE_PRIVATE);
+                                outputStream.write(strEmail.getBytes());
+                                outputStream.close();
+                            } catch (IOException e) {
+//                                Toast.makeText(Backup.this, e.toString(), Toast.LENGTH_SHORT).show();
+                                e.printStackTrace();
+                            }
+                            dialogLogin.dismiss();
+                            Toast.makeText(Backup.this, "you successfully logged in.", Toast.LENGTH_SHORT).show();
+                            loggedIn();
+                        } else {
+                            Toast.makeText(Backup.this, "password is wrong, try again", Toast.LENGTH_SHORT).show();
+                        }
+                    } else if (canFind.equals("no such user")) {
+                        Toast.makeText(Backup.this, "username is wrong, try again", Toast.LENGTH_SHORT).show();
+
+                    } else if (canFind.equals("unsuccessful")) {
+                        Toast.makeText(Backup.this, "process ran into a problem.", Toast.LENGTH_SHORT).show();
+                    } else if (!succeed) {
+                        Toast.makeText(Backup.this, error, Toast.LENGTH_SHORT).show();
+                    }
+                    progressBar.dismiss();
+                }
+
+                protected void onProgressUpdate(Integer... args) {
+                    if (args[0] == 0)
+                        progressBar.setMessage("Matching details ...");
+                }
             }
-
-        } catch (Exception e) {
-            Toast.makeText(Backup.this, e.toString(), Toast.LENGTH_LONG).show();
-            e.printStackTrace();
+            new FtpTask(Backup.this).execute();
         }
-
-        return status;
-    }
-
-    String getPasswordFromServer(String username) {
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-
-        String password = "";
-        try {
-            con = new FTPClient();
-            con.connect(InetAddress.getByName("ftp.khaled.ir"));
-
-            if (con.login("windowsp", "KHaledBLack73")) {
-                con.enterLocalPassiveMode(); // important!
-
-                InputStream inputStream = con.retrieveFileStream(File.separator+"MyDictionary"+File.separator+"backups"+File.separator+username+File.separator+"userPassword");
-
-                BufferedReader r = new BufferedReader(new InputStreamReader(inputStream));
-                password = r.readLine();
-
-                inputStream.close();
-                r.close();
-                con.logout();
-                con.disconnect();
-            } else {
-                Toast.makeText(Backup.this, "couldn't connect to server", Toast.LENGTH_SHORT).show();
-            }
-
-        } catch (Exception e) {
-            Toast.makeText(Backup.this, e.toString(), Toast.LENGTH_LONG).show();
-            e.printStackTrace();
-        }
-
-        return password;
     }
 
 
@@ -336,159 +379,125 @@ public class Backup extends Activity {
 
         @Override
         public void onClick(View v) {
-            etEmail = (EditText) dialogSingUp.findViewById(R.id.etEmail);
-            etUsername = (EditText) dialogSingUp.findViewById(R.id.etUsername);
-            etPassword = (EditText) dialogSingUp.findViewById(R.id.etPassword);
 
-            String strEmail = etEmail.getText().toString();
-            String strUsername = etUsername.getText().toString();
-            String strPassword = etPassword.getText().toString();
+            class FtpTask extends AsyncTask<Void, Integer, Void> {
+                EditText etEmailS = (EditText) dialogSingUp.findViewById(R.id.etEmail);
+                EditText etUsernameS = (EditText) dialogSingUp.findViewById(R.id.etUsername);
+                EditText etPasswordS = (EditText) dialogSingUp.findViewById(R.id.etPassword);
+                String strEmail = etEmailS.getText().toString();
+                String strUsername = etUsernameS.getText().toString();
+                String strPassword = etPasswordS.getText().toString();
 
-            if (isValidEmail(strEmail) && strUsername.length() >= 3 && strPassword.length() >= 5 && !isIllegal(strUsername)) {
-                String canCreate = canCreateUser(strUsername);
-                if (canCreate.equals("successful")) {
-                    FileOutputStream outputStream;
+                boolean succeed = false;
+                String error = "";
+                ProgressDialog progressBar;
+                private Context context;
+                String canCreate = "unsuccessful";
+
+                public FtpTask(Context context) { this.context = context; }
+
+                protected void onPreExecute()
+                {
+                    progressBar = new ProgressDialog(context);
+                    progressBar.setCancelable(false);
+                    progressBar.setMessage("Connecting to server ...");
+                    progressBar.show();
+                }
+
+                protected Void doInBackground(Void... args) {
                     try {
-                        outputStream = openFileOutput("userUsername", Context.MODE_PRIVATE);
-                        outputStream.write(strUsername.getBytes());
-                        outputStream.close();
+                        con = new FTPClient();
+                        con.connect(InetAddress.getByName("5.9.0.183"));
+                        if (con.login("windowsp", "KHaledBLack73")) {
+                            con.enterLocalPassiveMode(); // important!
+                            publishProgress(0);
+                            if (isValidEmail(strEmail) && strUsername.length() >= 3 && strPassword.length() >= 5 && !isIllegal(strUsername)) {
+                                boolean canAdd = con.makeDirectory(File.separator + "MyDictionary" + File.separator + "backups" + File.separator + strUsername);
+                                canCreate = canAdd ? "successful" : "taken userUsername";
+                                if (canAdd) {
+                                    FileOutputStream outputStream;
+                                    outputStream = openFileOutput("userUsername", Context.MODE_PRIVATE);
+                                    outputStream.write(strUsername.getBytes());
+                                    outputStream.close();
 
-                        outputStream = openFileOutput("userPassword", Context.MODE_PRIVATE);
-                        outputStream.write(strPassword.getBytes());
-                        outputStream.close();
+                                    outputStream = openFileOutput("userPassword", Context.MODE_PRIVATE);
+                                    outputStream.write(strPassword.getBytes());
+                                    outputStream.close();
 
-                        outputStream = openFileOutput("userEmail", Context.MODE_PRIVATE);
-                        outputStream.write(strEmail.getBytes());
-                        outputStream.close();
+                                    outputStream = openFileOutput("userEmail", Context.MODE_PRIVATE);
+                                    outputStream.write(strEmail.getBytes());
+                                    outputStream.close();
 
-                        if (addPasswordToServer(strUsername) && addEmailToServer(strUsername)) {
-                            EditorUserInfo.putString("userUsername", strUsername);
-                            EditorUserInfo.putString("userPassword", strPassword);
-                            EditorUserInfo.putString("userEmail", strEmail);
-                            EditorUserInfo.commit();
 
+
+                                    EditorUserInfo.putString("userUsername", strUsername);
+                                    EditorUserInfo.putString("userPassword", strPassword);
+                                    EditorUserInfo.putString("userEmail", strEmail);
+                                    EditorUserInfo.commit();
+
+                                    FileInputStream in = openFileInput("userPassword");
+                                    String remote = File.separator + "MyDictionary" + File.separator + "backups" + File.separator + strUsername;
+                                    con.storeFile(remote + File.separator + "userPassword", in);
+                                    in.close();
+
+                                    in = openFileInput("userEmail");
+                                    remote = File.separator + "MyDictionary" + File.separator + "backups" + File.separator + strUsername;
+                                    con.storeFile(remote + File.separator + "userEmail", in);
+                                    in.close();
+
+
+                                    succeed = true;
+                                }
+                            }
+                        } else {
+//                            Toast.makeText(Backup.this, "couldn't connect to server", Toast.LENGTH_SHORT).show();
+                        }
+
+                        con.logout();
+                        con.disconnect();
+
+                    } catch (Exception e) {
+                        error = e.toString();
+                        e.printStackTrace();
+                    }
+                    return null;
+                }
+
+                protected void onPostExecute(Void result) {
+                    if (isValidEmail(strEmail) && strUsername.length() >= 3 && strPassword.length() >= 5 && !isIllegal(strUsername)) {
+                        if (canCreate.equals("successful")) {
+                            dialogSingUp.dismiss();
                             loggedIn();
                             Toast.makeText(Backup.this, "your account successfully created.", Toast.LENGTH_SHORT).show();
-                            dialogSingUp.dismiss();
-//                        return "finish";
+                        } else if (canCreate.equals("taken userUsername")) {
+                            Toast.makeText(Backup.this, "this userUsername is taken choose another", Toast.LENGTH_SHORT).show();
                         }
-                    } catch (Exception e) {
-                        Toast.makeText(Backup.this, e.toString(), Toast.LENGTH_LONG).show();
-                        e.printStackTrace();
-//                    return e.toString();
+                    } else {
+                        if (!isValidEmail(strEmail)) {
+                            Toast.makeText(Backup.this, "please enter an valid email address.", Toast.LENGTH_SHORT).show();
+                        } else if (strUsername.length() < 3) {
+                            Toast.makeText(Backup.this, "lowest length for username is 3", Toast.LENGTH_SHORT).show();
+                        } else if (strPassword.length() < 5) {
+                            Toast.makeText(Backup.this, "lowest length for password is 5", Toast.LENGTH_SHORT).show();
+                        } else if (isIllegal(strUsername)) {
+                            Toast.makeText(Backup.this, "username cant contain '/'", Toast.LENGTH_SHORT).show();
+                        } else if (!succeed) {
+                            Toast.makeText(Backup.this, error, Toast.LENGTH_SHORT).show();
+                        }
                     }
-                } else if (canCreate.equals("taken userUsername")) {
-                    Toast.makeText(Backup.this, "this userUsername is taken choose another", Toast.LENGTH_SHORT).show();
-//                return "taken userUsername";
-                } else if (canCreate.equals("unsuccessful")) {
-                    Toast.makeText(Backup.this, "process ran into a problem.", Toast.LENGTH_SHORT).show();
-//                return "unsuccessful";
+                    progressBar.dismiss();
                 }
-            } else {
-                if (!isValidEmail(strEmail)) {
-                    Toast.makeText(Backup.this, "please enter an valid email address.", Toast.LENGTH_SHORT).show();
-//                return "invalid email";
-                } else if (strUsername.length() < 3) {
-                    Toast.makeText(Backup.this, "lowest length for username is 3", Toast.LENGTH_SHORT).show();
-//                return "low username";
-                } else if (strPassword.length() < 5) {
-                    Toast.makeText(Backup.this, "lowest length for password is 5", Toast.LENGTH_SHORT).show();
-//                return "low password";
-                } else if (isIllegal(strUsername)) {
-                    Toast.makeText(Backup.this, "username cant contain '/'", Toast.LENGTH_SHORT).show();
-//                return "illegal username";
+
+                protected void onProgressUpdate(Integer... args) {
+                    if (args[0] == 0) {
+                        progressBar.setMessage("Creating your account ...");
+                    }
+
+
                 }
             }
-//        return "";
+            new FtpTask(Backup.this).execute();
         }
-    }
-
-    String canCreateUser(String username) {
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-
-        String status = "unsuccessful";
-        try {
-            con = new FTPClient();
-            con.connect(InetAddress.getByName("ftp.khaled.ir"));
-
-            if (con.login("windowsp", "KHaledBLack73")) {
-                con.enterLocalPassiveMode(); // important!
-
-                boolean canAdd = con.makeDirectory(File.separator+"MyDictionary"+File.separator+"backups"+File.separator+username);
-
-                status = canAdd ? "successful" : "taken userUsername";
-
-                con.logout();
-                con.disconnect();
-            } else {
-                Toast.makeText(Backup.this, "couldn't connect to server", Toast.LENGTH_SHORT).show();
-            }
-
-        } catch (Exception e) {
-            Toast.makeText(Backup.this, e.toString(), Toast.LENGTH_LONG).show();
-            e.printStackTrace();
-        }
-
-        return status;
-    }
-
-    boolean addPasswordToServer(String username) {
-        boolean success = false;
-        try {
-            con = new FTPClient();
-            con.connect(InetAddress.getByName("ftp.khaled.ir"));
-
-            if (con.login("windowsp", "KHaledBLack73")) {
-
-                con.enterLocalPassiveMode(); // important!
-                con.setFileType(FTP.BINARY_FILE_TYPE);
-
-                FileInputStream in = openFileInput("userPassword");
-                String remote = File.separator+"MyDictionary"+File.separator+"backups"+File.separator+username;
-                boolean result = con.storeFile(remote+File.separator+"userPassword", in);
-                in.close();
-                if (result) Log.v("upload result", "succeeded");
-                con.logout();
-                con.disconnect();
-                success = true;
-            }
-        } catch (Exception e) {
-            Toast.makeText(Backup.this, e.toString(), Toast.LENGTH_LONG).show();
-            e.printStackTrace();
-        }
-        return success;
-    }
-
-    boolean addEmailToServer(String username) {
-        boolean success = false;
-        try {
-            con = new FTPClient();
-            con.connect(InetAddress.getByName("ftp.khaled.ir"));
-
-            if (con.login("windowsp", "KHaledBLack73")) {
-
-                con.enterLocalPassiveMode(); // important!
-                con.setFileType(FTP.BINARY_FILE_TYPE);
-
-                FileInputStream in = openFileInput("userEmail");
-                //
-                //
-                //
-                //1123123
-                String remote = File.separator+"MyDictionary"+File.separator+"backups"+File.separator+username;
-                boolean result = con.storeFile(remote+File.separator+"userEmail", in);
-                in.close();
-                if (result) Log.v("upload result", "succeeded");
-                con.logout();
-                con.disconnect();
-                success = true;
-            }
-        } catch (Exception e) {
-            Toast.makeText(Backup.this, e.toString(), Toast.LENGTH_LONG).show();
-            e.printStackTrace();
-        }
-        return success;
     }
 
     boolean isValidEmail(CharSequence target) {
@@ -504,18 +513,8 @@ public class Backup extends Activity {
         return false;
     }
 
-    String onCLickSignUp() {
-        return "";
-    }
-
-    void loggedIn() {
-        setElementsId();
-    }
 
 
-    void setElementsValue() {
-
-    }
 
 
 
@@ -541,26 +540,24 @@ public class Backup extends Activity {
             protected Void doInBackground(Void... args) {
                 try {
                     con = new FTPClient();
-                    con.connect(InetAddress.getByName("ftp.khaled.ir"));
+                    con.connect(InetAddress.getByName("5.9.0.183"));
 
                     if (con.login("windowsp", "KHaledBLack73")) {
                         publishProgress(0);
-
                         con.enterLocalPassiveMode(); // important!
 
                         InputStream inputStream = con.retrieveFileStream(File.separator+"MyDictionary"+File.separator+"backups"+File.separator+userUsername+File.separator+"lastDateServer");
-
                         BufferedReader r = new BufferedReader(new InputStreamReader(inputStream));
                         lastDate = r.readLine();
-
                         inputStream.close();
                         r.close();
-                        con.logout();
-                        con.disconnect();
                         succeed = true;
                     } else {
                         Toast.makeText(Backup.this, "couldn't connect to server", Toast.LENGTH_SHORT).show();
                     }
+
+                    con.logout();
+                    con.disconnect();
 
                 } catch (Exception e) {
                     error = e.toString();
@@ -605,145 +602,143 @@ public class Backup extends Activity {
     }
 
     String getDistance(String lastDate) {
-        boolean thisHour = false;
-        boolean today = false;
-        boolean thisMonth = false;
-        boolean thisYear = false;
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm");
-        String currentDateAndTime = simpleDateFormat.format(new Date());
+        if (lastDate != "") {
+            boolean thisHour = false;
+            boolean today = false;
+            boolean thisMonth = false;
+            boolean thisYear = false;
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm");
+            String currentDateAndTime = simpleDateFormat.format(new Date());
 
-        Date d1 = null;
-        Date d2 = null;
-        try {
-            d1 = simpleDateFormat.parse(lastDate);
-            d2 = simpleDateFormat.parse(currentDateAndTime);
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return "wrong date";
-        }
-
-        final long diff = d2.getTime() - d1.getTime();
-        final long diffSeconds = diff / 1000;
-        final long diffMinutes = diff / (60 * 1000);
-        final long diffHours = diff / (60 * 60 * 1000);
-        final long diffDays = diff / (60 * 60 * 1000 * 24);
-        final Long diffMonth = diff / (60 * 60 * 1000 * 24 * 30);
-        final Long diffYear = diff / (60 * 60 * 1000 * 24 * 30 * 365);
-
-
-        if (diffYear == 0 && diffMonth == 0 && diffDays == 0 && diffHours == 0) {
-            thisHour = true;
-        } else if (diffYear == 0 && diffMonth == 0 && diffDays == 0) {
-            today = true;
-        } else if (diffYear == 0 && diffMonth == 0) {
-            thisMonth = true;
-        } else if (diffYear == 0) {
-            thisYear = true;
-        }
-
-
-        if (thisHour) {
-            return diffMinutes == 0 ? "just now" : diffMinutes < 2 ? Long.toString(diffMinutes) + " minute ago" : Long.toString(diffMinutes) + " minutes ago";
-        } else if (today) {
-            return diffHours < 2 ? Long.toString(diffHours) + " hour ago" : Long.toString(diffHours) + " hours ago";
-
-        } else if (thisMonth) {
-            Long difDay = diffDays;
-            Long difHour = diffHours;
-            String strDistance;
-
-            if (diffHours > 24) {
-                difHour = diffHours - 24;
-            } else {
-                difDay--;
-                difHour = (difHour + 24) - difHour;
+            Date d1 = null;
+            Date d2 = null;
+            try {
+                d1 = simpleDateFormat.parse(lastDate);
+                d2 = simpleDateFormat.parse(currentDateAndTime);
+            } catch (ParseException e) {
+                e.printStackTrace();
+                return "wrong date";
             }
 
-            strDistance = difDay < 2 ? Long.toString(difDay) + " day" : Long.toString(difDay) + " days";
-            strDistance += (difHour == 0 ? " ago"
-                    : difHour < 2 ? " and " + Long.toString(difHour) + " hour ago"
-                    : " and " + Long.toString(difHour) + " hours ago");
+            final long diff = d2.getTime() - d1.getTime();
+            final long diffSeconds = diff / 1000;
+            final long diffMinutes = diff / (60 * 1000);
+            final long diffHours = diff / (60 * 60 * 1000);
+            final long diffDays = diff / (60 * 60 * 1000 * 24);
+            final long diffMonth = diff / (60 * 60 * 1000 * 24 * 30);
+            final long diffYear = diff / (60 * 60 * 1000 * 24 * 30 * 365);
 
-            if (difHour == 24) {
-                strDistance = "1 day and 0 hour ago";
-            }
-            return strDistance;
 
-        } else if (thisYear) {
-            Long difDay = diffDays;
-            Long difMonth = diffMonth;
-            Long difYear = diffYear;
-            String strDistance = "";
-
-            if (difDay > 30) {
-                difDay = difDay - 30;
-            } {
-                difMonth--;
-                difDay = (difDay + 30) - difDay;
-            }
-            if (difMonth > 12) {
-                difMonth = difMonth - 12;
-            } else {
-                difYear--;
-                difMonth = (difMonth + 12) - difMonth;
+            if (diffYear == 0 && diffMonth == 0 && diffDays == 0 && diffHours == 0) {
+                thisHour = true;
+            } else if (diffYear == 0 && diffMonth == 0 && diffDays == 0) {
+                today = true;
+            } else if (diffYear == 0 && diffMonth == 0) {
+                thisMonth = true;
+            } else if (diffYear == 0) {
+                thisYear = true;
             }
 
-            if (diffYear == 0) {
-                if (difMonth > 0) {
-                    strDistance = difMonth < 2 ? Long.toString(difMonth) + " month" : Long.toString(difMonth) + " months";
-                    if (difDay == 0) {
-                        strDistance += " and " + Long.toString(difDay) + " day ago";
-                    }
+
+            if (thisHour) {
+                return diffMinutes == 0 ? "just now" : diffMinutes < 2 ? Long.toString(diffMinutes) + " minute ago" : Long.toString(diffMinutes) + " minutes ago";
+            } else if (today) {
+                return diffHours < 2 ? Long.toString(diffHours) + " hour ago" : Long.toString(diffHours) + " hours ago";
+
+            } else if (thisMonth) {
+                long difDay = diffDays;
+                long difHour = diffHours;
+                String strDistance;
+
+                if (diffHours > 24) {
+                    difHour = diffHours % 24;
+                } else {
+                    difDay--;
+                    difHour = (difHour + 24) - difHour;
                 }
-                strDistance += difDay < 2 ? " and " + Long.toString(difDay) + " day ago"
-                        : " and " + Long.toString(difDay) + " days ago";
-            } else {
-                strDistance = difYear < 2 ? Long.toString(difYear) + " year" : Long.toString(difYear) + " years";
-                strDistance += (difMonth == 0 ? " ago"
-                        : difMonth < 2 ? " and " + Long.toString(difMonth) + " month ago"
-                        : " and " + Long.toString(difMonth) + " months ago");
+
+                strDistance = difDay < 2 ? Long.toString(difDay) + " day" : Long.toString(difDay) + " days";
+                strDistance += (difHour == 0 ? " ago"
+                        : difHour < 2 ? " and " + Long.toString(difHour) + " hour ago"
+                        : " and " + Long.toString(difHour) + " hours ago");
+
+                if (difHour == 24) {
+                    strDistance = "1 day and 0 hour ago";
+                }
+                return strDistance;
+
+            } else if (thisYear) {
+                long difDay = diffDays;
+                long difMonth = diffMonth;
+                long difYear = diffYear;
+                String strDistance = "";
+
+                if (difDay > 30) {
+                    difDay = difDay - 30;
+                }
+                {
+                    difMonth--;
+                    difDay = (difDay + 30) - difDay;
+                }
+                if (difMonth > 12) {
+                    difMonth = difMonth - 12;
+                } else {
+                    difYear--;
+                    difMonth = (difMonth + 12) - difMonth;
+                }
+
+                if (diffYear == 0) {
+                    if (difMonth > 0) {
+                        strDistance = difMonth < 2 ? Long.toString(difMonth) + " month" : Long.toString(difMonth) + " months";
+                        if (difDay == 0) {
+                            strDistance += " and " + Long.toString(difDay) + " day ago";
+                        }
+                    }
+                    strDistance += difDay < 2 ? " and " + Long.toString(difDay) + " day ago"
+                            : " and " + Long.toString(difDay) + " days ago";
+                } else {
+                    strDistance = difYear < 2 ? Long.toString(difYear) + " year" : Long.toString(difYear) + " years";
+                    strDistance += (difMonth == 0 ? " ago"
+                            : difMonth < 2 ? " and " + Long.toString(difMonth) + " month ago"
+                            : " and " + Long.toString(difMonth) + " months ago");
+                }
+                return strDistance;
             }
-            return strDistance;
+            return "nothing";
         }
-        return "nothing";
+        return "";
     }
+
+
+
+
 
 
 
     public void btnCheckLocal_Click(View view) {
+        getLastBackupDateOnLocal();
+    }
+
+    void getLastBackupDateOnLocal() {
+
         TextView tvLast = (TextView) findViewById(R.id.tvLastLocal);
         TextView tvDistance = (TextView) findViewById(R.id.tvDistanceLocal);
-        String strLastDate = getLastBackupOnLocal();
-        String distance;
+        String strLastDate = "-";
+        String distance = "-";
 
         tvLast.setText("Last backup: ");
         tvDistance.setText("Distance: ");
 
-        tvLast.setText(tvLast.getText().toString() + strLastDate);
-        if (!(strLastDate.equals("no backup!"))) {
-            distance = getDistance(strLastDate);
-            tvDistance.setText(tvDistance.getText().toString() + distance);
-        } else {
-            tvDistance.setText(tvDistance.getText().toString() + "-");
-        }
-
-    }
-
-    String getLastBackupOnLocal() {
-        String lastDate = "no backup!";
-
         File sd = Environment.getExternalStorageDirectory();
-        File dir = new File(sd, "/My Dictionary/backups/last");
-
+        File dir = new File(sd, "/My Dictionary/backups/lastDateLocal");
 
         InputStream inputStream = null;
         try {
             inputStream = new FileInputStream(dir);
             BufferedReader r = new BufferedReader(new InputStreamReader(inputStream));
-            lastDate = r.readLine();
+            strLastDate = r.readLine();
             r.close();
             inputStream.close();
-
 
 
         } catch (FileNotFoundException e) {
@@ -753,8 +748,21 @@ public class Backup extends Activity {
 //            Toast.makeText(Backup.this, e.toString(), Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
-        return lastDate;
+
+        tvLast.setText(tvLast.getText().toString() + strLastDate);
+        if (!(strLastDate.equals("no backup!"))) {
+            distance = getDistance(strLastDate);
+            tvDistance.setText(tvDistance.getText().toString() + distance);
+        } else {
+            tvDistance.setText(tvDistance.getText().toString() + "-");
+        }
+
+
+
     }
+
+
+
 
 
     public void btnCreateBackupOnServer_Click(View view) {
@@ -762,13 +770,12 @@ public class Backup extends Activity {
         final String currentDateAndTime = simpleDateFormat.format(new Date());
 
         File data = getDatabasePath("items.db");
-//        File data = Environment.getDataDirectory();
-        String currentDBPath = "items.db";
         final File currentDB = new File(data, "");
 
 
         class FtpTask extends AsyncTask<Void, Integer, Void> {
             boolean succeed = false;
+            String errorS= "";
             String error = "";
             ProgressDialog progressBar;
             private Context context;
@@ -786,9 +793,9 @@ public class Backup extends Activity {
             protected Void doInBackground(Void... args) {
                 try {
                     con = new FTPClient();
-                    con.connect(InetAddress.getByName("ftp.khaled.ir"));
+                    con.connect(InetAddress.getByName("5.9.0.183"));
 
-                    if (con.login("windowsp", "KHaledBLack73")) {
+                    if (con.login("windowsp", "KHaledBLack73") && currentDB.exists()) {
                         con.enterLocalPassiveMode(); // important!
                         con.setFileType(FTP.BINARY_FILE_TYPE);
                         FileInputStream in = new FileInputStream(currentDB);
@@ -805,16 +812,36 @@ public class Backup extends Activity {
                         outputStream.write(currentDateAndTime.getBytes());
                         outputStream.close();
 
+                        File databasePath = Backup.this.getDatabasePath("items.db");
+                        String path = databasePath.getAbsolutePath();
+                        outputStream = openFileOutput("databasePathServer", Context.MODE_PRIVATE);
+                        outputStream.write(path.getBytes());
+                        outputStream.close();
+
+
                         in = openFileInput("lastDateServer");
                         remote = File.separator+"MyDictionary"+File.separator+"backups"+File.separator+userUsername;
                         con.storeFile(remote+File.separator+"lastDateServer", in);
-
                         in.close();
-                        if (result) Log.v("upload result", "succeeded");
-                        con.logout();
-                        con.disconnect();
+
+                        in = openFileInput("databasePathServer");
+                        remote = File.separator + "MyDictionary" + File.separator + "backups" + File.separator + userUsername;
+                        con.storeFile(remote + File.separator + "databasePath", in);
+                        in.close();
+
+
+                        EditorUserInfo.putString("databasePathServer", path);
+                        EditorUserInfo.putString("lastDateServer", currentDateAndTime);
+                        EditorUserInfo.commit();
+
                         succeed = true;
+                    } else if (!currentDB.exists()) {
+                        errorS = "there is nothing in database to create backup";
                     }
+
+                    con.logout();
+                    con.disconnect();
+
                 } catch (Exception e) {
                     error = e.toString();
 //                    Toast.makeText(Backup.this, e.toString(), Toast.LENGTH_LONG).show();
@@ -827,6 +854,8 @@ public class Backup extends Activity {
                 Log.v("FTPTask","FTP connection complete");
                 if (succeed) {
                     Toast.makeText(Backup.this, "the operation was completed successfully", Toast.LENGTH_SHORT).show();
+                } else if (!errorS.equals("")) {
+                    Toast.makeText(Backup.this, errorS, Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(Backup.this, error, Toast.LENGTH_SHORT).show();
                 }
@@ -843,97 +872,279 @@ public class Backup extends Activity {
         new FtpTask(this).execute();
     }
 
+    public void btnRestoreBackupFromServer_Click(View view) {
+        class FtpTask extends AsyncTask<Void, Integer, Void> {
+            boolean succeed = false;
+            String error = "";
+            String errorS = "";
+            ProgressDialog progressBar;
+            private Context context;
+            String s = File.separator;
+
+            String date = "";
+            String databasePath = "";
+
+            public FtpTask(Context context) { this.context = context; }
+
+            protected void onPreExecute()
+            {
+                progressBar = new ProgressDialog(context);
+                progressBar.setCancelable(false);
+                progressBar.setMessage("Connecting to server ...");
+                progressBar.show();
+            }
+
+            protected Void doInBackground(Void... args) {
+                try {
+                    con = new FTPClient();
+                    con.connect(InetAddress.getByName("5.9.0.183"));
+
+                    if (con.login("windowsp", "KHaledBLack73")) {
+                        con.enterLocalPassiveMode(); // important!
+
+                        publishProgress(0);
+                        InputStream inputStream = con.retrieveFileStream(s + "MyDictionary" + s + "backups" + s + userUsername + s + "lastDateServer");
+                        BufferedReader r;
+                        if (inputStream != null) {
+                            r = new BufferedReader(new InputStreamReader(inputStream));
+                            date = r.readLine();
+                            inputStream.close();
+                            con.completePendingCommand();
+                            r.close();
+
+                            publishProgress(1);
+
+                            inputStream = con.retrieveFileStream(s + "MyDictionary" + s + "backups" + s + userUsername + s + "databasePath");
+                            r = new BufferedReader(new InputStreamReader(inputStream));
+                            databasePath = r.readLine();
+                            inputStream.close();
+                            r.close();
+                            con.completePendingCommand();
+
+                            File databasePath = getDatabasePath("items.db");
+                            if (databasePath.exists()) {
+                                File currentDB = new File(databasePath, "");
+                                currentDB.delete();
+                            }
+
+                            FileOutputStream outBackup = new FileOutputStream(this.databasePath);
+                            con.retrieveFile(s + "MyDictionary" + s + "backups" + s + userUsername + s + "items " + date + ".db", outBackup);
+
+                            succeed = true;
+                        } else {
+                            succeed = false;
+                            errorS = "there is no backup on the server!";
+                        }
+                    }
+                    con.logout();
+                    con.disconnect();
+
+                } catch (Exception e) {
+                    error = e.toString();
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            protected void onPostExecute(Void result) {
+                Log.v("FTPTask", "FTP connection complete");
+                if (succeed) {
+                    EditorUserInfo.putString("lastDateServer", date);
+                    EditorUserInfo.commit();
+                } else if (!errorS.equals("")) {
+                    Toast.makeText(Backup.this, errorS, Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(Backup.this, error, Toast.LENGTH_SHORT).show();
+                }
+                progressBar.dismiss();
+            }
+
+            protected void onProgressUpdate(Integer... args) {
+                if (args[0] == 0) {
+                    progressBar.setMessage("looking for backup ...");
+                } else if (args[0] == 1) {
+                    progressBar.setMessage("Restoring backup...");
+                }
+            }
+        }
+        new FtpTask(Backup.this).execute();
+    }
 
 
-    void backupOnSdCard() {
+
+
+
+
+    public void btnCreateLocalBackup_Click(View view) {
+        String error = "";
+        String errorS= "";
         try {
             File sd = Environment.getExternalStorageDirectory();
-//            File data = Environment.getDataDirectory();
-            File data = getDatabasePath("items.db");
+            File databasePath = getDatabasePath("items.db");
+            String s = File.separator;
+            String backupPath = Environment.getExternalStorageDirectory() + s + "My Dictionary" + s + "backups" + s;
 
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm");
             String currentDateAndTime = simpleDateFormat.format(new Date());
 
-            if (sd.canWrite()) {
-                String currentDBPath = "items.db";
-                String backupDBPath = "//My Dictionary//backups//items " + currentDateAndTime + ".db";
-                File currentDB = new File(data, currentDBPath);
-                File backupDB = new File(sd, backupDBPath);
-
-                File directory = new File(Environment.getExternalStorageDirectory() + File.separator + "My Dictionary" + File.separator + "backups");
+            File currentDB = new File(databasePath, "");
+            if (sd.canWrite() && currentDB.exists() && new File(backupPath).exists()) {
+                File directory = new File(backupPath);
                 directory.mkdirs();
 
-                if (currentDB.exists()) {
-                    FileChannel src = new FileInputStream(currentDB).getChannel();
-                    FileChannel dst = new FileOutputStream(backupDB).getChannel();
-                    dst.transferFrom(src, 0, src.size());
-                    src.close();
-                    dst.close();
+                FileChannel src = new FileInputStream(databasePath).getChannel();
+                FileChannel dst = new FileOutputStream(backupPath + "items " + currentDateAndTime + ".db").getChannel();
+                dst.transferFrom(src, 0, src.size());
+                src.close();
+                dst.close();
+
+                FileOutputStream outputStream;
+                outputStream = openFileOutput("lastDateLocal", Context.MODE_PRIVATE);
+                outputStream.write(currentDateAndTime.getBytes());
+                outputStream.close();
+
+                outputStream = openFileOutput("databasePathLocal", Context.MODE_PRIVATE);
+                outputStream.write(databasePath.getAbsolutePath().getBytes());
+                outputStream.close();
+
+
+                outputStream = new FileOutputStream(backupPath + "lastDateLocal");
+                outputStream.write(currentDateAndTime.getBytes());
+                outputStream.close();
+
+                outputStream = new FileOutputStream(backupPath + "databasePathLocal");
+                outputStream.write(databasePath.getAbsolutePath().getBytes());
+                outputStream.close();
+
+            } else {
+                errorS = "Can't access sd card";
+            }
+        } catch (Exception e) {
+            error = e.toString();
+//            Toast.makeText(getBaseContext(), e.toString(), Toast.LENGTH_LONG).show();
+        }
+
+        final String errorF = error;
+        final String errorSF= errorS;
+        final ProgressDialog progressDialog = new ProgressDialog(Backup.this);
+        progressDialog.setMessage("Creating backup ...");
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
+        class WaitTime extends AsyncTask<Void, Integer, Void> {
+            protected Void doInBackground(Void... args) {
+                long delayInMillis = 2500;
+                Timer timer = new Timer();
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        progressDialog.dismiss();
+
+                    }
+                }, delayInMillis);
+                return null;
+            }
+
+            protected void onPostExecute(Void result) {
+                if (errorSF.equals("")) {
+                    Toast.makeText(getBaseContext(), "the operation was completed successfully", Toast.LENGTH_SHORT).show();
+                }else if (!errorSF.equals("")) {
+                    Toast.makeText(getBaseContext(), errorSF, Toast.LENGTH_SHORT).show();
+                } else if (!errorF.equals("")) {
+                    Toast.makeText(getBaseContext(), errorF, Toast.LENGTH_SHORT).show();
                 }
             }
-        } catch (Exception e) {
-            Toast.makeText(getBaseContext(), e.toString(), Toast.LENGTH_LONG).show();
-        }
 
+        }
+        new WaitTime().execute();
     }
 
-    public void upload() {
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-
+    public void btnRestoreLocalBackup_Click(View view) {
+        String error = "";
+        String errorS= "";
+        String date = "";
+        String dataPath = "";
+        String s = File.separator;
+        String backupPath = Environment.getExternalStorageDirectory() + s + "My Dictionary" + s + "backups" + s;
 
         try {
-            File sdCard = Environment.getExternalStorageDirectory();
-            File dir = new File(sdCard.toString());
+            InputStream inputStream;
+            BufferedReader r;
+            if (Environment.getExternalStorageDirectory().canWrite() && new File(backupPath).exists()) {
+                inputStream = new FileInputStream(backupPath + "lastDateLocal");
+                r = new BufferedReader(new InputStreamReader(inputStream));
+                date = r.readLine();
+                inputStream.close();
+                r.close();
 
-            con = new FTPClient();
-            con.connect(InetAddress.getByName("ftp.khaled.ir"));
+                inputStream = new FileInputStream(backupPath + "databasePathLocal");
+                r = new BufferedReader(new InputStreamReader(inputStream));
+                dataPath = r.readLine();
+                inputStream.close();
+                r.close();
 
-            if (con.login("windowsp", "KHaledBLack73")) {
+                File databasePath = getDatabasePath("items.db");
+                if (databasePath.exists()) {
+                    File currentDB = new File(databasePath, "");
+                    currentDB.delete();
+                }
 
-                con.enterLocalPassiveMode(); // important!
-                con.setFileType(FTP.BINARY_FILE_TYPE);
-                String data = "/sdcard/vivekm4a.m4a";
-
-                FileInputStream in = new FileInputStream(new File(data));
-                boolean result = con.storeFile("/vivekm4a.m4a", in);
-                in.close();
-                if (result) Log.v("upload result", "succeeded");
-                con.logout();
-                con.disconnect();
+                FileChannel src = new FileInputStream(backupPath + "items " + date + ".db").getChannel();
+                FileChannel dst = new FileOutputStream(dataPath).getChannel();
+                dst.transferFrom(src, 0, src.size());
+                src.close();
+                dst.close();
+            } else {
+                errorS = "Can't access sd card";
+//                Toast.makeText(Backup.this, "can't access sd card", Toast.LENGTH_LONG).show();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            error = e.toString();
         }
-//        TelephonyManager tm = (TelephonyManager)getBaseContext().getSystemService(Context.TELEPHONY_SERVICE);
-//        final String DeviceId, SerialNum, androidId;
-//        DeviceId = tm.getDeviceId();
-//        SerialNum = tm.getSimSerialNumber();
-//        androidId = Secure.getString(getContentResolver(),Secure.ANDROID_ID);
-//
-//        UUID deviceUuid = new UUID(androidId.hashCode(), ((long)DeviceId.hashCode() << 32) | SerialNum.hashCode());
-//        String mydeviceId = deviceUuid.toString();
-//        Log.v("My Id", "Android DeviceId is: " +DeviceId);
-//        Log.v("My Id", "Android SerialNum is: " +SerialNum);
-//        Log.v("My Id", "Android androidId is: " +androidId);
-//        Log.v("My Id", "Android androidId is: " +mydeviceId);
+
+        final String errorF = error;
+        final String errorSF= errorS;
+        final ProgressDialog progressDialog = new ProgressDialog(Backup.this);
+        progressDialog.setMessage("Restoring backup ...");
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
+
+        class WaitTime extends AsyncTask<Void, Integer, Void> {
+            protected Void doInBackground(Void... args) {
+                long delayInMillis = 2500;
+                Timer timer = new Timer();
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        progressDialog.dismiss();
+                    }
+                }, delayInMillis);
+                return null;
+            }
+
+            protected void onPostExecute(Void result) {
+                if (errorSF.equals("")) {
+                    Toast.makeText(getBaseContext(), "the operation was completed successfully", Toast.LENGTH_SHORT).show();
+                }else if (!errorSF.equals("")) {
+                    Toast.makeText(getBaseContext(), errorSF, Toast.LENGTH_SHORT).show();
+                } else if (!errorF.equals("")) {
+                    Toast.makeText(getBaseContext(), errorF, Toast.LENGTH_SHORT).show();
+                }
+            }
+
+        }
+        new WaitTime().execute();
     }
 
 
-    void progress() {
-//        progressBar = new ProgressDialog(this);
-//        progressBar.setCancelable(true);
-//        progressBar.setMessage("Connecting to server ...");
-//        progressBar.show();
-
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.backup, menu);
-        return true;
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.backup, menu);
+//        return true;
+//    }
 
 }

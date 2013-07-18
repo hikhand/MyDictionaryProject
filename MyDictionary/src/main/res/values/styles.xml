@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <!--
@@ -12,6 +13,10 @@
         -->
     </style>
 
+    <style name="ThemeDialog" parent="android:Theme.Dialog">
+        <!--<item name="android:background">@color/whitegrey</item>-->
+    </style>
+
     <!-- Application theme. -->
     <style name="AppTheme" parent="AppBaseTheme">
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
@@ -20,10 +25,15 @@
     <color name="black">#FF000000</color>
     <color name="whitegrey">#FFF2F2F2</color>
 
-    <style name="dialog_light" parent="@android:style/Theme.Dialog">
+    <style name="Theme_Dialog" parent="@android:style/Theme.Dialog">
         <item name="@android:windowBackground">@color/whitegrey</item>
         <item name="@android:textColor">@color/black</item>
     </style>
 
+    <style name="LoginFormContainer">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">16dp</item>
+    </style>
 
 </resources>
