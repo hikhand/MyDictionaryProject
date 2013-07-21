@@ -4,7 +4,7 @@ package ir.khaled.mydictionary;
  * Created by khaled on 7/4/13 at 2:05 AM.
  */
 
-public class Item {
+public class ItemShow {
 
     private int id;
     private String name;
@@ -21,7 +21,7 @@ public class Item {
     private boolean chChecked;
     private boolean chVisible;
 
-    public Item(int id, String name, String meaning, String addDate, String lastCheckDate,int lastCheckDay, int deck, int index, int countCorrect, int countInCorrect, int count) {
+    public ItemShow(int id, String name, String meaning, String addDate, String lastCheckDate,int lastCheckDay, int deck, int index, int countCorrect, int countInCorrect, int count) {
         this.id = id;
         this.name = name;
         this.meaning = meaning;
@@ -35,7 +35,7 @@ public class Item {
         this.count = count;
     }
 
-    public Item(int id, String name, String meaning, String addDate, int deck, int index) {
+    public ItemShow(int id, String name, String meaning, String addDate, int deck, int index) {
         this.id = id;
         this.name = name;
         this.meaning = meaning;
@@ -44,7 +44,7 @@ public class Item {
         this.index = index;
     }
 
-    public Item(String name, String meaning, String addDate) {
+    public ItemShow(String name, String meaning, String addDate) {
 //        this.id = id;
         this.name = name;
         this.meaning = meaning;

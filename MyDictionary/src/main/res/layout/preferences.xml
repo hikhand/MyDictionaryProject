@@ -19,12 +19,12 @@
                 android:defaultValue="distance"
                 android:entries="@array/timeMethodItems"
                 android:entryValues="@array/timeMethodValues" />
-        <ListPreference
-                android:title="Default Sort Method"
-                android:key="sortMethod"
-                android:defaultValue="date"
-                android:entries="@array/sortMethodItems"
-                android:entryValues="@array/sortMethodValues" />
+        <!--<ListPreference-->
+                <!--android:title="Default Sort Method"-->
+                <!--android:key="sortMethod"-->
+                <!--android:defaultValue="date"-->
+                <!--android:entries="@array/sortMethodItems"-->
+                <!--android:entryValues="@array/sortMethodValues" />-->
         <CheckBoxPreference
                 android:title = "Show the number"
                 android:key="showItemNumber"

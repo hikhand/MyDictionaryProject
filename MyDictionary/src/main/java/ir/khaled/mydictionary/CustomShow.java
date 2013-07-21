@@ -5,7 +5,7 @@ package ir.khaled.mydictionary;
  * Created by khaled on 6/21/13.
  */
 
-public class Custom {
+public class CustomShow {
     private int id;
     private String word;
     private String meaning;
@@ -16,7 +16,10 @@ public class Custom {
     private boolean chVisible;
     private boolean isMeaningVisible;
 
-    public Custom(int id, String word, String meaning, String date, int count){
+    public CustomShow(){
+    }
+
+    public CustomShow(int id, String word, String meaning, String date, int count){
         this.id = id;
         this.word = word;
         this.meaning = meaning;
@@ -24,14 +27,14 @@ public class Custom {
         this.count = count;
     }
 
-    public Custom(String word, String meaning, String date, int count){
+    public CustomShow(String word, String meaning, String date, int count){
         this.word = word;
         this.meaning = meaning;
         this.date = date;
         this.count = count;
     }
 
-    public Custom(String word, String meaning, String date, boolean chVisible){
+    public CustomShow(String word, String meaning, String date, boolean chVisible){
         this.word = word;
         this.meaning = meaning;
         this.date = date;

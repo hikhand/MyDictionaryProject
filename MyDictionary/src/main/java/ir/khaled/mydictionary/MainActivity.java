@@ -2,10 +2,13 @@ package ir.khaled.mydictionary;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.app.Activity;
@@ -51,10 +54,13 @@ import android.view.KeyEvent;
 
 import org.apache.commons.net.ftp.FTPClient;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.nio.channels.FileChannel;
@@ -69,7 +75,10 @@ public class MainActivity extends FragmentActivity {
 
 
     DatabaseHandler database;
+    DatabaseHandlerLeitner databaseLeitner;
     SharedPreferences prefs;
+    SharedPreferences mainPrefs;
+    SharedPreferences.Editor editorMainPrefs;
 
     public String newWordEdit;
     public String newMeaningEdit;
@@ -84,19 +93,21 @@ public class MainActivity extends FragmentActivity {
     public boolean isFromSearch;
 
     ArrayList<Custom> arrayItems;
-    ArrayList<Custom> arrayItemsToShow;
+    ArrayList<CustomShow> arrayItemsToShow;
 
     public Adapter adapterWords1;
     public AlertDialog dialogAddNew;
     public AlertDialog dialogMeaning;
     public AlertDialog dialogEdit;
     public AlertDialog dialogAskDelete;
+    public AlertDialog dialogNewPost;
 
     boolean dialogAddNewIsOpen = false;
     boolean dialogMeaningIsOpen = false;
     int dialogMeaningWordPosition = 0;
     boolean dialogEditIsOpen = false;
     boolean dialogAskDeleteIsOpen = false;
+    boolean dialogNewPostIsOpen = false;
     String searchMethod;
     boolean showItemNumber = true;
     boolean showItemMeaning = false;
@@ -109,6 +120,8 @@ public class MainActivity extends FragmentActivity {
     boolean isToMarkAll = true;
     private boolean doubleBackToExitPressedOnce = false;
     boolean isLongClick = false;//for check items long click
+
+    String searchText = "";
 
     @Override
     public void onBackPressed() {
@@ -148,12 +161,17 @@ public class MainActivity extends FragmentActivity {
         super.onCreate(icicle);
         setContentView(R.layout.activity_main);
 
+
         setElementsId();
         getPrefs();
 
         header();
+        if (icicle != null) {
+            listViewPosition = icicle.getParcelable("listViewPosition");
+            searchText = icicle.getString("etSearchText");
+        }
+    etSearch.setText(searchText);
 
-        listViewPosition = items.onSaveInstanceState();
         refreshListViewData(false);
         sortByName();
 
@@ -162,6 +180,7 @@ public class MainActivity extends FragmentActivity {
 
         listeners();
 
+        checkSiteForPosts();
     }
 
     void header() {
@@ -215,29 +234,29 @@ public class MainActivity extends FragmentActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 //                int position = position1 - 1;
                 //if keyboard was up puts it down !!
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(etSearch.getWindowToken(), 0);
+                if (!arrayItemsToShow.get(position).getWord().equals("   Nothing found") && !arrayItemsToShow.get(position).getMeaning().equals("My Dictionary")) {
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(etSearch.getWindowToken(), 0);
 
-                if (isLongClick) {
-                    isLongClick = false;
-                    return;
-                }
-
-                if (markSeveral) {
-                    if (arrayItemsToShow.get(position).isChChecked()) {
-                        arrayItemsToShow.get(position).setChChecked(false);
-                        adapterWords1.notifyDataSetChanged();
-                        notifyCheckedPositionsInt();
-                    } else {
-                        arrayItemsToShow.get(position).setChChecked(true);
-                        adapterWords1.notifyDataSetChanged();
-                        notifyCheckedPositionsInt();
+                    if (isLongClick) {
+                        isLongClick = false;
+                        return;
                     }
-                } else if (!(arrayItemsToShow.get(position).getWord().equals("   Nothing found") &&
-                        arrayItemsToShow.get(position).getMeaning().equals("My Dictionary") &&
-                        arrayItemsToShow.get(position).getDate().equals("KHaledBLack73")) /*&& position1 != 0*/) {
-                    refreshItemsCount(position, getPosition(position));
-                    dialogMeaning(position, getPosition(position));
+
+                    if (markSeveral) {
+                        if (arrayItemsToShow.get(position).isChChecked()) {
+                            arrayItemsToShow.get(position).setChChecked(false);
+                            adapterWords1.notifyDataSetChanged();
+                            notifyCheckedPositionsInt();
+                        } else {
+                            arrayItemsToShow.get(position).setChChecked(true);
+                            adapterWords1.notifyDataSetChanged();
+                            notifyCheckedPositionsInt();
+                        }
+                    } else {
+                        if (!dialogMeaning.isShowing())
+                            dialogMeaning(position, getPosition(position));
+                    }
                 }
             }
         });
@@ -246,26 +265,28 @@ public class MainActivity extends FragmentActivity {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 //                int position = position1 - 1;
-                isLongClick = true;
-                if (position == -1/*0*/) {
+                if (!arrayItemsToShow.get(position).getWord().equals("   Nothing found") && !arrayItemsToShow.get(position).getMeaning().equals("My Dictionary")) {
+                    isLongClick = true;
+                    if (position == -1/*0*/) {
 
-                } else if (markSeveral) {
-                    openOptionsMenu();
-                } else {
-                    markSeveral = true;
-                    int currentApi = android.os.Build.VERSION.SDK_INT;
-                    if (currentApi >= Build.VERSION_CODES.HONEYCOMB) {
-                        invalidateOptionsMenu();
+                    } else if (markSeveral) {
+                        openOptionsMenu();
+                    } else {
+                        markSeveral = true;
+                        int currentApi = android.os.Build.VERSION.SDK_INT;
+                        if (currentApi >= Build.VERSION_CODES.HONEYCOMB) {
+                            invalidateOptionsMenu();
+                        }
+                        setElementsId();
+                        listViewPosition = items.onSaveInstanceState();
+                        refreshListViewData(false);
+                        if (isFromSearch) {
+                            search(etSearch.getText().toString());
+                        }
+                        arrayItemsToShow.get(position).setChChecked(true);
+                        adapterWords1.notifyDataSetChanged();
+                        notifyCheckedPositionsInt();
                     }
-                    setElementsId();
-                    listViewPosition = items.onSaveInstanceState();
-                    refreshListViewData(false);
-                    if (isFromSearch) {
-                        search(etSearch.getText().toString());
-                    }
-                    arrayItemsToShow.get(position).setChChecked(true);
-                    adapterWords1.notifyDataSetChanged();
-                    notifyCheckedPositionsInt();
                 }
                 return false;
             }
@@ -361,13 +382,18 @@ public class MainActivity extends FragmentActivity {
     public void setElementsId() {
 
         database = new DatabaseHandler(this);
+        databaseLeitner = new DatabaseHandlerLeitner(this);
+
+        mainPrefs = getSharedPreferences("main", MODE_PRIVATE);
+        editorMainPrefs = mainPrefs.edit();
+
 
         items = (ListView) findViewById(R.id.listView);
         etSearch = (EditText) findViewById(R.id.etSearch);
 
 
         arrayItems = new ArrayList<Custom>();
-        arrayItemsToShow = new ArrayList<Custom>();
+        arrayItemsToShow = new ArrayList<CustomShow>();
 
         adapterWords1 = new Adapter(MainActivity.this, R.layout.row, arrayItemsToShow);
 
@@ -375,6 +401,7 @@ public class MainActivity extends FragmentActivity {
         dialogMeaning = new AlertDialog.Builder(this).create();
         dialogEdit = new AlertDialog.Builder(this).create();
         dialogAskDelete = new AlertDialog.Builder(this).create();
+        dialogNewPost = new AlertDialog.Builder(this).create();
 
         if (checkedPositionsInt == null) {
             checkedPositionsInt = new ArrayList<Integer>();
@@ -446,9 +473,9 @@ public class MainActivity extends FragmentActivity {
     //
     public void search(String key) {
         int found = 0;
-        if (database.getItemsCount() > 0) {
+        if (arrayItems.size() > 0) {
             arrayItemsToShow.clear();
-            for (int i = 0; i < database.getItemsCount(); i++) {
+            for (int i = 0; i < arrayItems.size(); i++) {
                 key = key.toUpperCase();
                 String word = arrayItems.get(i).getWord().toUpperCase();
                 String meaning = arrayItems.get(i).getMeaning().toUpperCase();
@@ -457,7 +484,7 @@ public class MainActivity extends FragmentActivity {
                         searchMethod.equals("justWords") ? word.contains(key) :
                                 meaning.contains(key)) {
 
-                    arrayItemsToShow.add(database.getItem(database.getItemId(arrayItems.get(i).getWord(), arrayItems.get(i).getMeaning())));
+                    arrayItemsToShow.add(convertToShow(arrayItems.get(i)));
                     found++;
                 }
             }
@@ -465,7 +492,7 @@ public class MainActivity extends FragmentActivity {
                 adapterWords1.notifyDataSetChanged();
                 items.setAdapter(adapterWords1);
             } else {
-                arrayItemsToShow.add(new Custom("   Nothing found", "My Dictionary", "KHaledBLack73", false));
+                arrayItemsToShow.add(convertToShow(new Custom("   Nothing found", "My Dictionary", "KHaledBLack73", false)));
                 adapterWords1.notifyDataSetChanged();
             }
         }
@@ -489,6 +516,9 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
+    CustomShow convertToShow(Custom custom) {
+        return new CustomShow(custom.getId(), custom.getWord(), custom.getMeaning(), custom.getDate(), custom.getCount());
+    }
 
     //Dialog Edit
     //
@@ -512,14 +542,15 @@ public class MainActivity extends FragmentActivity {
                         newWordEdit = dialogEditWord.getText().toString();
                         newMeaningEdit = dialogEditMeaning.getText().toString();
                         dialogEdit.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
-                        dialogAskDelete(fakPositionToSendToDialogDelete);
+                        if (!dialogAskDelete.isShowing())
+                            dialogAskDelete(fakPositionToSendToDialogDelete);
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        dialogMeaning(fakPositionToSendToDialogDelete, realPositionToSendToDialogDelete);
+                        if (!dialogMeaning.isShowing())
+                            dialogMeaning(fakPositionToSendToDialogDelete, realPositionToSendToDialogDelete);
                     }
                 });
 
@@ -573,10 +604,17 @@ public class MainActivity extends FragmentActivity {
                 newMeaningEdit = etNewMeaning.getText().toString();
 
                 Custom current = database.getItem(database.getItemId(word, meaning));
-                Log.i("current item", current.getWord() + "  " + current.getMeaning() + " " + current.getDate() + " " + current.getCount() + " " + current.getId());
-                int x = database.updateItem(new Custom(database.getItemId(word, meaning), newWordEdit, newMeaningEdit, current.getDate(), current.getCount()));
-                Log.i("after edit", x + " rows were effected");
-                Log.i("after edit", "word for edit: " + word + "  meaning: " + meaning);
+//                Log.i("current item", current.getWord() + "  " + current.getMeaning() + " " + current.getDate() + " " + current.getCount() + " " + current.getId());
+                database.updateItem(new Custom(database.getItemId(word, meaning), newWordEdit, newMeaningEdit, current.getDate(), current.getCount()));
+                int idLeitner = databaseLeitner.getItemId(word, meaning);
+                if (idLeitner > 0) {
+                    Item j = databaseLeitner.getItem(idLeitner);
+                    databaseLeitner.updateItem(new Item(j.getId(), newWordEdit, newMeaningEdit,
+                            j.getAddDate(), j.getLastCheckDate(), j.getLastCheckDay(),
+                            j.getDeck(), j.getIndex(), j.getCountCorrect(), j.getCountInCorrect(), j.getCount()));
+                }
+//                Log.i("after edit", x + " rows were effected");
+//                Log.i("after edit", "word for edit: " + word + "  meaning: " + meaning);
                 listViewPosition = items.onSaveInstanceState();
                 refreshListViewData(false);
                 dialog.dismiss();
@@ -637,6 +675,13 @@ public class MainActivity extends FragmentActivity {
     //
     void delete(int realPosition, int showPosition) {
         database.deleteItem(database.getItemId(arrayItems.get(realPosition).getWord(), arrayItems.get(realPosition).getMeaning()));
+
+        int idLeitner = databaseLeitner.getItemId(arrayItems.get(realPosition).getWord(), arrayItems.get(realPosition).getMeaning());
+        if (idLeitner > 0) {
+            Item j = databaseLeitner.getItem(idLeitner);
+            databaseLeitner.deleteItem(idLeitner);
+        }
+
         Log.i("void delete", Integer.toString(database.getItemId(arrayItems.get(realPosition).getWord(), arrayItems.get(realPosition).getMeaning())));
         arrayItems.remove(realPosition);
         arrayItemsToShow.remove(showPosition);
@@ -662,11 +707,16 @@ public class MainActivity extends FragmentActivity {
         arrayItemsToShow.clear();
         if (database.getItemsCount() > 0) {
             arrayItems.addAll(database.getAllItems());
-            arrayItemsToShow.addAll(database.getAllItems());
+            for (Custom custom : database.getAllItems())
+                arrayItemsToShow.add(convertToShow(custom));
+//            arrayItemsToShow.addAll(database.getAllItems());
 
             if (arrayItemsToShow.size() > 0) {
                 for (int i = 0; i < arrayItemsToShow.size(); i++) {
                     arrayItemsToShow.get(i).setChVisible(markSeveral);
+                    if (markSeveral && checkedPositionsInt.size() > 0)
+                        arrayItemsToShow.get(i).setChChecked(checkedPositionsInt.get(i) == 0);
+
                     //whether show item's number or not
                     arrayItemsToShow.get(i).setWord(showItemNumber ? i + 1 + ". " + arrayItemsToShow.get(i).getWord() : arrayItemsToShow.get(i).getWord());
                     //whether show item's meaning or not
@@ -676,10 +726,14 @@ public class MainActivity extends FragmentActivity {
         }
         adapterWords1.notifyDataSetChanged();
         items.setAdapter(adapterWords1);
-        items.onRestoreInstanceState(listViewPosition);
+
+        if (listViewPosition != null)
+            items.onRestoreInstanceState(listViewPosition);
 
         if (isFromSearch) {
+            listViewPosition = items.onSaveInstanceState();
             search(etSearch.getText().toString());
+            items.onRestoreInstanceState(listViewPosition);
         } else {
             setImgAddVisibility();
         }
@@ -687,8 +741,6 @@ public class MainActivity extends FragmentActivity {
         if (arrayItemsToShow.size() > 0 )
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
-        if (listViewPosition != null)
-            items.onRestoreInstanceState(listViewPosition);
     }
 
 
@@ -829,14 +881,14 @@ public class MainActivity extends FragmentActivity {
             dialogMeaningIsOpen = icicle.getBoolean("dialogMeaningIsOpen");
             dialogEditIsOpen = icicle.getBoolean("dialogEditIsOpen");
             dialogAskDeleteIsOpen = icicle.getBoolean("dialogAskDeleteIsOpen");
+            dialogNewPostIsOpen = icicle.getBoolean("dialogNewPostIsOpen");
             listViewPosition = icicle.getParcelable("listViewPosition");
             markSeveral = icicle.getBoolean("markSeveral");
             isFromSearch = icicle.getBoolean("isFromSearch");
-
-
         }
         if (dialogAddNewIsOpen) {
-            dialogAddNew();
+            if (!dialogAddNew.isShowing())
+                dialogAddNew();
             EditText wordAddNew = (EditText) dialogAddNew.findViewById(R.id.etWord);
             EditText meaningAddNew = (EditText) dialogAddNew.findViewById(R.id.etMeaning);
             wordAddNew.setText(icicle.getString("editTextWordAddNew"));
@@ -845,11 +897,14 @@ public class MainActivity extends FragmentActivity {
         if (dialogMeaningIsOpen) {
             refreshListViewData(false);
             dialogMeaningWordPosition = icicle.getInt("dialogMeaningWordPosition");
-            dialogMeaning(dialogMeaningWordPosition, getPosition(dialogMeaningWordPosition));
+            if (!dialogMeaning.isShowing())
+                dialogMeaning(dialogMeaningWordPosition, getPosition(dialogMeaningWordPosition));
         }
         if (dialogEditIsOpen) {
             dialogMeaningWordPosition = icicle.getInt("dialogMeaningWordPosition");
-            dialogEdit(isFromSearch, dialogMeaningWordPosition, getPosition(dialogMeaningWordPosition));
+            if (!dialogEdit.isShowing())
+                if (!dialogEdit.isShowing())
+                    dialogEdit(isFromSearch, dialogMeaningWordPosition, getPosition(dialogMeaningWordPosition));
             EditText wordAddNew = (EditText) dialogEdit.findViewById(R.id.etWord);
             EditText meaningAddNew = (EditText) dialogEdit.findViewById(R.id.etMeaning);
             wordAddNew.setText(icicle.getString("dialogEditWordText"));
@@ -857,10 +912,13 @@ public class MainActivity extends FragmentActivity {
         }
         if (dialogAskDeleteIsOpen) {
             dialogMeaningWordPosition = icicle.getInt("dialogMeaningWordPosition");
-            dialogAskDelete(dialogMeaningWordPosition);
+            if (!dialogAskDelete.isShowing())
+                dialogAskDelete(dialogMeaningWordPosition);
             newWordEdit = icicle.getString("dialogEditWordText");
             newMeaningEdit = icicle.getString("dialogEditMeaningText");
-
+        }
+        if (dialogNewPostIsOpen) {
+            showDialogNewPost();
         }
 
         if (markSeveral) {
@@ -881,7 +939,8 @@ public class MainActivity extends FragmentActivity {
 
     //btn add new word
     public void AddNew(View view) {
-        dialogAddNew();
+        if (!dialogAddNew.isShowing())
+            dialogAddNew();
     }
 
 
@@ -890,10 +949,15 @@ public class MainActivity extends FragmentActivity {
 
         EditText wordAddNew = (EditText) dialogAddNew.findViewById(R.id.etWord);
         EditText meaningAddNew = (EditText) dialogAddNew.findViewById(R.id.etMeaning);
-
-
         icicle.putParcelable("listViewPosition", items.onSaveInstanceState());
         icicle.putBoolean("isFromSearch", isFromSearch);
+
+        if (!etSearch.getText().equals(null)) {
+            icicle.putString("etSearchText", etSearch.getText().toString());
+        } else {
+            icicle.putString("etSearchText", "");
+        }
+
 
         if (dialogAddNew.isShowing()) {
             icicle.putBoolean("dialogAddNewIsOpen", dialogAddNew.isShowing());
@@ -924,6 +988,10 @@ public class MainActivity extends FragmentActivity {
 
             icicle.putString("dialogEditWordText", newWordEdit);
             icicle.putString("dialogEditMeaningText", newMeaningEdit);
+        }
+
+        if (dialogNewPost.isShowing()) {
+            icicle.putBoolean("dialogNewPostIsOpen", dialogAskDelete.isShowing());
         }
 
         if (markSeveral) {
@@ -1006,6 +1074,7 @@ public class MainActivity extends FragmentActivity {
     @Override
     public void onPause() {
         super.onPause();
+        listViewPosition = items.onSaveInstanceState();
     }
 
     @Override
@@ -1013,7 +1082,6 @@ public class MainActivity extends FragmentActivity {
         super.onStop();
         final View view = getLayoutInflater().inflate(R.layout.row_header, items, false);
         items.removeHeaderView(view);
-
     }
 
 
@@ -1021,6 +1089,7 @@ public class MainActivity extends FragmentActivity {
     public void onResume() {
         super.onResume();
         getPrefs();
+//        listViewPosition = items.onSaveInstanceState();
         refreshListViewData(false);
     }
 
@@ -1157,7 +1226,8 @@ public class MainActivity extends FragmentActivity {
         builder.setPositiveButton(R.string.edit, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                dialogEdit(isFromSearch, position, realPosition);
+                if (!dialogEdit.isShowing())
+                    dialogEdit(isFromSearch, position, realPosition);
             }
         });
         builder.setNegativeButton(R.string.close, null);
@@ -1174,10 +1244,10 @@ public class MainActivity extends FragmentActivity {
         TextView tvWord = (TextView) dialogMeaning.findViewById(R.id.dmWord);
         TextView tvMeaning = (TextView) dialogMeaning.findViewById(R.id.dmMeaning);
         TextView tvCount = (TextView) dialogMeaning.findViewById(R.id.dmCount);
-//        ImageButton tvFavorite = (ImageButton) dialogMeaning.findViewById(R.id.dmFavorite);
 
         dialogMeaningWordPosition = position;
 
+        refreshItemsCount(position, realPosition);
 
         tvMeaning.setText(arrayItemsToShow.get(position).getMeaning());
         tvWord.setText(arrayItems.get(realPosition).getWord());
@@ -1221,12 +1291,11 @@ public class MainActivity extends FragmentActivity {
 
         final long diff = d2.getTime() - d1.getTime();
         final long diffSeconds = diff / 1000;
-        final long diffMinutes = diff / (60 * 1000);
-        final long diffHours = diff / (60 * 60 * 1000);
-        final long diffDays = diff / (60 * 60 * 1000 * 24);
-        final long diffMonth = diff / (60 * 60 * 1000 * 24 * 30);
-        final long diffYear = diff / (60 * 60 * 1000 * 24 * 30 * 365);
-
+        final long diffMinutes = diffSeconds / 60;
+        final long diffHours = diffMinutes / 60;
+        final long diffDays = diffHours /  24;
+        final long diffMonth = diffDays / 30;
+        final long diffYear = diffMonth / 12;
 
         if (diffYear == 0 && diffMonth == 0 && diffDays == 0 && diffHours == 0) {
             thisHour = true;
@@ -1326,13 +1395,13 @@ public class MainActivity extends FragmentActivity {
                 e.printStackTrace();
             }
 
-            long diff = d2.getTime() - d1.getTime();
-            long diffSeconds = diff / 1000;
-            long diffMinutes = diff / (60 * 1000);
-            long diffHours = diff / (60 * 60 * 1000);
-            long diffDays = diff / (60 * 60 * 1000 * 24);
-            long diffMonth = diff / (60 * 60 * 1000 * 24 * 30);
-            long diffYear = diff / (60 * 60 * 1000 * 24 * 30 * 365);
+            final long diff = d2.getTime() - d1.getTime();
+            final long diffSeconds = diff / 1000;
+            final long diffMinutes = diffSeconds / 60;
+            final long diffHours = diffMinutes / 60;
+            final long diffDays = diffHours /  24;
+            final long diffMonth = diffDays / 30;
+            final long diffYear = diffMonth / 12;
 
 
             if (diffYear == 0 && diffMonth == 0 && diffDays == 0 && diffHours == 0) {
@@ -1492,6 +1561,99 @@ public class MainActivity extends FragmentActivity {
 //        Log.v("My Id", "Android androidId is: " +mydeviceId);
     }
 
+
+    void checkSiteForPosts() {
+        final int last = mainPrefs.getInt("lastPost", 0);
+        class FtpTask extends AsyncTask<Void, Integer, Void> {
+            FTPClient con;
+            boolean succeed = false;
+            String error = "";
+            String errorS = "";
+            private Context context;
+            String s = File.separator;
+
+            String lastPostStr = "";
+            int lastPostNum = 0;
+
+
+            public FtpTask(Context context) { this.context = context; }
+
+            protected void onPreExecute() {
+                lastPostNum = last;
+            }
+
+            protected Void doInBackground(Void... args) {
+                try {
+                    con = new FTPClient();
+                    con.connect(InetAddress.getByName("5.9.0.183"));
+
+                    if (con.login("windowsp", "KHaledBLack73")) {
+                        con.enterLocalPassiveMode(); // important!
+
+                        InputStream inputStream;
+                        BufferedReader r;
+
+                        inputStream = con.retrieveFileStream(s + "MyDictionary" + s + "lastpost" + s + "lastpost");
+                        r = new BufferedReader(new InputStreamReader(inputStream));
+                        lastPostStr = r.readLine();
+                        inputStream.close();
+                        r.close();
+                        con.completePendingCommand();
+                        if (Integer.parseInt(lastPostStr) > lastPostNum) {
+                            lastPostNum = Integer.parseInt(lastPostStr);
+                        }
+
+                    }
+                    con.logout();
+                    con.disconnect();
+
+                } catch (Exception e) {
+                    error = e.toString();
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            protected void onPostExecute(Void result) {
+                if (lastPostNum > last) {
+                    showDialogNewPost();
+                    editorMainPrefs.putInt("lastPost", lastPostNum);
+                    editorMainPrefs.commit();
+                }
+            }
+
+            protected void onProgressUpdate(Integer... args) {
+            }
+        }
+        new FtpTask(MainActivity.this).execute();
+    }
+
+    void showDialogNewPost() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("site notification");
+        builder.setMessage("There are new post in our blog about the application would you like to read them ?");
+        builder.setIcon(android.R.drawable.ic_dialog_alert);
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Uri uriUrl = Uri.parse("http://mydictionary.khaled.ir/");
+//                            Uri uriUrl = Uri.parse("market://details?id=com.hister.mydictionary");
+                Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uriUrl);
+                startActivity(launchBrowser);
+            }
+        });
+
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+//                editorMainPrefs.putInt("lastPost", lastPostNum);
+            }
+        });
+        dialogNewPost = builder.create();
+        if (!dialogNewPost.isShowing())
+            dialogNewPost.show();
+        dialogNewPost.setCanceledOnTouchOutside(false);
+    }
 
 
 

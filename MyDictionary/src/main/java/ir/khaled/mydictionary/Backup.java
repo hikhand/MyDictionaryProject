@@ -11,11 +11,9 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.os.Environment;
 import android.os.Handler;
-import android.os.StrictMode;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -96,7 +94,6 @@ public class Backup extends Activity {
     void setElementsValue() {
         TextView tvLastDateServer = (TextView) findViewById(R.id.tvLastServer);
         TextView tvDistanceServer = (TextView) findViewById(R.id.tvDistanceServer);
-
         tvLastDateServer.setText(tvLastDateServer.getText().toString() + UserInfo.getString("lastDateServer", ""));
         tvDistanceServer.setText(tvDistanceServer.getText().toString() + getDistance(UserInfo.getString("lastDateServer", "")));
 
@@ -601,8 +598,116 @@ public class Backup extends Activity {
         new FtpTask(this).execute();
     }
 
-    String getDistance(String lastDate) {
-        if (lastDate != "") {
+//    String getDistance(String lastDate) {
+//        if (lastDate != "") {
+//            boolean thisHour = false;
+//            boolean today = false;
+//            boolean thisMonth = false;
+//            boolean thisYear = false;
+//            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm");
+//            String currentDateAndTime = simpleDateFormat.format(new Date());
+//
+//            Date d1 = null;
+//            Date d2 = null;
+//            try {
+//                d1 = simpleDateFormat.parse(lastDate);
+//                d2 = simpleDateFormat.parse(currentDateAndTime);
+//            } catch (ParseException e) {
+//                e.printStackTrace();
+//                return "wrong date";
+//            }
+//
+//            final long diff = d2.getTime() - d1.getTime();
+//            final long diffSeconds = diff / 1000;
+//            final long diffMinutes = diff / (60 * 1000);
+//            final long diffHours = diff / (60 * 60 * 1000);
+//            final long diffDays = diff / (60 * 60 * 1000 * 24);
+//            final long diffMonth = diff / (60 * 60 * 1000 * 24 * 30);
+//            final long diffYear = diff / (60 * 60 * 1000 * 24 * 30 * 365);
+//
+//
+//            if (diffYear == 0 && diffMonth == 0 && diffDays == 0 && diffHours == 0) {
+//                thisHour = true;
+//            } else if (diffYear == 0 && diffMonth == 0 && diffDays == 0) {
+//                today = true;
+//            } else if (diffYear == 0 && diffMonth == 0) {
+//                thisMonth = true;
+//            } else if (diffYear == 0) {
+//                thisYear = true;
+//            }
+//
+//
+//            if (thisHour) {
+//                return diffMinutes == 0 ? "just now" : diffMinutes < 2 ? Long.toString(diffMinutes) + " minute ago" : Long.toString(diffMinutes) + " minutes ago";
+//            } else if (today) {
+//                return diffHours < 2 ? Long.toString(diffHours) + " hour ago" : Long.toString(diffHours) + " hours ago";
+//
+//            } else if (thisMonth) {
+//                long difDay = diffDays;
+//                long difHour = diffHours;
+//                String strDistance;
+//
+//                if (diffHours > 24) {
+//                    difHour = diffHours % 24;
+//                } else {
+//                    difDay--;
+//                    difHour = (difHour + 24) - difHour;
+//                }
+//
+//                strDistance = difDay < 2 ? Long.toString(difDay) + " day" : Long.toString(difDay) + " days";
+//                strDistance += (difHour == 0 ? " ago"
+//                        : difHour < 2 ? " and " + Long.toString(difHour) + " hour ago"
+//                        : " and " + Long.toString(difHour) + " hours ago");
+//
+//                if (difHour == 24) {
+//                    strDistance = "1 day and 0 hour ago";
+//                }
+//                return strDistance;
+//
+//            } else if (thisYear) {
+//                long difDay = diffDays;
+//                long difMonth = diffMonth;
+//                long difYear = diffYear;
+//                String strDistance = "";
+//
+//                if (difDay > 30) {
+//                    difDay = difDay - 30;
+//                }
+//                {
+//                    difMonth--;
+//                    difDay = (difDay + 30) - difDay;
+//                }
+//                if (difMonth > 12) {
+//                    difMonth = difMonth - 12;
+//                } else {
+//                    difYear--;
+//                    difMonth = (difMonth + 12) - difMonth;
+//                }
+//
+//                if (diffYear == 0) {
+//                    if (difMonth > 0) {
+//                        strDistance = difMonth < 2 ? Long.toString(difMonth) + " month" : Long.toString(difMonth) + " months";
+//                        if (difDay == 0) {
+//                            strDistance += " and " + Long.toString(difDay) + " day ago";
+//                        }
+//                    }
+//                    strDistance += difDay < 2 ? " and " + Long.toString(difDay) + " day ago"
+//                            : " and " + Long.toString(difDay) + " days ago";
+//                } else {
+//                    strDistance = difYear < 2 ? Long.toString(difYear) + " year" : Long.toString(difYear) + " years";
+//                    strDistance += (difMonth == 0 ? " ago"
+//                            : difMonth < 2 ? " and " + Long.toString(difMonth) + " month ago"
+//                            : " and " + Long.toString(difMonth) + " months ago");
+//                }
+//                return strDistance;
+//            }
+//            return "nothing";
+//        }
+//        return "";
+//    }
+
+    String getDistance(String date) {
+        if (!date.equals("")) {
             boolean thisHour = false;
             boolean today = false;
             boolean thisMonth = false;
@@ -613,7 +718,7 @@ public class Backup extends Activity {
             Date d1 = null;
             Date d2 = null;
             try {
-                d1 = simpleDateFormat.parse(lastDate);
+                d1 = simpleDateFormat.parse(date);
                 d2 = simpleDateFormat.parse(currentDateAndTime);
             } catch (ParseException e) {
                 e.printStackTrace();
@@ -622,11 +727,11 @@ public class Backup extends Activity {
 
             final long diff = d2.getTime() - d1.getTime();
             final long diffSeconds = diff / 1000;
-            final long diffMinutes = diff / (60 * 1000);
-            final long diffHours = diff / (60 * 60 * 1000);
-            final long diffDays = diff / (60 * 60 * 1000 * 24);
-            final long diffMonth = diff / (60 * 60 * 1000 * 24 * 30);
-            final long diffYear = diff / (60 * 60 * 1000 * 24 * 30 * 365);
+            final long diffMinutes = diffSeconds / 60;
+            final long diffHours = diffMinutes / 60;
+            final long diffDays = diffHours /  24;
+            final long diffMonth = diffDays / 30;
+            final long diffYear = diffMonth / 12;
 
 
             if (diffYear == 0 && diffMonth == 0 && diffDays == 0 && diffHours == 0) {
@@ -667,21 +772,20 @@ public class Backup extends Activity {
                 }
                 return strDistance;
 
-            } else if (thisYear) {
+            } else {
                 long difDay = diffDays;
                 long difMonth = diffMonth;
                 long difYear = diffYear;
                 String strDistance = "";
 
                 if (difDay > 30) {
-                    difDay = difDay - 30;
-                }
-                {
+                    difDay = difDay % 30;
+                } else {
                     difMonth--;
                     difDay = (difDay + 30) - difDay;
                 }
                 if (difMonth > 12) {
-                    difMonth = difMonth - 12;
+                    difMonth = difMonth % 12;
                 } else {
                     difYear--;
                     difMonth = (difMonth + 12) - difMonth;
@@ -704,11 +808,9 @@ public class Backup extends Activity {
                 }
                 return strDistance;
             }
-            return "nothing";
         }
-        return "";
+        return "nothing";
     }
-
 
 
 
@@ -756,9 +858,6 @@ public class Backup extends Activity {
         } else {
             tvDistance.setText(tvDistance.getText().toString() + "-");
         }
-
-
-
     }
 
 
@@ -769,8 +868,8 @@ public class Backup extends Activity {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm");
         final String currentDateAndTime = simpleDateFormat.format(new Date());
 
-        File data = getDatabasePath("items.db");
-        final File currentDB = new File(data, "");
+        final File currentDBMain = new File(getDatabasePath("items.db"), "");
+        final File currentDBLeitner = new File(getDatabasePath("leitner.db"), "");
 
 
         class FtpTask extends AsyncTask<Void, Integer, Void> {
@@ -795,47 +894,49 @@ public class Backup extends Activity {
                     con = new FTPClient();
                     con.connect(InetAddress.getByName("5.9.0.183"));
 
-                    if (con.login("windowsp", "KHaledBLack73") && currentDB.exists()) {
+                    if (con.login("windowsp", "KHaledBLack73") && currentDBMain.exists()) {
                         con.enterLocalPassiveMode(); // important!
                         con.setFileType(FTP.BINARY_FILE_TYPE);
-                        FileInputStream in = new FileInputStream(currentDB);
-
-//                        progressBar.setMessage("uploading to server ...");
+//                        FileInputStream inMain;
+                        String userPath = File.separator + "MyDictionary" + File.separator + "backups" + File.separator + userUsername;
 
                         publishProgress(0);
 
-                        String remote = File.separator+"MyDictionary"+File.separator+"backups"+File.separator+userUsername;
-                        boolean result = con.storeFile(remote+File.separator+"items " + currentDateAndTime + ".db", in);
+                        con.storeFile(userPath + File.separator + "items " + currentDateAndTime + ".db", new FileInputStream(currentDBMain));
+                        con.storeFile(userPath + File.separator + "leitner " + currentDateAndTime + ".db", new FileInputStream(currentDBLeitner));
+
+
 
                         FileOutputStream outputStream;
+
                         outputStream = openFileOutput("lastDateServer", Context.MODE_PRIVATE);
                         outputStream.write(currentDateAndTime.getBytes());
                         outputStream.close();
 
-                        File databasePath = Backup.this.getDatabasePath("items.db");
-                        String path = databasePath.getAbsolutePath();
-                        outputStream = openFileOutput("databasePathServer", Context.MODE_PRIVATE);
-                        outputStream.write(path.getBytes());
+                        File databasePathMain = Backup.this.getDatabasePath("items.db");
+                        outputStream = openFileOutput("pathMainServer", Context.MODE_PRIVATE);
+                        outputStream.write(databasePathMain.getAbsolutePath().getBytes());
+                        outputStream.close();
+
+                        File databasePathLeitner = Backup.this.getDatabasePath("leitner.db");
+                        outputStream = openFileOutput("pathLeitnerServer", Context.MODE_PRIVATE);
+                        outputStream.write(databasePathLeitner.getAbsolutePath().getBytes());
                         outputStream.close();
 
 
-                        in = openFileInput("lastDateServer");
-                        remote = File.separator+"MyDictionary"+File.separator+"backups"+File.separator+userUsername;
-                        con.storeFile(remote+File.separator+"lastDateServer", in);
-                        in.close();
+                        con.storeFile(userPath + File.separator + "lastDateServer", openFileInput("lastDateServer"));
 
-                        in = openFileInput("databasePathServer");
-                        remote = File.separator + "MyDictionary" + File.separator + "backups" + File.separator + userUsername;
-                        con.storeFile(remote + File.separator + "databasePath", in);
-                        in.close();
+                        con.storeFile(userPath + File.separator + "pathMainServer", openFileInput("pathMainServer"));
+                        con.storeFile(userPath + File.separator + "pathLeitnerServer", openFileInput("pathLeitnerServer"));
 
 
-                        EditorUserInfo.putString("databasePathServer", path);
+                        EditorUserInfo.putString("pathMainServer", databasePathMain.getAbsolutePath());
+                        EditorUserInfo.putString("pathLeitnerServer", databasePathLeitner.getAbsolutePath());
                         EditorUserInfo.putString("lastDateServer", currentDateAndTime);
                         EditorUserInfo.commit();
 
                         succeed = true;
-                    } else if (!currentDB.exists()) {
+                    } else if (!currentDBMain.exists()) {
                         errorS = "there is nothing in database to create backup";
                     }
 
@@ -853,7 +954,12 @@ public class Backup extends Activity {
             protected void onPostExecute(Void result) {
                 Log.v("FTPTask","FTP connection complete");
                 if (succeed) {
-                    Toast.makeText(Backup.this, "the operation was completed successfully", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Backup.this, "backup successfully created.", Toast.LENGTH_SHORT).show();
+
+                    TextView tvLastDateServer = (TextView) findViewById(R.id.tvLastServer);
+                    TextView tvDistanceServer = (TextView) findViewById(R.id.tvDistanceServer);
+                    tvLastDateServer.setText(tvLastDateServer.getText().toString() + UserInfo.getString("lastDateServer", ""));
+                    tvDistanceServer.setText(tvDistanceServer.getText().toString() + getDistance(UserInfo.getString("lastDateServer", "")));
                 } else if (!errorS.equals("")) {
                     Toast.makeText(Backup.this, errorS, Toast.LENGTH_SHORT).show();
                 } else {
@@ -882,7 +988,8 @@ public class Backup extends Activity {
             String s = File.separator;
 
             String date = "";
-            String databasePath = "";
+            String pathMain = "";
+            String pathLeitner = "";
 
             public FtpTask(Context context) { this.context = context; }
 
@@ -903,6 +1010,7 @@ public class Backup extends Activity {
                         con.enterLocalPassiveMode(); // important!
 
                         publishProgress(0);
+
                         InputStream inputStream = con.retrieveFileStream(s + "MyDictionary" + s + "backups" + s + userUsername + s + "lastDateServer");
                         BufferedReader r;
                         if (inputStream != null) {
@@ -914,21 +1022,38 @@ public class Backup extends Activity {
 
                             publishProgress(1);
 
-                            inputStream = con.retrieveFileStream(s + "MyDictionary" + s + "backups" + s + userUsername + s + "databasePath");
+                            inputStream = con.retrieveFileStream(s + "MyDictionary" + s + "backups" + s + userUsername + s + "pathMainServer");
                             r = new BufferedReader(new InputStreamReader(inputStream));
-                            databasePath = r.readLine();
+                            pathMain = r.readLine();
                             inputStream.close();
                             r.close();
                             con.completePendingCommand();
 
-                            File databasePath = getDatabasePath("items.db");
-                            if (databasePath.exists()) {
-                                File currentDB = new File(databasePath, "");
+                            inputStream = con.retrieveFileStream(s + "MyDictionary" + s + "backups" + s + userUsername + s + "pathLeitnerServer");
+                            r = new BufferedReader(new InputStreamReader(inputStream));
+                            pathLeitner = r.readLine();
+                            inputStream.close();
+                            r.close();
+                            con.completePendingCommand();
+
+                            File pathMain = getDatabasePath("items.db");
+                            if (pathMain.exists()) {
+                                File currentDB = new File(pathMain, "");
                                 currentDB.delete();
                             }
 
-                            FileOutputStream outBackup = new FileOutputStream(this.databasePath);
+                            File pathLeitner = getDatabasePath("leitner.db");
+                            if (pathLeitner.exists()) {
+                                File currentDB = new File(pathLeitner, "");
+                                currentDB.delete();
+                            }
+
+
+                            FileOutputStream outBackup = new FileOutputStream(this.pathMain);
                             con.retrieveFile(s + "MyDictionary" + s + "backups" + s + userUsername + s + "items " + date + ".db", outBackup);
+
+                             outBackup = new FileOutputStream(this.pathLeitner);
+                            con.retrieveFile(s + "MyDictionary" + s + "backups" + s + userUsername + s + "leitner " + date + ".db", outBackup);
 
                             succeed = true;
                         } else {
@@ -951,6 +1076,11 @@ public class Backup extends Activity {
                 if (succeed) {
                     EditorUserInfo.putString("lastDateServer", date);
                     EditorUserInfo.commit();
+                    TextView tvLastDateServer = (TextView) findViewById(R.id.tvLastServer);
+                    TextView tvDistanceServer = (TextView) findViewById(R.id.tvDistanceServer);
+                    tvLastDateServer.setText(tvLastDateServer.getText().toString() + UserInfo.getString("lastDateServer", ""));
+                    tvDistanceServer.setText(tvDistanceServer.getText().toString() + getDistance(UserInfo.getString("lastDateServer", "")));
+                    Toast.makeText(Backup.this, "successfully restored.", Toast.LENGTH_SHORT).show();
                 } else if (!errorS.equals("")) {
                     Toast.makeText(Backup.this, errorS, Toast.LENGTH_SHORT).show();
                 } else {
@@ -980,20 +1110,26 @@ public class Backup extends Activity {
         String errorS= "";
         try {
             File sd = Environment.getExternalStorageDirectory();
-            File databasePath = getDatabasePath("items.db");
+            File pathMain = getDatabasePath("items.db");
+            File pathLeitner = getDatabasePath("leitner.db");
             String s = File.separator;
             String backupPath = Environment.getExternalStorageDirectory() + s + "My Dictionary" + s + "backups" + s;
 
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm");
             String currentDateAndTime = simpleDateFormat.format(new Date());
 
-            File currentDB = new File(databasePath, "");
-            if (sd.canWrite() && currentDB.exists() && new File(backupPath).exists()) {
-                File directory = new File(backupPath);
-                directory.mkdirs();
+            File directory = new File(backupPath);
+            directory.mkdirs();
 
-                FileChannel src = new FileInputStream(databasePath).getChannel();
+            if (sd.canWrite() && new File(pathMain, "").exists() && new File(backupPath).exists()) {
+                FileChannel src = new FileInputStream(pathMain).getChannel();
                 FileChannel dst = new FileOutputStream(backupPath + "items " + currentDateAndTime + ".db").getChannel();
+                dst.transferFrom(src, 0, src.size());
+                src.close();
+                dst.close();
+
+                src = new FileInputStream(pathLeitner).getChannel();
+                dst = new FileOutputStream(backupPath + "leitner " + currentDateAndTime + ".db").getChannel();
                 dst.transferFrom(src, 0, src.size());
                 src.close();
                 dst.close();
@@ -1003,19 +1139,25 @@ public class Backup extends Activity {
                 outputStream.write(currentDateAndTime.getBytes());
                 outputStream.close();
 
-                outputStream = openFileOutput("databasePathLocal", Context.MODE_PRIVATE);
-                outputStream.write(databasePath.getAbsolutePath().getBytes());
+                outputStream = openFileOutput("pathMainLocal", Context.MODE_PRIVATE);
+                outputStream.write(pathMain.getAbsolutePath().getBytes());
                 outputStream.close();
 
+                outputStream = openFileOutput("pathLeitnerLocal", Context.MODE_PRIVATE);
+                outputStream.write(pathLeitner.getAbsolutePath().getBytes());
+                outputStream.close();
 
                 outputStream = new FileOutputStream(backupPath + "lastDateLocal");
                 outputStream.write(currentDateAndTime.getBytes());
                 outputStream.close();
 
-                outputStream = new FileOutputStream(backupPath + "databasePathLocal");
-                outputStream.write(databasePath.getAbsolutePath().getBytes());
+                outputStream = new FileOutputStream(backupPath + "pathMainLocal");
+                outputStream.write(pathMain.getAbsolutePath().getBytes());
                 outputStream.close();
 
+                outputStream = new FileOutputStream(backupPath + "pathLeitnerLocal");
+                outputStream.write(pathLeitner.getAbsolutePath().getBytes());
+                outputStream.close();
             } else {
                 errorS = "Can't access sd card";
             }
@@ -1058,13 +1200,16 @@ public class Backup extends Activity {
 
         }
         new WaitTime().execute();
+
+        getLastBackupDateOnLocal();
     }
 
     public void btnRestoreLocalBackup_Click(View view) {
         String error = "";
         String errorS= "";
         String date = "";
-        String dataPath = "";
+        String pathMain = "";
+        String pathLeitner = "";
         String s = File.separator;
         String backupPath = Environment.getExternalStorageDirectory() + s + "My Dictionary" + s + "backups" + s;
 
@@ -1078,23 +1223,42 @@ public class Backup extends Activity {
                 inputStream.close();
                 r.close();
 
-                inputStream = new FileInputStream(backupPath + "databasePathLocal");
+                inputStream = new FileInputStream(backupPath + "pathMainLocal");
                 r = new BufferedReader(new InputStreamReader(inputStream));
-                dataPath = r.readLine();
+                pathMain = r.readLine();
                 inputStream.close();
                 r.close();
 
-                File databasePath = getDatabasePath("items.db");
-                if (databasePath.exists()) {
-                    File currentDB = new File(databasePath, "");
+                inputStream = new FileInputStream(backupPath + "pathLeitnerLocal");
+                r = new BufferedReader(new InputStreamReader(inputStream));
+                pathLeitner = r.readLine();
+                inputStream.close();
+                r.close();
+
+                File main = getDatabasePath("items.db");
+                if (main.exists()) {
+                    File currentDB = new File(main, "");
+                    currentDB.delete();
+                }
+
+                main = getDatabasePath("leitner.db");
+                if (main.exists()) {
+                    File currentDB = new File(main, "");
                     currentDB.delete();
                 }
 
                 FileChannel src = new FileInputStream(backupPath + "items " + date + ".db").getChannel();
-                FileChannel dst = new FileOutputStream(dataPath).getChannel();
+                FileChannel dst = new FileOutputStream(pathMain).getChannel();
                 dst.transferFrom(src, 0, src.size());
                 src.close();
                 dst.close();
+
+                src = new FileInputStream(backupPath + "leitner " + date + ".db").getChannel();
+                dst = new FileOutputStream(pathLeitner).getChannel();
+                dst.transferFrom(src, 0, src.size());
+                src.close();
+                dst.close();
+
             } else {
                 errorS = "Can't access sd card";
 //                Toast.makeText(Backup.this, "can't access sd card", Toast.LENGTH_LONG).show();

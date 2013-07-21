@@ -14,11 +14,11 @@ import android.widget.TextView;
 import ir.khaled.mydictionary.Custom;
 import ir.khaled.mydictionary.R;
 
-public class Adapter extends ArrayAdapter<Custom>{
-    private ArrayList<Custom> entries;
+public class Adapter extends ArrayAdapter<CustomShow>{
+    private ArrayList<CustomShow> entries;
     private Activity activity;
 
-    public Adapter(Activity a, int textViewResourceId, ArrayList<Custom> entries) {
+    public Adapter(Activity a, int textViewResourceId, ArrayList<CustomShow> entries) {
         super(a, textViewResourceId, entries);
         this.entries = entries;
         this.activity = a;
@@ -49,7 +49,7 @@ public class Adapter extends ArrayAdapter<Custom>{
         else
             holder=(ViewHolder)v.getTag();
 
-        final Custom custom = entries.get(position);
+        final CustomShow custom = entries.get(position);
         if (custom != null) {
             holder.item1.setText(custom.getWord());
             String meaning = custom.getMeaning();

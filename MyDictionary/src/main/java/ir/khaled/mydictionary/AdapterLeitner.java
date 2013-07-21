@@ -14,11 +14,11 @@ import android.widget.TextView;
 import ir.khaled.mydictionary.Item;
 import ir.khaled.mydictionary.R;
 
-public class AdapterLeitner extends ArrayAdapter<Item>{
-    private ArrayList<Item> entries;
+public class AdapterLeitner extends ArrayAdapter<ItemShow>{
+    private ArrayList<ItemShow> entries;
     private Activity activity;
 
-    public AdapterLeitner(Activity a, int textViewResourceId, ArrayList<Item> entries) {
+    public AdapterLeitner(Activity a, int textViewResourceId, ArrayList<ItemShow> entries) {
         super(a, textViewResourceId, entries);
         this.entries = entries;
         this.activity = a;
@@ -49,7 +49,7 @@ public class AdapterLeitner extends ArrayAdapter<Item>{
         else
             holder=(ViewHolder)v.getTag();
 
-        final Item Item = entries.get(position);
+        final ItemShow Item = entries.get(position);
         if (Item != null) {
             holder.item1.setText(Item.getName());
             String meaning = Item.getMeaning();

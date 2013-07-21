@@ -27,6 +27,8 @@ class DatabaseHandlerLeitner extends SQLiteOpenHelper {
     private static final String TABLE_DONT_ADD = "dontAdd";
     private static final String TABLE_LAST_CHECK_DAY = "indexesLastCheckDay";
     private static final String TABLE_LAST_CHECK_DAY_DATE = "indexesLastCheckDayDate";
+    private static final String TABLE_MAIN = "main";
+    private static final String TABLE_ARCHIVE = "archive";
 
 
     // Contacts Table Columns names
@@ -36,7 +38,6 @@ class DatabaseHandlerLeitner extends SQLiteOpenHelper {
     private static final String KEY_ADD_DATE = "addDate";
     private static final String KEY_lAST_DATE = "lastCheckDate";
     private static final String KEY_lAST_DAY = "lastCheckDay";
-    private static final String KEY_WITCH_DAY = "witchDayAt";
     private static final String KEY_DECK = "deck";
     private static final String KEY_INDEX = "index1";
     private static final String KEY_COUNT_CORRECT = "countCorrect";
@@ -46,6 +47,8 @@ class DatabaseHandlerLeitner extends SQLiteOpenHelper {
     private static final String KEY_LAST_DAY = "lastDay";
     private static final String KEY_LAST_DAY_DATE = "lastDayDate";
 
+    private static final String KEY_MAIN_LAST_DATE = "lastDate";
+    private static final String KEY_MAIN_LAST_DAY = "lastDay";
 
     public DatabaseHandlerLeitner(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -56,16 +59,23 @@ class DatabaseHandlerLeitner extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String sqlLeitner = String.format("CREATE TABLE %s " + "(%s INTEGER PRIMARY KEY AUTOINCREMENT, %s TEXT, %s TEXT, %s TEXT, %s TEXT," +
-                " %s INTEGER, %s INTEGER, %s INTEGER, %s INTEGER, %s INTEGER, %s INTEGER, %s INTEGER)",
+                " %s INTEGER, %s INTEGER, %s INTEGER, %s INTEGER, %s INTEGER, %s INTEGER)",
                 TABLE_LEITNER, KEY_ID, KEY_NAME, KEY_MEANING, KEY_ADD_DATE, KEY_lAST_DATE,
-                KEY_lAST_DAY, KEY_WITCH_DAY, KEY_DECK, KEY_INDEX, KEY_COUNT_CORRECT, KEY_COUNT_INCORRECT, KEY_COUNT);
+                KEY_lAST_DAY, KEY_DECK, KEY_INDEX, KEY_COUNT_CORRECT, KEY_COUNT_INCORRECT, KEY_COUNT);
         db.execSQL(sqlLeitner);
 
         String sqlDontADd = String.format("CREATE TABLE %s " + "(%s INTEGER PRIMARY KEY AUTOINCREMENT, %s TEXT, %s TEXT, %s TEXT, %s TEXT," +
-                " %s INTEGER, %s INTEGER, %s INTEGER, %s INTEGER, %s INTEGER, %s INTEGER, %s INTEGER)",
+                " %s INTEGER, %s INTEGER, %s INTEGER, %s INTEGER, %s INTEGER, %s INTEGER)",
                 TABLE_DONT_ADD, KEY_ID, KEY_NAME, KEY_MEANING, KEY_ADD_DATE, KEY_lAST_DATE,
-                KEY_lAST_DAY, KEY_WITCH_DAY, KEY_DECK, KEY_INDEX, KEY_COUNT_CORRECT, KEY_COUNT_INCORRECT, KEY_COUNT);
+                KEY_lAST_DAY, KEY_DECK, KEY_INDEX, KEY_COUNT_CORRECT, KEY_COUNT_INCORRECT, KEY_COUNT);
         db.execSQL(sqlDontADd);
+
+        String sqlArchive = String.format("CREATE TABLE %s " + "(%s INTEGER PRIMARY KEY AUTOINCREMENT, %s TEXT, %s TEXT, %s TEXT, %s TEXT," +
+                " %s INTEGER, %s INTEGER, %s INTEGER, %s INTEGER, %s INTEGER, %s INTEGER)",
+                TABLE_ARCHIVE, KEY_ID, KEY_NAME, KEY_MEANING, KEY_ADD_DATE, KEY_lAST_DATE,
+                KEY_lAST_DAY, KEY_DECK, KEY_INDEX, KEY_COUNT_CORRECT, KEY_COUNT_INCORRECT, KEY_COUNT);
+        db.execSQL(sqlArchive);
+
 
 
         String sqlLastCheckDay = String.format("CREATE TABLE %s " + "(%s INTEGER PRIMARY KEY AUTOINCREMENT, %s INTEGER)",
@@ -86,6 +96,13 @@ class DatabaseHandlerLeitner extends SQLiteOpenHelper {
             db.insert(TABLE_LAST_CHECK_DAY_DATE, null, values);
         }
 
+        String sqlMain = String.format("CREATE TABLE %s " + "(%s INTEGER PRIMARY KEY AUTOINCREMENT, %s TEXT, %s INTEGER)",
+                TABLE_MAIN, KEY_ID, KEY_MAIN_LAST_DATE, KEY_MAIN_LAST_DAY);
+        db.execSQL(sqlMain);
+        ContentValues values = new ContentValues();
+        values.put(KEY_MAIN_LAST_DATE, "today");
+        values.put(KEY_MAIN_LAST_DAY, 0);
+        db.insert(TABLE_MAIN, null, values);
     }
 
     // Upgrading database
@@ -104,7 +121,7 @@ class DatabaseHandlerLeitner extends SQLiteOpenHelper {
 
 
     // Adding new item
-    public void addItem(Item item, boolean inLeitner) {
+    public void addItem(Item item, String TABLE_NAME) {
         SQLiteDatabase db = this.getWritableDatabase();
 //        assert db != null;
 
@@ -115,7 +132,6 @@ class DatabaseHandlerLeitner extends SQLiteOpenHelper {
         values.put(KEY_ADD_DATE, item.getAddDate());
         values.put(KEY_lAST_DATE, item.getLastCheckDate());
         values.put(KEY_lAST_DAY, item.getLastCheckDay());
-        values.put(KEY_WITCH_DAY, item.getWitchDay());
         values.put(KEY_DECK, item.getDeck());
         values.put(KEY_INDEX, item.getIndex());
         values.put(KEY_COUNT_CORRECT, item.getCountCorrect());
@@ -124,7 +140,7 @@ class DatabaseHandlerLeitner extends SQLiteOpenHelper {
 
         Log.d("id value : ", Integer.toString(item.getId()));
 
-        db.insert(inLeitner ? TABLE_LEITNER : TABLE_DONT_ADD, null, values);
+        db.insert(TABLE_NAME, null, values);
         db.close();
 
     }
@@ -136,7 +152,7 @@ class DatabaseHandlerLeitner extends SQLiteOpenHelper {
 
         Cursor cursor = db.query(TABLE_LEITNER, new String[]{KEY_ID,
                 KEY_NAME, KEY_MEANING, KEY_ADD_DATE, KEY_lAST_DATE,
-                KEY_lAST_DAY, KEY_WITCH_DAY, KEY_DECK, KEY_INDEX, KEY_COUNT_CORRECT, KEY_COUNT_INCORRECT, KEY_COUNT}, KEY_ID + "=?",
+                KEY_lAST_DAY, KEY_DECK, KEY_INDEX, KEY_COUNT_CORRECT, KEY_COUNT_INCORRECT, KEY_COUNT}, KEY_ID + "=?",
                 new String[]{String.valueOf(id)}, null, null, null, null);
 
         cursor.moveToFirst();
@@ -151,12 +167,11 @@ class DatabaseHandlerLeitner extends SQLiteOpenHelper {
                     cursor.getString(4), //last check date
 
                     Integer.parseInt(cursor.getString(5)),//last check day
-                    Integer.parseInt(cursor.getString(6)),//witch day
-                    Integer.parseInt(cursor.getString(7)),//deck
-                    Integer.parseInt(cursor.getString(8)),//index
-                    Integer.parseInt(cursor.getString(9)),//count correct
-                    Integer.parseInt(cursor.getString(10)),//count incorrect
-                    Integer.parseInt(cursor.getString(11)));//count
+                    Integer.parseInt(cursor.getString(6)),//deck
+                    Integer.parseInt(cursor.getString(7)),//index
+                    Integer.parseInt(cursor.getString(8)),//count correct
+                    Integer.parseInt(cursor.getString(9)),//count incorrect
+                    Integer.parseInt(cursor.getString(10)));//count
         }
         cursor.close();
         db.close();
@@ -172,7 +187,7 @@ class DatabaseHandlerLeitner extends SQLiteOpenHelper {
 
         Cursor cursor = db.query(TABLE_LEITNER, new String[] { KEY_ID,
                 KEY_NAME, KEY_MEANING, KEY_ADD_DATE, KEY_lAST_DATE,
-                KEY_lAST_DAY, KEY_WITCH_DAY, KEY_DECK, KEY_INDEX, KEY_COUNT_CORRECT, KEY_COUNT_INCORRECT, KEY_COUNT}, KEY_NAME +"=? AND " + KEY_MEANING +"=?",
+                KEY_lAST_DAY, KEY_DECK, KEY_INDEX, KEY_COUNT_CORRECT, KEY_COUNT_INCORRECT, KEY_COUNT}, KEY_NAME +"=? AND " + KEY_MEANING +"=?",
                 new String[] {word, meaning}, null, null, null, null);
         if( cursor != null && cursor.moveToFirst()  ){
             Log.i("getItem's Id", "word: " + word + "  meaning: " + meaning + " = " + Integer.toString(cursor.getInt(0)));
@@ -202,12 +217,11 @@ class DatabaseHandlerLeitner extends SQLiteOpenHelper {
                         cursor.getString(4), //last check date
 
                         Integer.parseInt(cursor.getString(5)),//last check day
-                        Integer.parseInt(cursor.getString(6)),//witch day
-                        Integer.parseInt(cursor.getString(7)),//deck
-                        Integer.parseInt(cursor.getString(8)),//index
-                        Integer.parseInt(cursor.getString(9)),//count correct
-                        Integer.parseInt(cursor.getString(10)),//count incorrect
-                        Integer.parseInt(cursor.getString(11)));//count
+                        Integer.parseInt(cursor.getString(6)),//deck
+                        Integer.parseInt(cursor.getString(7)),//index
+                        Integer.parseInt(cursor.getString(8)),//count correct
+                        Integer.parseInt(cursor.getString(9)),//count incorrect
+                        Integer.parseInt(cursor.getString(10)));//count
 
                 itemsList.add(item);
             } while (cursor.moveToNext());
@@ -241,7 +255,6 @@ class DatabaseHandlerLeitner extends SQLiteOpenHelper {
         values.put(KEY_ADD_DATE, item.getAddDate());
         values.put(KEY_lAST_DATE, item.getLastCheckDate());
         values.put(KEY_lAST_DAY, item.getLastCheckDay());
-        values.put(KEY_WITCH_DAY, item.getWitchDay());
         values.put(KEY_DECK, item.getDeck());
         values.put(KEY_INDEX, item.getIndex());
         values.put(KEY_COUNT_CORRECT, item.getCountCorrect());
@@ -263,7 +276,6 @@ class DatabaseHandlerLeitner extends SQLiteOpenHelper {
         values.put(KEY_ADD_DATE, item.getAddDate());
         values.put(KEY_lAST_DATE, item.getLastCheckDate());
         values.put(KEY_lAST_DAY, item.getLastCheckDay());
-        values.put(KEY_WITCH_DAY, item.getWitchDay());
         values.put(KEY_DECK, deck);
         values.put(KEY_INDEX, index);
         values.put(KEY_COUNT_CORRECT, item.getCountCorrect());
@@ -297,24 +309,62 @@ class DatabaseHandlerLeitner extends SQLiteOpenHelper {
 
 
 
-
-    public int getLastDay(int id) {
+    public String getLastDate() {
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor cursor = db.query(TABLE_LAST_CHECK_DAY, new String[]{KEY_ID,
-                KEY_LAST_DAY}, KEY_ID + "=?",
-                new String[]{String.valueOf(id)}, null, null, null, null);
+        Cursor cursor = db.query(TABLE_MAIN, new String[]{KEY_ID,
+                KEY_MAIN_LAST_DATE, KEY_MAIN_LAST_DAY}, KEY_ID + "=?",
+                new String[]{String.valueOf(1)}, null, null, null, null);
 
         cursor.moveToFirst();
 
-        int item = 0;
+        String item = "today";
         if (cursor.getCount() > 0 && cursor != null) {
-            item = Integer.parseInt(cursor.getString(1));
+            item = cursor.getString(1);
         }
         cursor.close();
         db.close();
         // return item
         return item;
+    }
+
+    public int getLastDay() {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.query(TABLE_MAIN, new String[]{KEY_ID,
+                KEY_MAIN_LAST_DATE, KEY_MAIN_LAST_DAY}, KEY_ID + "=?",
+                new String[]{String.valueOf(1)}, null, null, null, null);
+
+        cursor.moveToFirst();
+
+        int item = 0;
+        if (cursor.getCount() > 0 && cursor != null) {
+            item = Integer.parseInt(cursor.getString(2));
+        }
+        cursor.close();
+        db.close();
+        // return item
+        return item;
+    }
+
+    public int updateLastDate(String newLastDate) {
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_MAIN_LAST_DATE, newLastDate);
+        values.put(KEY_MAIN_LAST_DAY, getLastDay());
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        return db.update(TABLE_MAIN, values, KEY_ID + "=" + 1, null);
+    }
+
+    public int updateLastDay(int newLastDay) {
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_MAIN_LAST_DATE, getLastDate());
+        values.put(KEY_MAIN_LAST_DAY, newLastDay);
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        return db.update(TABLE_MAIN, values, KEY_ID + "=" + 1, null);
     }
 
     public String getLastDayDate(int id) {
@@ -393,7 +443,6 @@ class DatabaseHandlerLeitner extends SQLiteOpenHelper {
 
         return db.update(TABLE_LAST_CHECK_DAY_DATE, values, KEY_ID + "=" + id, null);
     }
-
 
 
 

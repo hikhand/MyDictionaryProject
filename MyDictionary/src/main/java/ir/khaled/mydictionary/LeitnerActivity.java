@@ -39,28 +39,22 @@ public class LeitnerActivity extends Activity {
     DatabaseHandlerLeitner databaseLeitner;
 
     SharedPreferences prefs;
-    SharedPreferences mainPrefs;
-    SharedPreferences.Editor editorMainPrefs;
+//    SharedPreferences mainPrefs;
+//    SharedPreferences.Editor editorMainPrefs;
 
     public AlertDialog dialogAddNew;
     public AlertDialog dialogMeaning;
     public AlertDialog dialogEdit;
     public AlertDialog dialogAskDelete;
+    public AlertDialog dialogSummery;
 
     EditText etSearch;
     Button btnAddNew;
 
-    //    ArrayList<Item> deck0;
-    ArrayList<Item> deck1;
-    ArrayList<ArrayList<Item>> deck2;
-    ArrayList<ArrayList<Item>> deck3;
-    ArrayList<ArrayList<Item>> deck4;
-    ArrayList<ArrayList<Item>> deck5;
-
     ArrayList<Custom> arrayItemsInMD;
     ArrayList<Item> arrayItemsDontAdd;
     ArrayList<Item> arrayItems;
-    ArrayList<Item> itemsToShow;
+    ArrayList<ItemShow> itemsToShow;
     ArrayList<Integer> checkedPositionsInt;
     ArrayList<Integer> arrayIndexesLastDay;
     ArrayList<String> arrayIndexesLastDayDate;
@@ -76,6 +70,7 @@ public class LeitnerActivity extends Activity {
     boolean dialogAddNewIsOpen = false;
     boolean dialogMeaningIsOpen = false;
     boolean dialogAskDeleteIsOpen = false;
+    boolean dialogSummeryIsOpen = false;
     boolean dialogEditIsOpen = false;
 
     int dialogMeaningWordPosition = 0;
@@ -89,7 +84,14 @@ public class LeitnerActivity extends Activity {
     String searchMethod;
     String todayDate = "";
     String lastDate = "";
+
+    String searchText = "";
+
     Parcelable listViewPosition = null;
+
+    final String TABLE_LEITNER = "leitner";
+    final String TABLE_DONT_ADD = "dontAdd";
+    final String TABLE_ARCHIVE = "archive";
 
 
     @Override
@@ -98,21 +100,29 @@ public class LeitnerActivity extends Activity {
         setContentView(R.layout.activity_leitner);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
+
         setElementsId();
+        if (savedInstanceState != null) {
+        listViewPosition = savedInstanceState.getParcelable("listViewPosition");
+        searchText = savedInstanceState.getString("etSearchText");
+        }
+        etSearch.setText(searchText);
+
+
         setElementsValue();
         getPrefs();
         putNewFromMdToDatabase();
-        listViewPosition = items.onSaveInstanceState();
+//        listViewPosition = items.onSaveInstanceState();
         refreshListViewData();
         listeners();
         restore(savedInstanceState);
     }
 
     void setElementsId() {
-        setIndexesId();
+//        setIndexesId();
 
-        mainPrefs = getSharedPreferences("main", MODE_PRIVATE);
-        editorMainPrefs = mainPrefs.edit();
+//        mainPrefs = getSharedPreferences("main", MODE_PRIVATE);
+//        editorMainPrefs = mainPrefs.edit();
 
         databaseMain = new DatabaseHandler(this);
         databaseLeitner = new DatabaseHandlerLeitner(this);
@@ -121,6 +131,7 @@ public class LeitnerActivity extends Activity {
         dialogMeaning = new AlertDialog.Builder(this).create();
         dialogEdit = new AlertDialog.Builder(this).create();
         dialogAskDelete = new AlertDialog.Builder(this).create();
+        dialogSummery = new AlertDialog.Builder(this).create();
 
         etSearch = (EditText) findViewById(R.id.leitnerSearchET);
         btnAddNew = (Button) findViewById(R.id.leitnerAddNewBtn);
@@ -128,7 +139,7 @@ public class LeitnerActivity extends Activity {
         arrayItemsInMD = new ArrayList<Custom>();
         arrayItemsDontAdd = new ArrayList<Item>();
         arrayItems = new ArrayList<Item>();
-        itemsToShow = new ArrayList<Item>();
+        itemsToShow = new ArrayList<ItemShow>();
         checkedPositionsInt = new ArrayList<Integer>();
 
         items = (ListView) findViewById(R.id.leitnerListView);
@@ -144,28 +155,6 @@ public class LeitnerActivity extends Activity {
         arrayItems.addAll(databaseLeitner.getAllItems(true));
         arrayIndexesLastDay.addAll(databaseLeitner.getAllItemsLastDay());
         arrayIndexesLastDayDate.addAll(databaseLeitner.getAllItemsLastDayDate());
-
-
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
-        todayDate = simpleDateFormat.format(new Date());
-        lastDate = mainPrefs.getString("lastDate", "today");
-
-        if (lastDate.equals(todayDate)) {
-            todayNum = mainPrefs.getInt("lastDay", 0);
-        } else {
-            todayNum = mainPrefs.getInt("lastDay", 0) + 1;
-            if (todayNum < 31 && todayNum > 1) {
-                todayNum--;
-                updateIndexesLastDayLessThan30();
-                todayNum++;
-            } else if (todayNum > 1) {
-                todayNum--;
-                updateIndexLastDayMoreThan30();
-                todayNum++;
-            }
-        }
-
-
     }
 
     void putNewFromMdToDatabase() {
@@ -184,60 +173,48 @@ public class LeitnerActivity extends Activity {
                 }
             }
             if (!exists) {
-                databaseLeitner.addItem(new Item(itemInMD.getWord(), itemInMD.getMeaning(), itemInMD.getDate()), true);
+                databaseLeitner.addItem(new Item(itemInMD.getWord(), itemInMD.getMeaning(), itemInMD.getDate()), TABLE_LEITNER);
             }
         }
     }
 
-    void setIndexesId() {
-//        deck0 = new ArrayList<Item>();
-        deck1 = new ArrayList<Item>();//0
-        deck2 = new ArrayList<ArrayList<Item>>();
-        deck3 = new ArrayList<ArrayList<Item>>();
-        deck4 = new ArrayList<ArrayList<Item>>();
-        deck5 = new ArrayList<ArrayList<Item>>();
-
-        deck2.add(new ArrayList<Item>());//0--1
-        deck2.add(new ArrayList<Item>());//1--2
-
-        deck3.add(new ArrayList<Item>());//0--3
-        deck3.add(new ArrayList<Item>());//1--4
-        deck3.add(new ArrayList<Item>());//2--5
-        deck3.add(new ArrayList<Item>());//3--6
-
-        deck4.add(new ArrayList<Item>());//0--7
-        deck4.add(new ArrayList<Item>());//1--8
-        deck4.add(new ArrayList<Item>());//2--9
-        deck4.add(new ArrayList<Item>());//3--10
-        deck4.add(new ArrayList<Item>());//4--11
-        deck4.add(new ArrayList<Item>());//5--12
-        deck4.add(new ArrayList<Item>());//6--13
-        deck4.add(new ArrayList<Item>());//7--14
-
-        deck5.add(new ArrayList<Item>());//0--15
-        deck5.add(new ArrayList<Item>());//1--16
-        deck5.add(new ArrayList<Item>());//2--17
-        deck5.add(new ArrayList<Item>());//3--18
-        deck5.add(new ArrayList<Item>());//4--19
-        deck5.add(new ArrayList<Item>());//5--20
-        deck5.add(new ArrayList<Item>());//6--21
-        deck5.add(new ArrayList<Item>());//7--22
-        deck5.add(new ArrayList<Item>());//8--23
-        deck5.add(new ArrayList<Item>());//9--24
-        deck5.add(new ArrayList<Item>());//10--25
-        deck5.add(new ArrayList<Item>());//11--26
-        deck5.add(new ArrayList<Item>());//12--27
-        deck5.add(new ArrayList<Item>());//13--28
-        deck5.add(new ArrayList<Item>());//14--29
-        deck5.add(new ArrayList<Item>());//15--30
-    }
-
     void refreshListViewData() {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+        todayDate = simpleDateFormat.format(new Date());
+        lastDate = databaseLeitner.getLastDate();
+
+        if (lastDate.equals(todayDate)) {
+            todayNum = databaseLeitner.getLastDay();
+        } else {
+            todayNum = databaseLeitner.getLastDay() + 1;
+            if (todayNum < 31 && todayNum > 1) {
+                todayNum--;
+                updateIndexesLastDayLessThan30();
+                todayNum++;
+            } else if (todayNum > 1) {
+                todayNum--;
+                updateIndexLastDayMoreThan30();
+                todayNum++;
+            }
+        }
+//        if (lastDate.equals(todayDate)) {
+//            todayNum = mainPrefs.getInt("lastDay", 0);
+//        } else {
+//            todayNum = mainPrefs.getInt("lastDay", 0) + 1;
+//            if (todayNum < 31 && todayNum > 1) {
+//                todayNum--;
+//                updateIndexesLastDayLessThan30();
+//                todayNum++;
+//            } else if (todayNum > 1) {
+//                todayNum--;
+//                updateIndexLastDayMoreThan30();
+//                todayNum++;
+//            }
+//        }
         arrayItems.clear();
         itemsToShow.clear();
         if (databaseLeitner.getItemsCount(true) > 0) {
             arrayItems.addAll(databaseLeitner.getAllItems(true));
-            itemsToShow.addAll(databaseLeitner.getAllItems(true));
 
             refreshShow();
 
@@ -245,24 +222,73 @@ public class LeitnerActivity extends Activity {
                 int k = 1;
                 for (int i = 0; i < itemsToShow.size(); i++) {
                     itemsToShow.get(i).setChVisible(markSeveral);
+                    if (markSeveral && checkedPositionsInt.size() > 0)
+                        itemsToShow.get(i).setChChecked(checkedPositionsInt.get(i) == 0);
                     itemsToShow.get(i).setName(showItemNumber ? k + ". " + itemsToShow.get(i).getName() : itemsToShow.get(i).getName());
                     k++;
                 }
+            } else {
+                itemsToShow.add(new ItemShow("   Nothing found", "My Dictionary", "KHaledBLack73"));
             }
         }
         adapter.notifyDataSetChanged();
         items.setAdapter(adapter);
 
-//        if (isFromSearch) {
-//            search(etSearch.getText().toString());
-//        } else {
-//            setImgAddVisibility();
-//        }
-        if (itemsToShow.size() > 0)
-            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
         if (listViewPosition != null)
             items.onRestoreInstanceState(listViewPosition);
+
+        if (isFromSearch) {
+            listViewPosition = items.onSaveInstanceState();
+            search(etSearch.getText().toString());
+            items.onRestoreInstanceState(listViewPosition);
+        }
+
+        if (itemsToShow.size() > 0) {
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+            TextView tvSummery = (TextView) findViewById(R.id.leitnerSummeryTV);
+            if (!itemsToShow.get(0).getName().equals("   Nothing found") && !itemsToShow.get(0).getMeaning().equals("My Dictionary"))
+                tvSummery.setText("'" + Integer.toString(itemsToShow.size()) + "' words left");
+            else tvSummery.setText("'" + Integer.toString(itemsToShow.size()-1) + "' words left");
+        }
+    }
+
+    public void summery_OnClick(View view) {
+        dialogSummery();
+    }
+
+    void dialogSummery() {
+        int deck1 = 0;
+        int deck2 = 0;
+        int deck3 = 0;
+        int deck4 = 0;
+        int deck5 = 0;
+
+        for (ItemShow item : itemsToShow) {
+            if (!item.getName().equals("   Nothing found") && !item.getMeaning().equals("My Dictionary")) {
+                if (item.getDeck() == 1) deck1++;
+                else if (item.getDeck() == 2) deck2++;
+                else if (item.getDeck() == 3) deck3++;
+                else if (item.getDeck() == 4) deck4++;
+                else if (item.getDeck() == 5) deck5++;
+            }
+        }
+
+        String summery = "";
+        summery += Integer.toString(deck1) + " left in first deck\n";
+        summery += Integer.toString(deck2) + " left in second deck\n";
+        summery += Integer.toString(deck3) + " left in third deck \n";
+        summery += Integer.toString(deck4) + " left in forth deck \n";
+        summery += Integer.toString(deck5) + " left in fifth deck";
+
+        dialogSummery = new AlertDialog.Builder(this)
+                .setMessage(summery)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })
+                .create();
+        dialogSummery.show();
     }
 
     void refreshShow() {
@@ -276,421 +302,242 @@ public class LeitnerActivity extends Activity {
     void refreshLessThan30() {
         switch (todayNum) {
             case 1: {
-                int i = 0;
-                boolean found;
-                while (i < itemsToShow.size()) {
-                    found = false;
-                    if (itemsToShow.get(i).getIndex() != 0 || itemsToShow.get(i).getLastCheckDay() == todayNum) {
-                        itemsToShow.remove(i);
-                        found = true;
-                        i = 0;
+                for (Item item : arrayItems) {
+                    if (item.getIndex() == 0 && item.getLastCheckDay() != todayNum) {
+                        itemsToShow.add(convertItem(item));
                     }
-                    if (!found) i++;
                 }
                 break;
             }
             case 2: {
-                int i = 0;
-                boolean found;
-                while (i < itemsToShow.size()) {
-                    found = false;
-                    if ((itemsToShow.get(i).getIndex() != 0) || itemsToShow.get(i).getLastCheckDay() == todayNum) {
-                        itemsToShow.remove(i);
-                        found = true;
-                        i = 0;
+                for (Item item : arrayItems) {
+                    if (item.getIndex() == 0 && item.getLastCheckDay() != todayNum) {
+                        itemsToShow.add(convertItem(item));
                     }
-                    if (!found) i++;
                 }
                 break;
             }
             case 3: {
-                int i = 0;
-                boolean found;
-                while (i < itemsToShow.size()) {
-                    found = false;
-                    if ((itemsToShow.get(i).getIndex() != 1 && itemsToShow.get(i).getIndex() != 0) || itemsToShow.get(i).getLastCheckDay() == todayNum) {
-                        itemsToShow.remove(i);
-                        found = true;
-                        i = 0;
+                for (Item item : arrayItems) {
+                    if ((item.getIndex() == 1 || item.getIndex() == 0) && item.getLastCheckDay() != todayNum) {
+                        itemsToShow.add(convertItem(item));
                     }
-                    if (!found) i++;
                 }
                 break;
             }
             case 4: {
-                int i = 0;
-                boolean found;
-                while (i < itemsToShow.size()) {
-                    found = false;
-                    if ((itemsToShow.get(i).getIndex() != 2 && itemsToShow.get(i).getIndex() != 0) || itemsToShow.get(i).getLastCheckDay() == todayNum) {
-                        itemsToShow.remove(i);
-                        found = true;
-                        i = 0;
+                for (Item item : arrayItems) {
+                    if ((item.getIndex() == 2 || item.getIndex() == 0) && item.getLastCheckDay() != todayNum) {
+                        itemsToShow.add(convertItem(item));
                     }
-                    if (!found) i++;
                 }
                 break;
             }
             case 5: {
-                int i = 0;
-                boolean found;
-                while (i < itemsToShow.size()) {
-                    found = false;
-                    if ((itemsToShow.get(i).getIndex() != 1 && itemsToShow.get(i).getIndex() != 0) || itemsToShow.get(i).getLastCheckDay() == todayNum) {
-                        itemsToShow.remove(i);
-                        found = true;
-                        i = 0;
+                for (Item item : arrayItems) {
+                    if ((item.getIndex() == 1 || item.getIndex() == 0) && item.getLastCheckDay() != todayNum) {
+                        itemsToShow.add(convertItem(item));
                     }
-                    if (!found) i++;
                 }
                 break;
             }
             case 6: {
-                int i = 0;
-                boolean found;
-                while (i < itemsToShow.size()) {
-                    found = false;
-                    if ((itemsToShow.get(i).getIndex() != 2 && itemsToShow.get(i).getIndex() != 0) || itemsToShow.get(i).getLastCheckDay() == todayNum) {
-                        itemsToShow.remove(i);
-                        found = true;
-                        i = 0;
+                for (Item item : arrayItems) {
+                    if ((item.getIndex() == 2 || item.getIndex() == 0) && item.getLastCheckDay() != todayNum) {
+                        itemsToShow.add(convertItem(item));
                     }
-                    if (!found) i++;
                 }
+                break;
             }
             case 7: {
-                int i = 0;
-                boolean found;
-                while (i < itemsToShow.size()) {
-                    found = false;
-                    if ((itemsToShow.get(i).getIndex() != 3 && itemsToShow.get(i).getIndex() != 1 && itemsToShow.get(i).getIndex() != 0) || itemsToShow.get(i).getLastCheckDay() == todayNum) {
-                        itemsToShow.remove(i);
-                        found = true;
-                        i = 0;
+                for (Item item : arrayItems) {
+                    if ((item.getIndex() == 3 || item.getIndex() == 1 || item.getIndex() == 0) && item.getLastCheckDay() != todayNum) {
+                        itemsToShow.add(convertItem(item));
                     }
-                    if (!found) i++;
                 }
                 break;
             }
             case 8: {
-                int i = 0;
-                boolean found;
-                while (i < itemsToShow.size()) {
-                    found = false;
-                    if ((itemsToShow.get(i).getIndex() != 4 && itemsToShow.get(i).getIndex() != 2 && itemsToShow.get(i).getIndex() != 0) || itemsToShow.get(i).getLastCheckDay() == todayNum) {
-                        itemsToShow.remove(i);
-                        found = true;
-                        i = 0;
+                for (Item item : arrayItems) {
+                    if ((item.getIndex() == 4 || item.getIndex() == 2 || item.getIndex() == 0) && item.getLastCheckDay() != todayNum) {
+                        itemsToShow.add(convertItem(item));
                     }
-                    if (!found) i++;
                 }
                 break;
             }
             case 9: {
-                int i = 0;
-                boolean found;
-                while (i < itemsToShow.size()) {
-                    found = false;
-                    if ((itemsToShow.get(i).getIndex() != 5 && itemsToShow.get(i).getIndex() != 1 && itemsToShow.get(i).getIndex() != 0) || itemsToShow.get(i).getLastCheckDay() == todayNum) {
-                        itemsToShow.remove(i);
-                        found = true;
-                        i = 0;
+                for (Item item : arrayItems) {
+                    if ((item.getIndex() == 5 || item.getIndex() == 1 || item.getIndex() == 0) && item.getLastCheckDay() != todayNum) {
+                        itemsToShow.add(convertItem(item));
                     }
-                    if (!found) i++;
                 }
                 break;
             }
             case 10: {
-                int i = 0;
-                boolean found;
-                while (i < itemsToShow.size()) {
-                    found = false;
-                    if ((itemsToShow.get(i).getIndex() != 6 && itemsToShow.get(i).getIndex() != 2 && itemsToShow.get(i).getIndex() != 0) || itemsToShow.get(i).getLastCheckDay() == todayNum) {
-                        itemsToShow.remove(i);
-                        found = true;
-                        i = 0;
+                for (Item item : arrayItems) {
+                    if ((item.getIndex() == 6 || item.getIndex() == 2 || item.getIndex() == 0) && item.getLastCheckDay() != todayNum) {
+                        itemsToShow.add(convertItem(item));
                     }
-                    if (!found) i++;
                 }
                 break;
             }
             case 11: {
-                int i = 0;
-                boolean found;
-                while (i < itemsToShow.size()) {
-                    found = false;
-                    if ((itemsToShow.get(i).getIndex() != 3 && itemsToShow.get(i).getIndex() != 1 && itemsToShow.get(i).getIndex() != 0) || itemsToShow.get(i).getLastCheckDay() == todayNum) {
-                        itemsToShow.remove(i);
-                        found = true;
-                        i = 0;
+                for (Item item : arrayItems) {
+                    if ((item.getIndex() == 3 || item.getIndex() == 1 || item.getIndex() == 0) && item.getLastCheckDay() != todayNum) {
+                        itemsToShow.add(convertItem(item));
                     }
-                    if (!found) i++;
                 }
                 break;
             }
             case 12: {
-                int i = 0;
-                boolean found;
-                while (i < itemsToShow.size()) {
-                    found = false;
-                    if ((itemsToShow.get(i).getIndex() != 4 && itemsToShow.get(i).getIndex() != 2 && itemsToShow.get(i).getIndex() != 0) || itemsToShow.get(i).getLastCheckDay() == todayNum) {
-                        itemsToShow.remove(i);
-                        found = true;
-                        i = 0;
+                for (Item item : arrayItems) {
+                    if ((item.getIndex() == 4 || item.getIndex() == 2 || item.getIndex() == 0) && item.getLastCheckDay() != todayNum) {
+                        itemsToShow.add(convertItem(item));
                     }
-                    if (!found) i++;
                 }
                 break;
             }
             case 13: {
-                int i = 0;
-                boolean found;
-                while (i < itemsToShow.size()) {
-                    found = false;
-                    if ((itemsToShow.get(i).getIndex() != 5 && itemsToShow.get(i).getIndex() != 1 && itemsToShow.get(i).getIndex() != 0) || itemsToShow.get(i).getLastCheckDay() == todayNum) {
-                        itemsToShow.remove(i);
-                        found = true;
-                        i = 0;
+                for (Item item : arrayItems) {
+                    if ((item.getIndex() == 5 || item.getIndex() == 1 || item.getIndex() == 0) && item.getLastCheckDay() != todayNum) {
+                        itemsToShow.add(convertItem(item));
                     }
-                    if (!found) i++;
                 }
                 break;
             }
             case 14: {
-                int i = 0;
-                boolean found;
-                while (i < itemsToShow.size()) {
-                    found = false;
-                    if ((itemsToShow.get(i).getIndex() != 6 && itemsToShow.get(i).getIndex() != 2 && itemsToShow.get(i).getIndex() != 0) || itemsToShow.get(i).getLastCheckDay() == todayNum) {
-                        itemsToShow.remove(i);
-                        found = true;
-                        i = 0;
+                for (Item item : arrayItems) {
+                    if ((item.getIndex() == 6 || item.getIndex() == 2 || item.getIndex() == 0) && item.getLastCheckDay() != todayNum) {
+                        itemsToShow.add(convertItem(item));
                     }
-                    if (!found) i++;
                 }
                 break;
             }
             case 15: {
-                int i = 0;
-                boolean found;
-                while (i < itemsToShow.size()) {
-                    found = false;
-                    if ((itemsToShow.get(i).getIndex() != 7 && itemsToShow.get(i).getIndex() != 3 && itemsToShow.get(i).getIndex() != 1 && itemsToShow.get(i).getIndex() != 0) || itemsToShow.get(i).getLastCheckDay() == todayNum) {
-                        itemsToShow.remove(i);
-                        found = true;
-                        i = 0;
+                for (Item item : arrayItems) {
+                    if ((item.getIndex() == 7 || item.getIndex() == 3 || item.getIndex() == 1 || item.getIndex() == 0) && item.getLastCheckDay() != todayNum) {
+                        itemsToShow.add(convertItem(item));
                     }
-                    if (!found) i++;
                 }
                 break;
             }
             case 16: {
-                int i = 0;
-                boolean found;
-                while (i < itemsToShow.size()) {
-                    found = false;
-                    if ((itemsToShow.get(i).getIndex() != 8 && itemsToShow.get(i).getIndex() != 4 && itemsToShow.get(i).getIndex() != 2 && itemsToShow.get(i).getIndex() != 0) || itemsToShow.get(i).getLastCheckDay() == todayNum) {
-                        itemsToShow.remove(i);
-                        found = true;
-                        i = 0;
+                for (Item item : arrayItems) {
+                    if ((item.getIndex() == 8 || item.getIndex() == 4 || item.getIndex() == 2 || item.getIndex() == 0) && item.getLastCheckDay() != todayNum) {
+                        itemsToShow.add(convertItem(item));
                     }
-                    if (!found) i++;
                 }
                 break;
             }
             case 17: {
-                int i = 0;
-                boolean found;
-                while (i < itemsToShow.size()) {
-                    found = false;
-                    if ((itemsToShow.get(i).getIndex() != 9 && itemsToShow.get(i).getIndex() != 5 && itemsToShow.get(i).getIndex() != 1 && itemsToShow.get(i).getIndex() != 0) || itemsToShow.get(i).getLastCheckDay() == todayNum) {
-                        itemsToShow.remove(i);
-                        found = true;
-                        i = 0;
+                for (Item item : arrayItems) {
+                    if ((item.getIndex() == 9 || item.getIndex() == 5 || item.getIndex() == 1 || item.getIndex() == 0) && item.getLastCheckDay() != todayNum) {
+                        itemsToShow.add(convertItem(item));
                     }
-                    if (!found) i++;
                 }
                 break;
             }
             case 18: {
-                int i = 0;
-                boolean found;
-                while (i < itemsToShow.size()) {
-                    found = false;
-                    if ((itemsToShow.get(i).getIndex() != 10 && itemsToShow.get(i).getIndex() != 6 && itemsToShow.get(i).getIndex() != 2 && itemsToShow.get(i).getIndex() != 0) || itemsToShow.get(i).getLastCheckDay() == todayNum) {
-                        itemsToShow.remove(i);
-                        found = true;
-                        i = 0;
+                for (Item item : arrayItems) {
+                    if ((item.getIndex() == 10 || item.getIndex() == 6 || item.getIndex() == 2 || item.getIndex() == 0) && item.getLastCheckDay() != todayNum) {
+                        itemsToShow.add(convertItem(item));
                     }
-                    if (!found) i++;
                 }
                 break;
             }
             case 19: {
-                int i = 0;
-                boolean found;
-                while (i < itemsToShow.size()) {
-                    found = false;
-                    if ((itemsToShow.get(i).getIndex() != 11 && itemsToShow.get(i).getIndex() != 3 && itemsToShow.get(i).getIndex() != 1 && itemsToShow.get(i).getIndex() != 0) || itemsToShow.get(i).getLastCheckDay() == todayNum) {
-                        itemsToShow.remove(i);
-                        found = true;
-                        i = 0;
+                for (Item item : arrayItems) {
+                    if ((item.getIndex() == 11 || item.getIndex() == 3 || item.getIndex() == 1 || item.getIndex() == 0) && item.getLastCheckDay() != todayNum) {
+                        itemsToShow.add(convertItem(item));
                     }
-                    if (!found) i++;
                 }
                 break;
             }
             case 20: {
-                int i = 0;
-                boolean found;
-                while (i < itemsToShow.size()) {
-                    found = false;
-                    if ((itemsToShow.get(i).getIndex() != 12 && itemsToShow.get(i).getIndex() != 4 && itemsToShow.get(i).getIndex() != 2 && itemsToShow.get(i).getIndex() != 0) || itemsToShow.get(i).getLastCheckDay() == todayNum) {
-                        itemsToShow.remove(i);
-                        found = true;
-                        i = 0;
+                for (Item item : arrayItems) {
+                    if ((item.getIndex() == 12 || item.getIndex() == 4 || item.getIndex() == 2 || item.getIndex() == 0) && item.getLastCheckDay() != todayNum) {
+                        itemsToShow.add(convertItem(item));
                     }
-                    if (!found) i++;
                 }
                 break;
             }
             case 21: {
-                int i = 0;
-                boolean found;
-                while (i < itemsToShow.size()) {
-                    found = false;
-                    if ((itemsToShow.get(i).getIndex() != 13 && itemsToShow.get(i).getIndex() != 5 && itemsToShow.get(i).getIndex() != 1 && itemsToShow.get(i).getIndex() != 0) || itemsToShow.get(i).getLastCheckDay() == todayNum) {
-                        itemsToShow.remove(i);
-                        found = true;
-                        i = 0;
+                for (Item item : arrayItems) {
+                    if ((item.getIndex() == 13 || item.getIndex() == 5 || item.getIndex() == 1 || item.getIndex() == 0) && item.getLastCheckDay() != todayNum) {
+                        itemsToShow.add(convertItem(item));
                     }
-                    if (!found) i++;
                 }
                 break;
             }
             case 22: {
-                int i = 0;
-                boolean found;
-                while (i < itemsToShow.size()) {
-                    found = false;
-                    if ((itemsToShow.get(i).getIndex() != 14 && itemsToShow.get(i).getIndex() != 6 && itemsToShow.get(i).getIndex() != 2 && itemsToShow.get(i).getIndex() != 0) || itemsToShow.get(i).getLastCheckDay() == todayNum) {
-                        itemsToShow.remove(i);
-                        found = true;
-                        i = 0;
+                for (Item item : arrayItems) {
+                    if ((item.getIndex() == 14 || item.getIndex() == 6 || item.getIndex() == 2 || item.getIndex() == 0) && item.getLastCheckDay() != todayNum) {
+                        itemsToShow.add(convertItem(item));
                     }
-                    if (!found) i++;
                 }
                 break;
             }
             case 23: {
-                int i = 0;
-                boolean found;
-                while (i < itemsToShow.size()) {
-                    found = false;
-                    if ((itemsToShow.get(i).getIndex() != 7 && itemsToShow.get(i).getIndex() != 3 && itemsToShow.get(i).getIndex() != 1 && itemsToShow.get(i).getIndex() != 0) || itemsToShow.get(i).getLastCheckDay() == todayNum) {
-                        itemsToShow.remove(i);
-                        found = true;
-                        i = 0;
+                for (Item item : arrayItems) {
+                    if ((item.getIndex() == 7 || item.getIndex() == 3 || item.getIndex() == 1 || item.getIndex() == 0) && item.getLastCheckDay() != todayNum) {
+                        itemsToShow.add(convertItem(item));
                     }
-                    if (!found) i++;
                 }
                 break;
             }
             case 24: {
-                int i = 0;
-                boolean found;
-                while (i < itemsToShow.size()) {
-                    found = false;
-                    if ((itemsToShow.get(i).getIndex() != 8 && itemsToShow.get(i).getIndex() != 4 && itemsToShow.get(i).getIndex() != 2 && itemsToShow.get(i).getIndex() != 0) || itemsToShow.get(i).getLastCheckDay() == todayNum) {
-                        itemsToShow.remove(i);
-                        found = true;
-                        i = 0;
+                for (Item item : arrayItems) {
+                    if ((item.getIndex() == 8 || item.getIndex() == 4 || item.getIndex() == 2 || item.getIndex() == 0) && item.getLastCheckDay() != todayNum) {
+                        itemsToShow.add(convertItem(item));
                     }
-                    if (!found) i++;
                 }
                 break;
             }
             case 25: {
-                int i = 0;
-                boolean found;
-                while (i < itemsToShow.size()) {
-                    found = false;
-                    if ((itemsToShow.get(i).getIndex() != 9 && itemsToShow.get(i).getIndex() != 5 && itemsToShow.get(i).getIndex() != 1 && itemsToShow.get(i).getIndex() != 0) || itemsToShow.get(i).getLastCheckDay() == todayNum) {
-                        itemsToShow.remove(i);
-                        found = true;
-                        i = 0;
+                for (Item item : arrayItems) {
+                    if ((item.getIndex() == 9 || item.getIndex() == 5 || item.getIndex() == 1 || item.getIndex() == 0) && item.getLastCheckDay() != todayNum) {
+                        itemsToShow.add(convertItem(item));
                     }
-                    if (!found) i++;
                 }
                 break;
             }
             case 26: {
-                int i = 0;
-                boolean found;
-                while (i < itemsToShow.size()) {
-                    found = false;
-                    if ((itemsToShow.get(i).getIndex() != 10 && itemsToShow.get(i).getIndex() != 6 && itemsToShow.get(i).getIndex() != 2 && itemsToShow.get(i).getIndex() != 0) || itemsToShow.get(i).getLastCheckDay() == todayNum) {
-                        itemsToShow.remove(i);
-                        found = true;
-                        i = 0;
+                for (Item item : arrayItems) {
+                    if ((item.getIndex() == 10 || item.getIndex() == 6 || item.getIndex() == 2 || item.getIndex() == 0) && item.getLastCheckDay() != todayNum) {
+                        itemsToShow.add(convertItem(item));
                     }
-                    if (!found) i++;
                 }
                 break;
             }
             case 27: {
-                int i = 0;
-                boolean found;
-                while (i < itemsToShow.size()) {
-                    found = false;
-                    if ((itemsToShow.get(i).getIndex() != 11 && itemsToShow.get(i).getIndex() != 3 && itemsToShow.get(i).getIndex() != 1 && itemsToShow.get(i).getIndex() != 0) || itemsToShow.get(i).getLastCheckDay() == todayNum) {
-                        itemsToShow.remove(i);
-                        found = true;
-                        i = 0;
+                for (Item item : arrayItems) {
+                    if ((item.getIndex() == 11 || item.getIndex() == 3 || item.getIndex() == 1 || item.getIndex() == 0) && item.getLastCheckDay() != todayNum) {
+                        itemsToShow.add(convertItem(item));
                     }
-                    if (!found) i++;
                 }
                 break;
             }
             case 28: {
-                int i = 0;
-                boolean found;
-                while (i < itemsToShow.size()) {
-                    found = false;
-                    if ((itemsToShow.get(i).getIndex() != 12 && itemsToShow.get(i).getIndex() != 4 && itemsToShow.get(i).getIndex() != 2 && itemsToShow.get(i).getIndex() != 0) || itemsToShow.get(i).getLastCheckDay() == todayNum) {
-                        itemsToShow.remove(i);
-                        found = true;
-                        i = 0;
+                for (Item item : arrayItems) {
+                    if ((item.getIndex() == 12 || item.getIndex() == 4 || item.getIndex() == 2 || item.getIndex() == 0) && item.getLastCheckDay() != todayNum) {
+                        itemsToShow.add(convertItem(item));
                     }
-                    if (!found) i++;
                 }
                 break;
             }
             case 29: {
-                int i = 0;
-                boolean found;
-                while (i < itemsToShow.size()) {
-                    found = false;
-                    if ((itemsToShow.get(i).getIndex() != 13 && itemsToShow.get(i).getIndex() != 5 && itemsToShow.get(i).getIndex() != 1 && itemsToShow.get(i).getIndex() != 0) || itemsToShow.get(i).getLastCheckDay() == todayNum) {
-                        itemsToShow.remove(i);
-                        found = true;
-                        i = 0;
+                for (Item item : arrayItems) {
+                    if ((item.getIndex() == 13 || item.getIndex() == 5 || item.getIndex() == 1 || item.getIndex() == 0) && item.getLastCheckDay() != todayNum) {
+                        itemsToShow.add(convertItem(item));
                     }
-                    if (!found) i++;
                 }
                 break;
             }
             case 30: {
-                int i = 0;
-                boolean found;
-                while (i < itemsToShow.size()) {
-                    found = false;
-                    if ((itemsToShow.get(i).getIndex() != 14 && itemsToShow.get(i).getIndex() != 6 && itemsToShow.get(i).getIndex() != 2 && itemsToShow.get(i).getIndex() != 0) || itemsToShow.get(i).getLastCheckDay() == todayNum) {
-                        itemsToShow.remove(i);
-                        found = true;
-                        i = 0;
+                for (Item item : arrayItems) {
+                    if ((item.getIndex() == 14 || item.getIndex() == 6 || item.getIndex() == 2 || item.getIndex() == 0) && item.getLastCheckDay() != todayNum) {
+                        itemsToShow.add(convertItem(item));
                     }
-                    if (!found) i++;
                 }
                 break;
             }
@@ -701,229 +548,133 @@ public class LeitnerActivity extends Activity {
     }
 
     void refreshMoreThan30() {
-        int lastIndexDeck5 = lastIndexMore30(deck5);
+        int lastIndexDeck5 = nextIndexMore30(16);
         switch (lastIndexDeck5) {
             case 15: {
-                int i = 0;
-                boolean found;
-                while (i < itemsToShow.size()) {
-                    found = false;
-                    if ((itemsToShow.get(i).getIndex() != 15 && itemsToShow.get(i).getIndex() != 7 && itemsToShow.get(i).getIndex() != 3 && itemsToShow.get(i).getIndex() != 1 && itemsToShow.get(i).getIndex() != 0) || itemsToShow.get(i).getLastCheckDay() == todayNum) {
-                        itemsToShow.remove(i);
-                        found = true;
-                        i = 0;
+                for (Item item : arrayItems) {
+                    if ((item.getIndex() == 15 || item.getIndex() == 7 || item.getIndex() == 3 || item.getIndex() == 1 || item.getIndex() == 0) && item.getLastCheckDay() != todayNum) {
+                        itemsToShow.add(convertItem(item));
                     }
-                    if (!found) i++;
                 }
                 break;
             }
             case 16: {
-                int i = 0;
-                boolean found;
-                while (i < itemsToShow.size()) {
-                    found = false;
-                    if ((itemsToShow.get(i).getIndex() != 16 && itemsToShow.get(i).getIndex() != 8 && itemsToShow.get(i).getIndex() != 4 && itemsToShow.get(i).getIndex() != 2 && itemsToShow.get(i).getIndex() != 0) || itemsToShow.get(i).getLastCheckDay() == todayNum) {
-                        itemsToShow.remove(i);
-                        found = true;
-                        i = 0;
+                for (Item item : arrayItems) {
+                    if ((item.getIndex() == 16 || item.getIndex() == 8 || item.getIndex() == 4 || item.getIndex() == 2 || item.getIndex() == 0) && item.getLastCheckDay() != todayNum) {
+                        itemsToShow.add(convertItem(item));
                     }
-                    if (!found) i++;
                 }
                 break;
             }
             case 17: {
-                int i = 0;
-                boolean found;
-                while (i < itemsToShow.size()) {
-                    found = false;
-                    if ((itemsToShow.get(i).getIndex() != 17 && itemsToShow.get(i).getIndex() != 9 && itemsToShow.get(i).getIndex() != 5 && itemsToShow.get(i).getIndex() != 1 && itemsToShow.get(i).getIndex() != 0) || itemsToShow.get(i).getLastCheckDay() == todayNum) {
-                        itemsToShow.remove(i);
-                        found = true;
-                        i = 0;
+                for (Item item : arrayItems) {
+                    if ((item.getIndex() == 17 || item.getIndex() == 9 || item.getIndex() == 5 || item.getIndex() == 1 || item.getIndex() == 0) && item.getLastCheckDay() != todayNum) {
+                        itemsToShow.add(convertItem(item));
                     }
-                    if (!found) i++;
                 }
                 break;
             }
             case 18: {
-                int i = 0;
-                boolean found;
-                while (i < itemsToShow.size()) {
-                    found = false;
-                    if ((itemsToShow.get(i).getIndex() != 18 && itemsToShow.get(i).getIndex() != 10 && itemsToShow.get(i).getIndex() != 6 && itemsToShow.get(i).getIndex() != 2 && itemsToShow.get(i).getIndex() != 0) || itemsToShow.get(i).getLastCheckDay() == todayNum) {
-                        itemsToShow.remove(i);
-                        found = true;
-                        i = 0;
+                for (Item item : arrayItems) {
+                    if ((item.getIndex() == 18 || item.getIndex() == 10 || item.getIndex() == 6 || item.getIndex() == 2 || item.getIndex() == 0) && item.getLastCheckDay() != todayNum) {
+                        itemsToShow.add(convertItem(item));
                     }
-                    if (!found) i++;
                 }
                 break;
             }
             case 19: {
-                int i = 0;
-                boolean found;
-                while (i < itemsToShow.size()) {
-                    found = false;
-                    if ((itemsToShow.get(i).getIndex() != 19 && itemsToShow.get(i).getIndex() != 11 && itemsToShow.get(i).getIndex() != 3 && itemsToShow.get(i).getIndex() != 1 && itemsToShow.get(i).getIndex() != 0) || itemsToShow.get(i).getLastCheckDay() == todayNum) {
-                        itemsToShow.remove(i);
-                        found = true;
-                        i = 0;
+                for (Item item : arrayItems) {
+                    if ((item.getIndex() == 19 || item.getIndex() == 11 || item.getIndex() == 3 || item.getIndex() == 1 || item.getIndex() == 0) && item.getLastCheckDay() != todayNum) {
+                        itemsToShow.add(convertItem(item));
                     }
-                    if (!found) i++;
                 }
                 break;
             }
             case 20: {
-                int i = 0;
-                boolean found;
-                while (i < itemsToShow.size()) {
-                    found = false;
-                    if ((itemsToShow.get(i).getIndex() != 20 && itemsToShow.get(i).getIndex() != 12 && itemsToShow.get(i).getIndex() != 4 && itemsToShow.get(i).getIndex() != 2 && itemsToShow.get(i).getIndex() != 0) || itemsToShow.get(i).getLastCheckDay() == todayNum) {
-                        itemsToShow.remove(i);
-                        found = true;
-                        i = 0;
+                for (Item item : arrayItems) {
+                    if ((item.getIndex() == 20 || item.getIndex() == 12 || item.getIndex() == 4 || item.getIndex() == 2 || item.getIndex() == 0) && item.getLastCheckDay() != todayNum) {
+                        itemsToShow.add(convertItem(item));
                     }
-                    if (!found) i++;
                 }
                 break;
             }
             case 21: {
-                int i = 0;
-                boolean found;
-                while (i < itemsToShow.size()) {
-                    found = false;
-                    if ((itemsToShow.get(i).getIndex() != 21 && itemsToShow.get(i).getIndex() != 13 && itemsToShow.get(i).getIndex() != 5 && itemsToShow.get(i).getIndex() != 1 && itemsToShow.get(i).getIndex() != 0) || itemsToShow.get(i).getLastCheckDay() == todayNum) {
-                        itemsToShow.remove(i);
-                        found = true;
-                        i = 0;
+                for (Item item : arrayItems) {
+                    if ((item.getIndex() == 21 || item.getIndex() == 13 || item.getIndex() == 5 || item.getIndex() == 1 || item.getIndex() == 0) && item.getLastCheckDay() != todayNum) {
+                        itemsToShow.add(convertItem(item));
                     }
-                    if (!found) i++;
                 }
                 break;
             }
             case 22: {
-                int i = 0;
-                boolean found;
-                while (i < itemsToShow.size()) {
-                    found = false;
-                    if ((itemsToShow.get(i).getIndex() != 22 && itemsToShow.get(i).getIndex() != 14 && itemsToShow.get(i).getIndex() != 6 && itemsToShow.get(i).getIndex() != 2 && itemsToShow.get(i).getIndex() != 0) || itemsToShow.get(i).getLastCheckDay() == todayNum) {
-                        itemsToShow.remove(i);
-                        found = true;
-                        i = 0;
+                for (Item item : arrayItems) {
+                    if ((item.getIndex() == 22 || item.getIndex() == 14 || item.getIndex() == 6 || item.getIndex() == 2 || item.getIndex() == 0) && item.getLastCheckDay() != todayNum) {
+                        itemsToShow.add(convertItem(item));
                     }
-                    if (!found) i++;
                 }
                 break;
             }
             case 23: {
-                int i = 0;
-                boolean found;
-                while (i < itemsToShow.size()) {
-                    found = false;
-                    if ((itemsToShow.get(i).getIndex() != 23 && itemsToShow.get(i).getIndex() != 7 && itemsToShow.get(i).getIndex() != 3 && itemsToShow.get(i).getIndex() != 1 && itemsToShow.get(i).getIndex() != 0) || itemsToShow.get(i).getLastCheckDay() == todayNum) {
-                        itemsToShow.remove(i);
-                        found = true;
-                        i = 0;
+                for (Item item : arrayItems) {
+                    if ((item.getIndex() == 23 || item.getIndex() == 7 || item.getIndex() == 3 || item.getIndex() == 1 || item.getIndex() == 0) && item.getLastCheckDay() != todayNum) {
+                        itemsToShow.add(convertItem(item));
                     }
-                    if (!found) i++;
                 }
                 break;
             }
             case 24: {
-                int i = 0;
-                boolean found;
-                while (i < itemsToShow.size()) {
-                    found = false;
-                    if ((itemsToShow.get(i).getIndex() != 24 && itemsToShow.get(i).getIndex() != 8 && itemsToShow.get(i).getIndex() != 4 && itemsToShow.get(i).getIndex() != 2 && itemsToShow.get(i).getIndex() != 0) || itemsToShow.get(i).getLastCheckDay() == todayNum) {
-                        itemsToShow.remove(i);
-                        found = true;
-                        i = 0;
+                for (Item item : arrayItems) {
+                    if ((item.getIndex() == 24 || item.getIndex() == 8 || item.getIndex() == 4 || item.getIndex() == 2 || item.getIndex() == 0) && item.getLastCheckDay() != todayNum) {
+                        itemsToShow.add(convertItem(item));
                     }
-                    if (!found) i++;
                 }
                 break;
             }
             case 25: {
-                int i = 0;
-                boolean found;
-                while (i < itemsToShow.size()) {
-                    found = false;
-                    if ((itemsToShow.get(i).getIndex() != 25 && itemsToShow.get(i).getIndex() != 9 && itemsToShow.get(i).getIndex() != 5 && itemsToShow.get(i).getIndex() != 1 && itemsToShow.get(i).getIndex() != 0) || itemsToShow.get(i).getLastCheckDay() == todayNum) {
-                        itemsToShow.remove(i);
-                        found = true;
-                        i = 0;
+                for (Item item : arrayItems) {
+                    if ((item.getIndex() == 25 || item.getIndex() == 9 || item.getIndex() == 5 || item.getIndex() == 1 || item.getIndex() == 0) && item.getLastCheckDay() != todayNum) {
+                        itemsToShow.add(convertItem(item));
                     }
-                    if (!found) i++;
                 }
                 break;
             }
             case 26: {
-                int i = 0;
-                boolean found;
-                while (i < itemsToShow.size()) {
-                    found = false;
-                    if ((itemsToShow.get(i).getIndex() != 26 && itemsToShow.get(i).getIndex() != 10 && itemsToShow.get(i).getIndex() != 6 && itemsToShow.get(i).getIndex() != 2 && itemsToShow.get(i).getIndex() != 0) || itemsToShow.get(i).getLastCheckDay() == todayNum) {
-                        itemsToShow.remove(i);
-                        found = true;
-                        i = 0;
+                for (Item item : arrayItems) {
+                    if ((item.getIndex() == 26 || item.getIndex() == 10 || item.getIndex() == 6 || item.getIndex() == 2 || item.getIndex() == 0) && item.getLastCheckDay() != todayNum) {
+                        itemsToShow.add(convertItem(item));
                     }
-                    if (!found) i++;
                 }
                 break;
             }
             case 27: {
-                int i = 0;
-                boolean found;
-                while (i < itemsToShow.size()) {
-                    found = false;
-                    if ((itemsToShow.get(i).getIndex() != 27 && itemsToShow.get(i).getIndex() != 11 && itemsToShow.get(i).getIndex() != 3 && itemsToShow.get(i).getIndex() != 1 && itemsToShow.get(i).getIndex() != 0) || itemsToShow.get(i).getLastCheckDay() == todayNum) {
-                        itemsToShow.remove(i);
-                        found = true;
-                        i = 0;
+                for (Item item : arrayItems) {
+                    if ((item.getIndex() == 27 || item.getIndex() == 11 || item.getIndex() == 3 || item.getIndex() == 1 || item.getIndex() == 0) && item.getLastCheckDay() != todayNum) {
+                        itemsToShow.add(convertItem(item));
                     }
-                    if (!found) i++;
                 }
                 break;
             }
             case 28: {
-                int i = 0;
-                boolean found;
-                while (i < itemsToShow.size()) {
-                    found = false;
-                    if ((itemsToShow.get(i).getIndex() != 28 && itemsToShow.get(i).getIndex() != 12 && itemsToShow.get(i).getIndex() != 4 && itemsToShow.get(i).getIndex() != 2 && itemsToShow.get(i).getIndex() != 0) || itemsToShow.get(i).getLastCheckDay() == todayNum) {
-                        itemsToShow.remove(i);
-                        found = true;
-                        i = 0;
+                for (Item item : arrayItems) {
+                    if ((item.getIndex() == 28 || item.getIndex() == 12 || item.getIndex() == 4 || item.getIndex() == 2 || item.getIndex() == 0) && item.getLastCheckDay() != todayNum) {
+                        itemsToShow.add(convertItem(item));
                     }
-                    if (!found) i++;
                 }
                 break;
             }
             case 29: {
-                int i = 0;
-                boolean found;
-                while (i < itemsToShow.size()) {
-                    found = false;
-                    if ((itemsToShow.get(i).getIndex() != 29 && itemsToShow.get(i).getIndex() != 13 && itemsToShow.get(i).getIndex() != 5 && itemsToShow.get(i).getIndex() != 1 && itemsToShow.get(i).getIndex() != 0) || itemsToShow.get(i).getLastCheckDay() == todayNum) {
-                        itemsToShow.remove(i);
-                        found = true;
-                        i = 0;
+                for (Item item : arrayItems) {
+                    if ((item.getIndex() == 29 || item.getIndex() == 13 || item.getIndex() == 5 || item.getIndex() == 1 || item.getIndex() == 0) && item.getLastCheckDay() != todayNum) {
+                        itemsToShow.add(convertItem(item));
                     }
-                    if (!found) i++;
                 }
                 break;
             }
             case 30: {
-                int i = 0;
-                boolean found;
-                while (i < itemsToShow.size()) {
-                    found = false;
-                    if ((itemsToShow.get(i).getIndex() != 30 && itemsToShow.get(i).getIndex() != 14 && itemsToShow.get(i).getIndex() != 6 && itemsToShow.get(i).getIndex() != 2 && itemsToShow.get(i).getIndex() != 0) || itemsToShow.get(i).getLastCheckDay() == todayNum) {
-                        itemsToShow.remove(i);
-                        found = true;
-                        i = 0;
+                for (Item item : arrayItems) {
+                    if ((item.getIndex() == 30 || item.getIndex() == 14 || item.getIndex() == 6 || item.getIndex() == 2 || item.getIndex() == 0) && item.getLastCheckDay() != todayNum) {
+                        itemsToShow.add(convertItem(item));
                     }
-                    if (!found) i++;
                 }
                 break;
             }
@@ -933,31 +684,39 @@ public class LeitnerActivity extends Activity {
         }
     }
 
+    ItemShow convertItem(Item j) {
+        return new ItemShow(j.getId(), j.getName(), j.getMeaning(), j.getAddDate(), j.getLastCheckDate(), j.getLastCheckDay(), j.getDeck(), j.getIndex(), j.getCountCorrect(), j.getCountInCorrect(), j.getCount());
+    }
+
     void listeners() {
         items.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(etSearch.getWindowToken(), 0);
-
-                if (isLongClick) {
-                    isLongClick = false;
-                    return;
-                }
-
-                if (markSeveral) {
-                    if (itemsToShow.get(position).isChChecked()) {
-                        itemsToShow.get(position).setChChecked(false);
-                        adapter.notifyDataSetChanged();
-                        notifyCheckedPositionsInt();
-                    } else {
-                        itemsToShow.get(position).setChChecked(true);
-                        adapter.notifyDataSetChanged();
-                        notifyCheckedPositionsInt();
+                if (!itemsToShow.get(position).getName().equals("   Nothing found") && !itemsToShow.get(position).getMeaning().equals("My Dictionary")) {
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(etSearch.getWindowToken(), 0);
+                    if (isLongClick) {
+                        isLongClick = false;
+                        return;
                     }
-                } else if (!(itemsToShow.get(position).getName().equals("   Nothing found") &&
-                        itemsToShow.get(position).getMeaning().equals("My Dictionary") &&
-                        itemsToShow.get(position).getAddDate().equals("KHaledBLack73")) /*&& position1 != 0*/) {
-                    dialogMeaning(position, getPosition(position));
+
+                    if (markSeveral) {
+                        if (itemsToShow.get(position).isChChecked()) {
+                            itemsToShow.get(position).setChChecked(false);
+                            adapter.notifyDataSetChanged();
+                            notifyCheckedPositionsInt();
+                        } else {
+                            itemsToShow.get(position).setChChecked(true);
+                            adapter.notifyDataSetChanged();
+                            notifyCheckedPositionsInt();
+                        }
+                    } else {
+                        dialogMeaning(position);
+                    }
+//                    } else if (!(itemsToShow.get(position).getName().equals("   Nothing found") &&
+//                            itemsToShow.get(position).getMeaning().equals("My Dictionary") &&
+//                            itemsToShow.get(position).getAddDate().equals("KHaledBLack73")) /*&& position1 != 0*/) {
+//                        dialogMeaning(position, getPosition(position));
+//                    }
                 }
             }
         });
@@ -966,24 +725,25 @@ public class LeitnerActivity extends Activity {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 isLongClick = true;
-
-                if (markSeveral) {
-                    openOptionsMenu();
-                } else {
-                    markSeveral = true;
-                    int currentApi = android.os.Build.VERSION.SDK_INT;
-                    if (currentApi >= Build.VERSION_CODES.HONEYCOMB) {
-                        invalidateOptionsMenu();
+                if (!itemsToShow.get(position).getName().equals("   Nothing found") && !itemsToShow.get(position).getMeaning().equals("My Dictionary")) {
+                    if (markSeveral) {
+                        openOptionsMenu();
+                    } else {
+                        markSeveral = true;
+                        int currentApi = android.os.Build.VERSION.SDK_INT;
+                        if (currentApi >= Build.VERSION_CODES.HONEYCOMB) {
+                            invalidateOptionsMenu();
+                        }
+                        setElementsId();
+                        listViewPosition = items.onSaveInstanceState();
+                        refreshListViewData();
+                        if (isFromSearch) {
+                            search(etSearch.getText().toString());
+                        }
+                        itemsToShow.get(position).setChChecked(true);
+                        adapter.notifyDataSetChanged();
+                        notifyCheckedPositionsInt();
                     }
-                    setElementsId();
-                    listViewPosition = items.onSaveInstanceState();
-                    refreshListViewData();
-                    if (isFromSearch) {
-                        search(etSearch.getText().toString());
-                    }
-                    itemsToShow.get(position).setChChecked(true);
-                    adapter.notifyDataSetChanged();
-                    notifyCheckedPositionsInt();
                 }
                 return false;
             }
@@ -1059,18 +819,11 @@ public class LeitnerActivity extends Activity {
     }
 
 
-    public void name_click(View view) {
-        TextView tvNameMeaning = (TextView) dialogMeaning.findViewById(R.id.leitnerNameAndMeaning);
-        if (tvNameMeaning.getText().toString().equals(arrayItems.get(getPosition(dialogMeaningWordPosition)).getName())) {
-            tvNameMeaning.setText(arrayItems.get(getPosition(dialogMeaningWordPosition)).getMeaning());
-        } else {
-            tvNameMeaning.setText(arrayItems.get(getPosition(dialogMeaningWordPosition)).getName());
-        }
-    }
 
-    void dialogEdit(boolean fromSearch, int fakePosition, int realPosition) {
+
+    void dialogEdit(boolean fromSearch, int fakePosition) {
         final int fakPositionToSendToDialogDelete = fakePosition;
-        final int realPositionToSendToDialogDelete = realPosition;
+        final int realPosition = getPosition(fakePosition);
         LayoutInflater inflater = this.getLayoutInflater();
         final View layout = inflater.inflate(R.layout.dialog_addnew, null);
         final AlertDialog.Builder d = new AlertDialog.Builder(this)
@@ -1094,7 +847,7 @@ public class LeitnerActivity extends Activity {
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        dialogMeaning(fakPositionToSendToDialogDelete, realPositionToSendToDialogDelete);
+                        dialogMeaning(fakPositionToSendToDialogDelete);
                     }
                 });
 
@@ -1151,7 +904,7 @@ public class LeitnerActivity extends Activity {
                 databaseLeitner.updateItem(new Item(
                         databaseLeitner.getItemId(word, meaning), newWordEdit,
                         newMeaningEdit, current.getAddDate(), current.getLastCheckDate(),
-                        current.getLastCheckDay(), current.getWitchDay(), current.getDeck(), current.getIndex(), current.getCountCorrect(),
+                        current.getLastCheckDay(), current.getDeck(), current.getIndex(), current.getCountCorrect(),
                         current.getCountInCorrect(), current.getCount()));
 
                 listViewPosition = items.onSaveInstanceState();
@@ -1180,7 +933,7 @@ public class LeitnerActivity extends Activity {
         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                dialogEdit(isFromSearch, position, getPosition(position));
+                dialogEdit(isFromSearch, position);
                 EditText dialogEditWord = (EditText) dialogEdit.findViewById(R.id.etWord);
                 EditText dialogEditMeaning = (EditText) dialogEdit.findViewById(R.id.etMeaning);
                 dialogEditWord.setText(newWordEdit);
@@ -1239,7 +992,7 @@ public class LeitnerActivity extends Activity {
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
                 String currentDateAndTime = simpleDateFormat.format(new Date());
 
-                databaseLeitner.addItem(new Item(newWord, newMeaning, currentDateAndTime), true);
+                databaseLeitner.addItem(new Item(newWord, newMeaning, currentDateAndTime), TABLE_LEITNER);
 
                 listViewPosition = items.onSaveInstanceState();
                 refreshListViewData();
@@ -1263,7 +1016,7 @@ public class LeitnerActivity extends Activity {
             Toast.makeText(this, "The Word's Meaning is missing.", Toast.LENGTH_SHORT).show();
             return false;
         }
-        for (int i = 0; i < databaseLeitner.getItemsCount(true); i++) {
+        for (int i = 0; i < arrayItems.size(); i++) {
             if (newWord.equals(arrayItems.get(i).getName()) && newMeaning.equals(arrayItems.get(i).getMeaning())) {
                 Toast.makeText(this, "The Word exists in the database", Toast.LENGTH_SHORT).show();
                 return false;
@@ -1297,7 +1050,6 @@ public class LeitnerActivity extends Activity {
             final long diffHours = diffMinutes / 60;
             final long diffDays = diffHours /  24;
             final long diffMonth = diffDays / 30;
-//            final long diffMonth = diff / (60 * 60 * 1000 * 24 * 30);
             final long diffYear = diffMonth / 12;
 
 
@@ -1375,7 +1127,6 @@ public class LeitnerActivity extends Activity {
                 }
                 return strDistance;
             }
-//            return "nothing";
         }
         return "nothing";
     }
@@ -1417,7 +1168,7 @@ public class LeitnerActivity extends Activity {
     void delete(int realPosition, int showPosition) {
         Item item = arrayItems.get(realPosition);
         databaseLeitner.deleteItem(databaseLeitner.getItemId(item.getName(), item.getMeaning()));
-        databaseLeitner.addItem(new Item(item.getName(), item.getMeaning(), item.getAddDate()), false);
+        databaseLeitner.addItem(new Item(item.getName(), item.getMeaning(), item.getAddDate()), TABLE_DONT_ADD);
         arrayItems.remove(realPosition);
         itemsToShow.remove(showPosition);
 
@@ -1449,7 +1200,7 @@ public class LeitnerActivity extends Activity {
             return false;
         }
 
-        for (int i = 0; i < databaseLeitner.getItemsCount(true); i++) {
+        for (int i = 0; i < arrayItems.size(); i++) {
             if (newWord.equals(arrayItems.get(i).getName()) && newMeaning.equals(arrayItems.get(i).getMeaning())) {
                 Toast.makeText(this, "The Word exists in the database", Toast.LENGTH_SHORT).show();
                 return false;
@@ -1469,9 +1220,13 @@ public class LeitnerActivity extends Activity {
 
     void search(String key) {
         int found = 0;
+        itemsToShow.clear();
+        refreshShow();
 
-        for (int i = 0; i < itemsToShow.size(); i++)
-            itemsToShow.get(i).setName(showItemNumber ? itemsToShow.get(i).getName().substring(Integer.toString(i).length()+2) : itemsToShow.get(i).getName());
+        adapter.notifyDataSetChanged();
+
+//        for (Item item: arrayItems)
+//            itemsToShow.add(convertItem(item));
 
         if (itemsToShow.size() > 0) {
             int i = 0;
@@ -1492,36 +1247,9 @@ public class LeitnerActivity extends Activity {
             }
             if (found > 0) {
                 items.setAdapter(adapter);
-            } else {
-                itemsToShow.add(new Item("   Nothing found", "My Dictionary", "KHaledBLack73"));
             }
             adapter.notifyDataSetChanged();
         }
-
-//        if (databaseLeitner.getItemsCount(true) > 0) {
-//            itemsToShow.clear();
-//            for (int i = 0; i < databaseLeitner.getItemsCount(true); i++) {
-//                key = key.toUpperCase();
-//                String word = arrayItems.get(i).getName().toUpperCase();
-//                String meaning = arrayItems.get(i).getMeaning().toUpperCase();
-//
-//                if (searchMethod.equals("wordsAndMeanings") ? word.contains(key) || meaning.contains(key) :
-//                        searchMethod.equals("justWords") ? word.contains(key) :
-//                                meaning.contains(key)) {
-//
-//                    itemsToShow.add(databaseLeitner.getItem(databaseLeitner.getItemId(arrayItems.get(i).getName(), arrayItems.get(i).getMeaning())));
-//                    found++;
-//                }
-//            }
-//            if (found > 0) {
-//                adapter.notifyDataSetChanged();
-//                items.setAdapter(adapter);
-//            } else {
-//                itemsToShow.add(new Item("   Nothing found", "My Dictionary", "KHaledBLack73"));
-//                adapter.notifyDataSetChanged();
-//            }
-//        }
-
         isFromSearch = true;
 
         if (itemsToShow.size() > 0) {
@@ -1535,6 +1263,8 @@ public class LeitnerActivity extends Activity {
                 }
             }
             notifyCheckedPositionsInt();
+        } else {
+            itemsToShow.add(new ItemShow("   Nothing found", "My Dictionary", "KHaledBLack73"));
         }
     }
 
@@ -1587,7 +1317,7 @@ public class LeitnerActivity extends Activity {
                         itemsToShow.get(i).setChChecked(false);
                         Item item = arrayItems.get(rPosition);
                         databaseLeitner.deleteItem(databaseLeitner.getItemId(item.getName(), item.getMeaning()));
-                        databaseLeitner.addItem(new Item(item.getName(), item.getMeaning(), item.getAddDate()), false);
+                        databaseLeitner.addItem(new Item(item.getName(), item.getMeaning(), item.getAddDate()), TABLE_DONT_ADD);
                         checkedPositionsInt.set(i, 1);
                         i = 0;
                         continue;
@@ -1644,26 +1374,29 @@ public class LeitnerActivity extends Activity {
     }
 
 
-    void dialogMeaning(final int position, final int realPosition) {
+
+
+
+    void dialogMeaning(final int position) {
         LayoutInflater inflater = this.getLayoutInflater();
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setView(inflater.inflate(R.layout.dialog_meaning_leitner, null));
         builder.setPositiveButton(R.string.correct, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                answer_Correct(realPosition);
+                answer_Correct(position);
             }
         });
         builder.setNegativeButton(R.string.Incorrect, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                answer_Incorrect(realPosition);
+                answer_Incorrect(position);
             }
         });
         builder.setNeutralButton(R.string.edit, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                dialogEdit(isFromSearch, position, realPosition);
+                dialogEdit(isFromSearch, position);
             }
         });
         int currentApi = android.os.Build.VERSION.SDK_INT;
@@ -1676,7 +1409,7 @@ public class LeitnerActivity extends Activity {
         dialogMeaning = builder.create();
         dialogMeaning.show();
         dialogMeaningWordPosition = position;
-        Item item = arrayItems.get(realPosition);
+        ItemShow item = itemsToShow.get(position);
 
         TextView tvAddDate = (TextView) dialogMeaning.findViewById(R.id.leitnerAddDate);
         TextView tvLastDate = (TextView) dialogMeaning.findViewById(R.id.leitnerLastDate);
@@ -1686,115 +1419,14 @@ public class LeitnerActivity extends Activity {
         TextView tvCountInCorrect = (TextView) dialogMeaning.findViewById(R.id.leitnerCountInCorrect);
         TextView tvNameMeaning = (TextView) dialogMeaning.findViewById(R.id.leitnerNameAndMeaning);
 
-        int index = item.getIndex();
-
-        switch (item.getIndex()) {
-            case 0:
-                index = 1;
-                break;
-
-            case 1:
-                index = 1;
-                break;
-            case 2:
-                index = 2;
-                break;
-
-            case 3:
-                index = 1;
-                break;
-            case 4:
-                index = 2;
-                break;
-            case 5:
-                index = 3;
-                break;
-            case 6:
-                index = 4;
-                break;
-
-            case 7:
-                index = 1;
-                break;
-            case 8:
-                index = 2;
-                break;
-            case 9:
-                index = 3;
-                break;
-            case 10:
-                index = 4;
-                break;
-            case 11:
-                index = 5;
-                break;
-            case 12:
-                index = 6;
-                break;
-            case 13:
-                index = 7;
-                break;
-            case 14:
-                index = 8;
-                break;
-
-            case 15:
-                index = 1;
-                break;
-            case 16:
-                index = 2;
-                break;
-            case 17:
-                index = 3;
-                break;
-            case 18:
-                index = 4;
-                break;
-            case 19:
-                index = 5;
-                break;
-            case 20:
-                index = 6;
-                break;
-            case 21:
-                index = 7;
-                break;
-            case 22:
-                index = 8;
-                break;
-            case 23:
-                index = 9;
-                break;
-            case 24:
-                index = 10;
-                break;
-            case 25:
-                index = 11;
-                break;
-            case 26:
-                index = 12;
-                break;
-            case 27:
-                index = 13;
-                break;
-            case 28:
-                index = 14;
-                break;
-            case 29:
-                index = 15;
-                break;
-            case 30:
-                index = 16;
-                break;
-            default:
-                break;
-        }
+        int index = indexDeck(item.getIndex());
 
         tvPosition.setText("at deck '" + Integer.toString(item.getDeck()) + "', index '" + Integer.toString(index) + "'");
         tvCountCorrect.setText(Integer.toString(item.getCountCorrect()));
         tvCount.setText(Integer.toString(item.getCount()));
         tvCountInCorrect.setText(Integer.toString(item.getCountInCorrect()));
-        tvNameMeaning.setText(item.getName());
+//        tvNameMeaning.setText(item.getName());
+        tvNameMeaning.setText(showItemNumber ? item.getName().substring(Integer.toString(position).length()+2) : item.getName());
 
         isDistanceTempAdd = isDistance;
         isDistanceTempLast = isDistance;
@@ -1813,12 +1445,105 @@ public class LeitnerActivity extends Activity {
         dialogMeaning.setCanceledOnTouchOutside(true);
     }
 
-    void answer_Correct(int realPosition) {
-        move_Next_Correct(realPosition);
-        update_Info_After_Answer(realPosition, true);
+    public void name_click(View view) {
+        name_Click(dialogMeaningWordPosition);
     }
 
-    void move_Next_Correct(int realPosition) {
+    void name_Click(int position) {
+//        TextView tvNameMeaning = (TextView) dialogMeaning.findViewById(R.id.leitnerNameAndMeaning);
+//        if (tvNameMeaning.getText().toString().equals(itemsToShow.get(position).getName())) {
+//            tvNameMeaning.setText(itemsToShow.get(position).getMeaning());
+//            tvNameMeaning.setText(showItemNumber ? item.getName().substring(Integer.toString(position+2).length()) : item.getName());
+//        } else {
+//            tvNameMeaning.setText(itemsToShow.get(position).getName());
+//        }
+        TextView tvNameMeaning = (TextView) dialogMeaning.findViewById(R.id.leitnerNameAndMeaning);
+        if (tvNameMeaning.getText().toString().equals(showItemNumber ? itemsToShow.get(position).getName().substring(Integer.toString(position).length()+2) : itemsToShow.get(position).getName())) {
+            tvNameMeaning.setText(itemsToShow.get(position).getMeaning());
+        } else {
+            tvNameMeaning.setText(showItemNumber ? itemsToShow.get(position).getName().substring(Integer.toString(position).length()+2) : itemsToShow.get(position).getName());
+        }
+    }
+
+    int indexDeck(int index) {
+        switch (index) {
+            case 0:
+                return 1;
+
+            case 1:
+                return 1;
+            case 2:
+                return 2;
+
+            case 3:
+                return 1;
+            case 4:
+                return 2;
+            case 5:
+                return 3;
+            case 6:
+                return 4;
+
+            case 7:
+                return 1;
+            case 8:
+                return 2;
+            case 9:
+                return 3;
+            case 10:
+                return 4;
+            case 11:
+                return 5;
+            case 12:
+                return 6;
+            case 13:
+                return 7;
+            case 14:
+                return 8;
+
+            case 15:
+                return 1;
+            case 16:
+                return 2;
+            case 17:
+                return 3;
+            case 18:
+                return 4;
+            case 19:
+                return 5;
+            case 20:
+                return 6;
+            case 21:
+                return 7;
+            case 22:
+                return 8;
+            case 23:
+                return 9;
+            case 24:
+                return 10;
+            case 25:
+                return 11;
+            case 26:
+                return 12;
+            case 27:
+                return 13;
+            case 28:
+                return 14;
+            case 29:
+                return 15;
+            case 30:
+                return 16;
+        }
+        return 1;
+    }
+
+    void answer_Correct(int position) {
+        move_Next_Correct(position);
+        update_Info_After_Answer(position, true);
+    }
+
+    void move_Next_Correct(int position) {
+        int realPosition = getPosition(position);
         int currentDeck = arrayItems.get(realPosition).getDeck();
         int nextIndex = 0;
         switch (currentDeck) {
@@ -1829,7 +1554,7 @@ public class LeitnerActivity extends Activity {
                 break;
 
             case 1:  //to deck 2
-                nextIndex = whichIndexTurnDeck(deck2);
+                nextIndex = whichIndexTurnDeck(2);
 
                 databaseLeitner.updateItemLastDays(nextIndex + 1, todayNum);//update third one
                 databaseLeitner.updateItemLastDaysDate(nextIndex + 1, todayDate);//update third one
@@ -1842,7 +1567,7 @@ public class LeitnerActivity extends Activity {
                 break;
 
             case 2: // to deck 3
-                nextIndex = whichIndexTurnDeck(deck3);
+                nextIndex = whichIndexTurnDeck(4);
 
                 databaseLeitner.updateItemLastDays(nextIndex + 1, todayNum);//update third one
                 databaseLeitner.updateItemLastDaysDate(nextIndex + 1, todayDate);//update third one
@@ -1855,7 +1580,7 @@ public class LeitnerActivity extends Activity {
                 break;
 
             case 3: // to deck 4
-                nextIndex = whichIndexTurnDeck(deck4);
+                nextIndex = whichIndexTurnDeck(8);
 
                 databaseLeitner.updateItemLastDays(nextIndex + 1, todayNum);//update third one
                 databaseLeitner.updateItemLastDaysDate(nextIndex + 1, todayDate);//update third one
@@ -1868,7 +1593,7 @@ public class LeitnerActivity extends Activity {
                 break;
 
             case 4: // to deck 5
-                nextIndex = whichIndexTurnDeck(deck5);
+                nextIndex = whichIndexTurnDeck(16);
 
                 databaseLeitner.updateItemLastDays(nextIndex + 1, todayNum);//update third one
                 databaseLeitner.updateItemLastDaysDate(nextIndex + 1, todayDate);//update third one
@@ -1880,17 +1605,17 @@ public class LeitnerActivity extends Activity {
                 databaseLeitner.updatePosition(arrayItems.get(realPosition).getId(), 5, nextIndex);
                 break;
             case 5: // to archive
-
+                databaseLeitner.addItem(arrayItems.get(realPosition), TABLE_ARCHIVE);
                 break;
         }
 
     }
 
-    int whichIndexTurnDeck(ArrayList<ArrayList<Item>> deck) {
+    int whichIndexTurnDeck(int size) {
         int lastIndex = -1;
         int lastDay = -1;
 
-        if (deck.size() == 2) {
+        if (size == 2) {
             if (arrayIndexesLastDay.get(1) == -1) {
                 return 1;
             }
@@ -1910,7 +1635,7 @@ public class LeitnerActivity extends Activity {
                 }
             }
 
-        } else if (deck.size() == 4) {
+        } else if (size == 4) {
             if (arrayIndexesLastDay.get(3) == -1) {
                 return 3;
             }
@@ -1930,7 +1655,7 @@ public class LeitnerActivity extends Activity {
                 }
             }
 
-        } else if (deck.size() == 8) {
+        } else if (size == 8) {
             if (arrayIndexesLastDay.get(7) == -1) {
                 return 7;
             }
@@ -1950,7 +1675,7 @@ public class LeitnerActivity extends Activity {
                 }
             }
 
-        } else if (deck.size() == 16) {
+        } else if (size == 16) {
             if (arrayIndexesLastDay.get(15) == -1) {
                 return 15;
             }
@@ -1973,7 +1698,7 @@ public class LeitnerActivity extends Activity {
         return -1;
     }
 
-    int lastIndexMore30(ArrayList<ArrayList<Item>> deck) {
+    int lastIndexMore30() {
         int lastIndex = -1;
         int lastDay = -1;
 
@@ -1986,11 +1711,11 @@ public class LeitnerActivity extends Activity {
         return lastIndex;
     }
 
-    int nextIndexMore30(ArrayList<ArrayList<Item>> deck) {
+    int nextIndexMore30(int size) {
         int lastIndex = -1;
         int lastDay = -1;
 
-        if (deck.size() == 16) {
+        if (size == 16) {
             for (int i = 15; i < 31; i++) {
                 if (arrayIndexesLastDay.get(i) > lastDay) {
                     lastDay = arrayIndexesLastDay.get(i);
@@ -2011,31 +1736,34 @@ public class LeitnerActivity extends Activity {
     }
 
 
-    void answer_Incorrect(int realPosition) {
+    void answer_Incorrect(int position) {
+        int realPosition = getPosition(position);
         arrayItems.get(realPosition).setDeck(1);
         arrayItems.get(realPosition).setIndex(0);
 
-        update_Info_After_Answer(realPosition, false);
+        update_Info_After_Answer(position, false);
     }
 
 
-    void update_Info_After_Answer(int realPosition, boolean correct) {
+    void update_Info_After_Answer(int position, boolean correct) {
+        int realPosition = getPosition(position);
         Item currentItem = arrayItems.get(realPosition);
 
-        editorMainPrefs.putString("lastDate", this.todayDate);
-        editorMainPrefs.putInt("lastDay", todayNum);
+        databaseLeitner.updateLastDate(todayDate);
+        databaseLeitner.updateLastDay(todayNum);
         lastDate = todayDate;
-        editorMainPrefs.commit();
 
-        int countCorrect = correct ? currentItem.getCountCorrect() + 1 : -1;
-        int countIncorrect = !correct ? currentItem.getCountCorrect() + 1 : -1;
+//        editorMainPrefs.putString("lastDate", this.todayDate);
+//        editorMainPrefs.putInt("lastDay", todayNum);
+//        lastDate = todayDate;
+//        editorMainPrefs.commit();
+
+        int countCorrect = correct ? currentItem.getCountCorrect() + 1 : currentItem.getCountCorrect();
+        int countIncorrect = !correct ? currentItem.getCountInCorrect() + 1 : currentItem.getCountInCorrect();
         int count = currentItem.getCount() + 1;
 
-        if (correct) {
-            arrayItems.get(realPosition).setCountCorrect(countCorrect);
-        } else {
-            arrayItems.get(realPosition).setCountCorrect(countIncorrect);
-        }
+        arrayItems.get(realPosition).setCountCorrect(countCorrect);
+        arrayItems.get(realPosition).setCountInCorrect(countIncorrect);
         arrayItems.get(realPosition).setCount(count);
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
@@ -2048,12 +1776,16 @@ public class LeitnerActivity extends Activity {
 
         databaseLeitner.updateItem(new Item(currentItem.getId(), currentItem.getName(), currentItem.getMeaning(),
                 currentItem.getAddDate(), currentDateAndTime, todayNum,
-                correct ? currentItem.getWitchDay() : 1, currentItem.getDeck(), currentItem.getIndex(),
-                correct ? countCorrect : currentItem.getCountCorrect(), !correct ? countIncorrect : currentItem.getCountInCorrect(), count
-        ));
+                currentItem.getDeck(), currentItem.getIndex(),
+                countCorrect, countIncorrect, count));
 
         listViewPosition = items.onSaveInstanceState();
         refreshListViewData();
+
+        if (position == itemsToShow.size() || (itemsToShow.get(position).getName().equals("   Nothing found"))) {
+        }else {
+           dialogMeaning(position);
+        }
     }
 
 
@@ -2548,7 +2280,7 @@ public class LeitnerActivity extends Activity {
     }
 
     void updateIndexLastDayMoreThan30() {
-        int nextIndexDeck5 = nextIndexMore30(deck5);
+        int nextIndexDeck5 = lastIndexMore30();
         switch (nextIndexDeck5) {
             case 15: {
                 databaseLeitner.updateItemLastDays(16, todayNum);
@@ -2867,7 +2599,11 @@ public class LeitnerActivity extends Activity {
 
         EditText wordAddNew = (EditText) dialogAddNew.findViewById(R.id.etWord);
         EditText meaningAddNew = (EditText) dialogAddNew.findViewById(R.id.etMeaning);
-
+        if (!etSearch.getText().equals(null)) {
+            icicle.putString("etSearchText", etSearch.getText().toString());
+        } else {
+            icicle.putString("etSearchText", "");
+        }
 
         icicle.putParcelable("listViewPosition", items.onSaveInstanceState());
         icicle.putBoolean("isFromSearch", isFromSearch);
@@ -2903,6 +2639,10 @@ public class LeitnerActivity extends Activity {
             icicle.putString("dialogEditMeaningText", newMeaningEdit);
         }
 
+        if (dialogSummery.isShowing()) {
+            icicle.putBoolean("dialogSummeryIsOpen", dialogSummery.isShowing());
+        }
+
         if (markSeveral) {
             icicle.putBoolean("markSeveral", markSeveral);
 
@@ -2918,6 +2658,7 @@ public class LeitnerActivity extends Activity {
             dialogMeaningIsOpen = icicle.getBoolean("dialogMeaningIsOpen");
             dialogEditIsOpen = icicle.getBoolean("dialogEditIsOpen");
             dialogAskDeleteIsOpen = icicle.getBoolean("dialogAskDeleteIsOpen");
+            dialogSummeryIsOpen = icicle.getBoolean("dialogSummeryIsOpen");
             listViewPosition = icicle.getParcelable("listViewPosition");
             markSeveral = icicle.getBoolean("markSeveral");
             isFromSearch = icicle.getBoolean("isFromSearch");
@@ -2934,11 +2675,11 @@ public class LeitnerActivity extends Activity {
         if (dialogMeaningIsOpen) {
             refreshListViewData();
             dialogMeaningWordPosition = icicle.getInt("dialogMeaningWordPosition");
-            dialogMeaning(dialogMeaningWordPosition, getPosition(dialogMeaningWordPosition));
+            dialogMeaning(dialogMeaningWordPosition);
         }
         if (dialogEditIsOpen) {
             dialogMeaningWordPosition = icicle.getInt("dialogMeaningWordPosition");
-            dialogEdit(isFromSearch, dialogMeaningWordPosition, getPosition(dialogMeaningWordPosition));
+            dialogEdit(isFromSearch, dialogMeaningWordPosition);
             EditText wordAddNew = (EditText) dialogEdit.findViewById(R.id.etWord);
             EditText meaningAddNew = (EditText) dialogEdit.findViewById(R.id.etMeaning);
             wordAddNew.setText(icicle.getString("dialogEditWordText"));
@@ -2949,7 +2690,9 @@ public class LeitnerActivity extends Activity {
             dialogAskDelete(dialogMeaningWordPosition);
             newWordEdit = icicle.getString("dialogEditWordText");
             newMeaningEdit = icicle.getString("dialogEditMeaningText");
-
+        }
+        if (dialogSummeryIsOpen) {
+            dialogSummery();
         }
 
         if (markSeveral) {
@@ -2963,7 +2706,7 @@ public class LeitnerActivity extends Activity {
         if (markSeveral) {
             adapter = new AdapterLeitner(LeitnerActivity.this, R.layout.row, itemsToShow);
             markSeveral = false;
-            setElementsId();
+//            setElementsId();
             listViewPosition = items.onSaveInstanceState();
             refreshListViewData();
             clearMarks();
@@ -2985,16 +2728,15 @@ public class LeitnerActivity extends Activity {
     @Override
     public void onStop() {
         super.onStop();
-        final View view = getLayoutInflater().inflate(R.layout.row_header, items, false);
-        items.removeHeaderView(view);
-
+//        final View view = getLayoutInflater().inflate(R.layout.row_header, items, false);
+//        items.removeHeaderView(view);
     }
 
     @Override
     public void onResume() {
         super.onResume();
         getPrefs();
-        listViewPosition = items.onSaveInstanceState();
+//        listViewPosition = items.onSaveInstanceState();
         refreshListViewData();
     }
 
@@ -3018,7 +2760,7 @@ public class LeitnerActivity extends Activity {
         if (menu != null) {
             menu.clear();
         }
-        if (markSeveral && databaseLeitner.getItemsCount(true) > 0) {
+        if (markSeveral && arrayItems.size() > 0) {
             getMenuInflater().inflate(R.menu.on_delete, menu);
             MenuItem itemMarkAll = menu.findItem(R.id.action_markAll);
 
