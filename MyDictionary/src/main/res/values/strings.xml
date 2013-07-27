@@ -67,5 +67,7 @@
     <string name="correct">Correct</string>
     <string name="Incorrect">Incorrect</string>
     <string name="action_leitner">Leitner</string>
+    <string name="action_dictionary">My Dictionary</string>
+    <string name="action_count_today">Count Today</string>
 
 </resources>

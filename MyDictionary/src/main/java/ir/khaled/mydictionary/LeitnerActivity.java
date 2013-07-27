@@ -253,7 +253,8 @@ public class LeitnerActivity extends Activity {
     }
 
     public void summery_OnClick(View view) {
-        dialogSummery();
+        if (!dialogSummery.isShowing())
+            dialogSummery();
     }
 
     void dialogSummery() {
@@ -710,7 +711,8 @@ public class LeitnerActivity extends Activity {
                             notifyCheckedPositionsInt();
                         }
                     } else {
-                        dialogMeaning(position);
+                        if (!dialogMeaning.isShowing())
+                            dialogMeaning(position);
                     }
 //                    } else if (!(itemsToShow.get(position).getName().equals("   Nothing found") &&
 //                            itemsToShow.get(position).getMeaning().equals("My Dictionary") &&
@@ -841,13 +843,15 @@ public class LeitnerActivity extends Activity {
                         newMeaningEdit = dialogEditMeaning.getText().toString();
                         dialogEdit.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
-                        dialogAskDelete(fakPositionToSendToDialogDelete);
+                        if (!dialogAskDelete.isShowing())
+                            dialogAskDelete(fakPositionToSendToDialogDelete);
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        dialogMeaning(fakPositionToSendToDialogDelete);
+                        if (!dialogMeaning.isShowing())
+                            dialogMeaning(fakPositionToSendToDialogDelete);
                     }
                 });
 
@@ -933,7 +937,8 @@ public class LeitnerActivity extends Activity {
         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                dialogEdit(isFromSearch, position);
+                if (!dialogEdit.isShowing())
+                    dialogEdit(isFromSearch, position);
                 EditText dialogEditWord = (EditText) dialogEdit.findViewById(R.id.etWord);
                 EditText dialogEditMeaning = (EditText) dialogEdit.findViewById(R.id.etMeaning);
                 dialogEditWord.setText(newWordEdit);
@@ -947,7 +952,8 @@ public class LeitnerActivity extends Activity {
     }
 
     public void AddNew(View view) {
-        dialogAddNew();
+        if (!dialogAddNew.isShowing())
+            dialogAddNew();
     }
 
     void dialogAddNew() {
@@ -1784,7 +1790,8 @@ public class LeitnerActivity extends Activity {
 
         if (position == itemsToShow.size() || (itemsToShow.get(position).getName().equals("   Nothing found"))) {
         }else {
-           dialogMeaning(position);
+            if (!dialogMeaning.isShowing())
+                dialogMeaning(position);
         }
     }
 
@@ -2666,7 +2673,8 @@ public class LeitnerActivity extends Activity {
 
         }
         if (dialogAddNewIsOpen) {
-            dialogAddNew();
+            if (!dialogAddNew.isShowing())
+                dialogAddNew();
             EditText wordAddNew = (EditText) dialogAddNew.findViewById(R.id.etWord);
             EditText meaningAddNew = (EditText) dialogAddNew.findViewById(R.id.etMeaning);
             wordAddNew.setText(icicle.getString("editTextWordAddNew"));
@@ -2675,7 +2683,8 @@ public class LeitnerActivity extends Activity {
         if (dialogMeaningIsOpen) {
             refreshListViewData();
             dialogMeaningWordPosition = icicle.getInt("dialogMeaningWordPosition");
-            dialogMeaning(dialogMeaningWordPosition);
+            if (!dialogMeaning.isShowing())
+                dialogMeaning(dialogMeaningWordPosition);
         }
         if (dialogEditIsOpen) {
             dialogMeaningWordPosition = icicle.getInt("dialogMeaningWordPosition");
@@ -2687,12 +2696,14 @@ public class LeitnerActivity extends Activity {
         }
         if (dialogAskDeleteIsOpen) {
             dialogMeaningWordPosition = icicle.getInt("dialogMeaningWordPosition");
-            dialogAskDelete(dialogMeaningWordPosition);
+            if (!dialogAskDelete.isShowing())
+                dialogAskDelete(dialogMeaningWordPosition);
             newWordEdit = icicle.getString("dialogEditWordText");
             newMeaningEdit = icicle.getString("dialogEditMeaningText");
         }
         if (dialogSummeryIsOpen) {
-            dialogSummery();
+            if (!dialogSummery.isShowing())
+                dialogSummery();
         }
 
         if (markSeveral) {
@@ -2789,13 +2800,13 @@ public class LeitnerActivity extends Activity {
                 itemMarkAll.setTitle(R.string.action_unmarkAll);
             }
         } else {
-            getMenuInflater().inflate(R.menu.main, menu);
+            getMenuInflater().inflate(R.menu.leitner, menu);
         }
 
-        MenuItem itemLeitner = menu.findItem(R.id.action_leitner);
-        if (itemLeitner != null) {
-            itemLeitner.setTitle("My Dictionary");
-        }
+//        MenuItem itemLeitner = menu.findItem(R.id.action_leitner);
+//        if (itemLeitner != null) {
+//            itemLeitner.setTitle("My Dictionary");
+//        }
 
         return true;
     }
@@ -2857,12 +2868,16 @@ public class LeitnerActivity extends Activity {
                 }
                 return true;
 
-            case R.id.action_leitner:
+            case R.id.action_dictionary:
                 LeitnerActivity.this.startActivity(new Intent(LeitnerActivity.this, MainActivity.class));
+                return true;
+
+            case R.id.action_count_today:
+                databaseLeitner.updateLastDate(todayDate);
+                databaseLeitner.updateLastDay(todayNum);
+                lastDate = todayDate;
                 return true;
         }
         return super.onMenuItemSelected(featureId, item);
     }
-
-
 }

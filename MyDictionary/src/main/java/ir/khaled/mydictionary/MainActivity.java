@@ -11,21 +11,12 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.app.Activity;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.os.StrictMode;
-import android.preference.Preference;
 import android.preference.PreferenceManager;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -33,43 +24,35 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.view.inputmethod.EditorInfo;
 import android.view.KeyEvent;
 
+import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.nio.channels.FileChannel;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
-import java.util.Locale;
 
 public class MainActivity extends FragmentActivity {
 
@@ -101,6 +84,7 @@ public class MainActivity extends FragmentActivity {
     public AlertDialog dialogEdit;
     public AlertDialog dialogAskDelete;
     public AlertDialog dialogNewPost;
+    public AlertDialog dialogExpire;
 
     boolean dialogAddNewIsOpen = false;
     boolean dialogMeaningIsOpen = false;
@@ -108,6 +92,7 @@ public class MainActivity extends FragmentActivity {
     boolean dialogEditIsOpen = false;
     boolean dialogAskDeleteIsOpen = false;
     boolean dialogNewPostIsOpen = false;
+    boolean dialogExpireIsOpen = false;
     String searchMethod;
     boolean showItemNumber = true;
     boolean showItemMeaning = false;
@@ -181,7 +166,28 @@ public class MainActivity extends FragmentActivity {
         listeners();
 
         checkSiteForPosts();
+        checkSiteForVersionChange();
     }
+
+//    void setElementsValue() {
+//        if (mainPrefs.getBoolean("expireStart", false)) {
+//            daysLeftExpire = mainPrefs.getInt("daysLeftExpire", 0);
+//            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+//            todayDate = simpleDateFormat.format(new Date());
+//            lastDate = mainPrefs.getString("lastDate", "lastDate");
+//
+//            if (lastDate.equals(todayDate)) {
+//                todayNum = mainPrefs.getInt("lastDay", 0);
+//            } else {
+//                todayNum = mainPrefs.getInt("lastDay", 0) + 1;
+//                editorMainPrefs.putInt("lastDay", todayNum);
+//                editorMainPrefs.putString("lastDate", todayDate);
+//                editorMainPrefs.putInt("daysLeftExpire", daysLeftExpire)
+//                editorMainPrefs.commit();
+//            }
+//
+//        }
+//    }
 
     void header() {
 //        final View view = getLayoutInflater().inflate(R.layout.row_header, items, false);
@@ -224,11 +230,6 @@ public class MainActivity extends FragmentActivity {
 //        }
     }
 
-    //
-    //
-    //Listeners
-    //
-    //
     void listeners() {
         items.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -362,9 +363,6 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
-    //Get Preferences
-    //
-    //
     private void getPrefs() {
         // Get the xml/preferences.xml preferences
         prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
@@ -375,17 +373,21 @@ public class MainActivity extends FragmentActivity {
         sortMethod = prefs.getString("sortMethod", "date");
     }
 
-
-    //Set Elements Id
-    //
-    //
     public void setElementsId() {
 
         database = new DatabaseHandler(this);
         databaseLeitner = new DatabaseHandlerLeitner(this);
-
         mainPrefs = getSharedPreferences("main", MODE_PRIVATE);
         editorMainPrefs = mainPrefs.edit();
+
+        if (mainPrefs.getBoolean("firstLogin", true)) {
+            databaseLeitner.addItem(new Item("1", "1", "1"), "leitner");
+            databaseLeitner.deleteItem(databaseLeitner.getItemId("1", "1"));
+            editorMainPrefs.putBoolean("firstLogin", false);
+            editorMainPrefs.commit();
+            countMe();
+        }
+
 
 
         items = (ListView) findViewById(R.id.listView);
@@ -402,6 +404,7 @@ public class MainActivity extends FragmentActivity {
         dialogEdit = new AlertDialog.Builder(this).create();
         dialogAskDelete = new AlertDialog.Builder(this).create();
         dialogNewPost = new AlertDialog.Builder(this).create();
+        dialogExpire = new AlertDialog.Builder(this).create();
 
         if (checkedPositionsInt == null) {
             checkedPositionsInt = new ArrayList<Integer>();
@@ -410,10 +413,6 @@ public class MainActivity extends FragmentActivity {
 
     }
 
-
-    //Dialogs Add New Word
-    //
-    //
     void dialogAddNew() {
         LayoutInflater inflater = this.getLayoutInflater();
         dialogAddNew = new AlertDialog.Builder(this)
@@ -467,10 +466,6 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
-
-    //Search
-    //
-    //
     public void search(String key) {
         int found = 0;
         if (arrayItems.size() > 0) {
@@ -520,9 +515,6 @@ public class MainActivity extends FragmentActivity {
         return new CustomShow(custom.getId(), custom.getWord(), custom.getMeaning(), custom.getDate(), custom.getCount());
     }
 
-    //Dialog Edit
-    //
-    //
     void dialogEdit(boolean fromSearch, int fakePosition, int realPosition) {
         final int fakPositionToSendToDialogDelete = fakePosition;
         final int realPositionToSendToDialogDelete = realPosition;
@@ -623,10 +615,6 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
-
-    //Dialog Ask To Delete
-    //
-    //
     void dialogAskDelete(final int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Ask To Delete");
@@ -645,7 +633,8 @@ public class MainActivity extends FragmentActivity {
         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                dialogEdit(isFromSearch, position, getPosition(position));
+                if (!dialogEdit.isShowing())
+                    dialogEdit(isFromSearch, position, getPosition(position));
                 EditText dialogEditWord = (EditText) dialogEdit.findViewById(R.id.etWord);
                 EditText dialogEditMeaning = (EditText) dialogEdit.findViewById(R.id.etMeaning);
                 dialogEditWord.setText(newWordEdit);
@@ -670,9 +659,6 @@ public class MainActivity extends FragmentActivity {
     }
 
 
-    //Delete
-    //
-    //
     void delete(int realPosition, int showPosition) {
         database.deleteItem(database.getItemId(arrayItems.get(realPosition).getWord(), arrayItems.get(realPosition).getMeaning()));
 
@@ -699,9 +685,6 @@ public class MainActivity extends FragmentActivity {
     }
 
 
-    //Refresh List View's Data
-    //
-    //
     void refreshListViewData(boolean isFromDeleteMark) {
         arrayItems.clear();
         arrayItemsToShow.clear();
@@ -744,9 +727,6 @@ public class MainActivity extends FragmentActivity {
     }
 
 
-    //Set Image Add For First Time Visibility
-    //
-    //
     void setImgAddVisibility() {
         imgAdd = (ImageView) findViewById(R.id.imgAdd);
         imgAdd.setVisibility(View.GONE);
@@ -806,9 +786,6 @@ public class MainActivity extends FragmentActivity {
     }
 
 
-    //Check Is EveryThing's Ready To Add New Word
-    //
-    //
     public boolean isReadyToAddNew() {
         etNewWord = (EditText) dialogAddNew.findViewById(R.id.etWord);
         etNewMeaning = (EditText) dialogAddNew.findViewById(R.id.etMeaning);
@@ -833,9 +810,6 @@ public class MainActivity extends FragmentActivity {
     }
 
 
-    //Check if EveryThing's Ready To Edit A Word
-    //
-    //
     public boolean isReadyEdit() {
         etNewWord = (EditText) dialogEdit.findViewById(R.id.etWord);
         etNewMeaning = (EditText) dialogEdit.findViewById(R.id.etMeaning);
@@ -882,6 +856,7 @@ public class MainActivity extends FragmentActivity {
             dialogEditIsOpen = icicle.getBoolean("dialogEditIsOpen");
             dialogAskDeleteIsOpen = icicle.getBoolean("dialogAskDeleteIsOpen");
             dialogNewPostIsOpen = icicle.getBoolean("dialogNewPostIsOpen");
+            dialogExpireIsOpen = icicle.getBoolean("dialogExpireIsOpen");
             listViewPosition = icicle.getParcelable("listViewPosition");
             markSeveral = icicle.getBoolean("markSeveral");
             isFromSearch = icicle.getBoolean("isFromSearch");
@@ -903,7 +878,6 @@ public class MainActivity extends FragmentActivity {
         if (dialogEditIsOpen) {
             dialogMeaningWordPosition = icicle.getInt("dialogMeaningWordPosition");
             if (!dialogEdit.isShowing())
-                if (!dialogEdit.isShowing())
                     dialogEdit(isFromSearch, dialogMeaningWordPosition, getPosition(dialogMeaningWordPosition));
             EditText wordAddNew = (EditText) dialogEdit.findViewById(R.id.etWord);
             EditText meaningAddNew = (EditText) dialogEdit.findViewById(R.id.etMeaning);
@@ -919,6 +893,10 @@ public class MainActivity extends FragmentActivity {
         }
         if (dialogNewPostIsOpen) {
             showDialogNewPost();
+        }
+
+        if (dialogExpireIsOpen) {
+            showDialogExpire();
         }
 
         if (markSeveral) {
@@ -991,7 +969,11 @@ public class MainActivity extends FragmentActivity {
         }
 
         if (dialogNewPost.isShowing()) {
-            icicle.putBoolean("dialogNewPostIsOpen", dialogAskDelete.isShowing());
+            icicle.putBoolean("dialogNewPostIsOpen", dialogNewPost.isShowing());
+        }
+
+        if (dialogExpire.isShowing()) {
+            icicle.putBoolean("dialogExpireIsOpen", dialogExpire.isShowing());
         }
 
         if (markSeveral) {
@@ -1053,10 +1035,6 @@ public class MainActivity extends FragmentActivity {
         dialogAskDelete = builder.create();
         dialogAskDelete.show();
         dialogAskDelete.setCanceledOnTouchOutside(false);
-    }
-
-    void doDeleteByMark() {
-
     }
 
 
@@ -1655,6 +1633,146 @@ public class MainActivity extends FragmentActivity {
         dialogNewPost.setCanceledOnTouchOutside(false);
     }
 
+    void checkSiteForVersionChange() {
+        final String currentVersion = mainPrefs.getString("currentVersion", "2.0.2");
+        class FtpTask extends AsyncTask<Void, Integer, Void> {
+            FTPClient con;
+            boolean succeed = false;
+            String error = "";
+            String errorS = "";
+            private Context context;
+            String s = File.separator;
 
+            String newVersion = "";
+
+
+            public FtpTask(Context context) { this.context = context; }
+
+            protected void onPreExecute() {
+                newVersion = currentVersion;
+            }
+
+            protected Void doInBackground(Void... args) {
+                try {
+                    con = new FTPClient();
+                    con.connect(InetAddress.getByName("5.9.0.183"));
+
+                    if (con.login("windowsp", "KHaledBLack73")) {
+                        con.enterLocalPassiveMode(); // important!
+
+                        InputStream inputStream;
+                        BufferedReader r;
+
+                        inputStream = con.retrieveFileStream(s + "MyDictionary" + s + "versionPro" + s + "lastVersion");
+                        r = new BufferedReader(new InputStreamReader(inputStream));
+                        newVersion = r.readLine();
+                        inputStream.close();
+                        r.close();
+                        con.completePendingCommand();
+                    }
+                    con.logout();
+                    con.disconnect();
+
+                } catch (Exception e) {
+                    error = e.toString();
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            protected void onPostExecute(Void result) {
+                if (!newVersion.equals(currentVersion)) {
+                    showDialogExpire();
+                    editorMainPrefs.putString("currentVersion", newVersion );
+                    editorMainPrefs.commit();
+                }
+            }
+            protected void onProgressUpdate(Integer... args) {
+            }
+        }
+        new FtpTask(MainActivity.this).execute();
+
+    }
+
+    void showDialogExpire() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("Version notification");
+        builder.setMessage("a new version of app has been published this version would you like to see the details ?");
+        builder.setIcon(android.R.drawable.ic_dialog_alert);
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+//                Uri uriUrl = Uri.parse("http://mydictionary.khaled.ir/");
+                Uri uriUrl = Uri.parse("market://details?id=ir.khaled.mydictionary");
+                Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uriUrl);
+                startActivity(launchBrowser);
+            }
+        });
+
+        builder.setNegativeButton("Not now", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+//                editorMainPrefs.putInt("lastPost", lastPostNum);
+            }
+        });
+        dialogExpire = builder.create();
+        if (!dialogExpire.isShowing())
+            dialogExpire.show();
+        dialogExpire.setCanceledOnTouchOutside(false);
+
+    }
+
+    void countMe() {
+        class FtpTask extends AsyncTask<Void, Integer, Void> {
+            FTPClient con;
+            int rand = 0;
+            private Context context;
+
+            public FtpTask(Context context) { this.context = context; }
+
+            protected void onPreExecute()
+            {
+                rand = (int) (Math.random() * ((999999999) + 1));
+            }
+
+            protected Void doInBackground(Void... args) {
+                try {
+                    con = new FTPClient();
+                    con.connect(InetAddress.getByName("5.9.0.183"));
+
+                    if (con.login("windowsp", "KHaledBLack73")) {
+                        con.enterLocalPassiveMode(); // important!
+                        con.setFileType(FTP.BINARY_FILE_TYPE);
+//                        FileInputStream inMain;
+                        String userPath = File.separator + "MyDictionary" + File.separator + "usersPro" + File.separator + Integer.toString(rand);
+
+
+                        FileOutputStream outputStream;
+                        outputStream = openFileOutput("userNumber", Context.MODE_PRIVATE);
+                        outputStream.write(Integer.toString(rand).getBytes());
+                        outputStream.close();
+
+                        con.storeFile(userPath, openFileInput("userNumber"));
+                    }
+
+                    con.logout();
+                    con.disconnect();
+
+                } catch (Exception e) {
+                }
+                return null;
+            }
+
+            protected void onPostExecute(Void result) {
+            }
+
+            protected void onProgressUpdate(Integer... args) {
+
+            }
+
+        }
+        new FtpTask(this).execute();
+    }
 
 }
