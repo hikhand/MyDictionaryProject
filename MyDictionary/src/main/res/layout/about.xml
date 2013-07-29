@@ -17,7 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Version 1.1.2"
+            android:text="Version 2.0.2"
             android:id="@+id/textView"
             android:layout_below="@+id/imageView"
             android:layout_centerHorizontal="true"
@@ -37,7 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="http://sourcekade.ir"
+            android:text="http://md.khaled.ir"
             android:id="@+id/tvSiteUrl"
             android:layout_below="@+id/textView2"
             android:layout_marginTop="20dp"
@@ -107,7 +107,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text='"My Dictionary" is an small app to save and review the words in any language you learn.'
+            android:text='"My Dictionary" is a small with LEITNER system that helps you remember every thing.'
             android:id="@+id/textView6"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="5dp"

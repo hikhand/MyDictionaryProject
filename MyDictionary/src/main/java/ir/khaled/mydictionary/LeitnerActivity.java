@@ -31,6 +31,7 @@ import android.widget.Toast;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 
 public class LeitnerActivity extends Activity {
@@ -72,6 +73,7 @@ public class LeitnerActivity extends Activity {
     boolean dialogAskDeleteIsOpen = false;
     boolean dialogSummeryIsOpen = false;
     boolean dialogEditIsOpen = false;
+    boolean answerViewed = false;
 
     int dialogMeaningWordPosition = 0;
     int todayNum = 0;
@@ -197,26 +199,15 @@ public class LeitnerActivity extends Activity {
                 todayNum++;
             }
         }
-//        if (lastDate.equals(todayDate)) {
-//            todayNum = mainPrefs.getInt("lastDay", 0);
-//        } else {
-//            todayNum = mainPrefs.getInt("lastDay", 0) + 1;
-//            if (todayNum < 31 && todayNum > 1) {
-//                todayNum--;
-//                updateIndexesLastDayLessThan30();
-//                todayNum++;
-//            } else if (todayNum > 1) {
-//                todayNum--;
-//                updateIndexLastDayMoreThan30();
-//                todayNum++;
-//            }
-//        }
+
         arrayItems.clear();
         itemsToShow.clear();
         if (databaseLeitner.getItemsCount(true) > 0) {
             arrayItems.addAll(databaseLeitner.getAllItems(true));
 
             refreshShow();
+
+            sortAlphabetical();
 
             if (itemsToShow.size() > 0) {
                 int k = 1;
@@ -251,6 +242,27 @@ public class LeitnerActivity extends Activity {
             else tvSummery.setText("'" + Integer.toString(itemsToShow.size()-1) + "' words left");
         }
     }
+
+    void sortAlphabetical() {
+        ArrayList<String> words = new ArrayList<String>();
+        for (ItemShow item : itemsToShow) {
+            words.add(item.getName());
+        }
+        Collections.sort(words);
+        ArrayList<Item> buff = new ArrayList<Item>();
+        for (ItemShow item: itemsToShow) {
+            buff.add(convertItemShow(item));
+        }
+        itemsToShow.clear();
+        for (int i = 0; i < buff.size(); i++) {
+            for (Item j : buff) {
+                if (words.get(i).equals(j.getName())) {
+                    itemsToShow.add(convertItem(j));
+                }
+            }
+        }
+    }
+
 
     public void summery_OnClick(View view) {
         if (!dialogSummery.isShowing())
@@ -689,6 +701,10 @@ public class LeitnerActivity extends Activity {
         return new ItemShow(j.getId(), j.getName(), j.getMeaning(), j.getAddDate(), j.getLastCheckDate(), j.getLastCheckDay(), j.getDeck(), j.getIndex(), j.getCountCorrect(), j.getCountInCorrect(), j.getCount());
     }
 
+    Item convertItemShow(ItemShow j) {
+        return new Item(j.getId(), j.getName(), j.getMeaning(), j.getAddDate(), j.getLastCheckDate(), j.getLastCheckDay(), j.getDeck(), j.getIndex(), j.getCountCorrect(), j.getCountInCorrect(), j.getCount());
+    }
+
     void listeners() {
         items.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -898,7 +914,7 @@ public class LeitnerActivity extends Activity {
 
         @Override
         public void onClick(View v) {
-            if (isReadyEdit()) {
+            if (isReadyEdit(word)) {
                 EditText etNewWord = (EditText) dialog.findViewById(R.id.etWord);
                 EditText etNewMeaning = (EditText) dialog.findViewById(R.id.etMeaning);
                 newWordEdit = etNewWord.getText().toString();
@@ -1023,7 +1039,8 @@ public class LeitnerActivity extends Activity {
             return false;
         }
         for (int i = 0; i < arrayItems.size(); i++) {
-            if (newWord.equals(arrayItems.get(i).getName()) && newMeaning.equals(arrayItems.get(i).getMeaning())) {
+//            if (newWord.equals(arrayItems.get(i).getName()) && newMeaning.equals(arrayItems.get(i).getMeaning())) {
+            if (newWord.equals(arrayItems.get(i).getName())) {
                 Toast.makeText(this, "The Word exists in the database", Toast.LENGTH_SHORT).show();
                 return false;
             }
@@ -1162,7 +1179,7 @@ public class LeitnerActivity extends Activity {
     }
 
     int getPosition(String word, String meaning) {
-        for (int i = 0; i < databaseLeitner.getItemsCount(true); i++) {
+        for (int i = 0; i < arrayItems.size(); i++) {
             if (arrayItems.get(i).getName().toUpperCase().equals(word) &&
                     arrayItems.get(i).getMeaning().toUpperCase().equals(meaning)) {
                 return i;
@@ -1186,11 +1203,12 @@ public class LeitnerActivity extends Activity {
         }
     }
 
-    public boolean isReadyEdit() {
+    public boolean isReadyEdit(String word) {
         EditText etNewWord = (EditText) dialogEdit.findViewById(R.id.etWord);
         EditText etNewMeaning = (EditText) dialogEdit.findViewById(R.id.etMeaning);
         String newWord = etNewWord.getText().toString();
         String newMeaning = etNewMeaning.getText().toString();
+
 
         if (isStringJustSpace(newWord)) {
             Toast.makeText(this, "The Word's Name is missing.", Toast.LENGTH_SHORT).show();
@@ -1201,18 +1219,17 @@ public class LeitnerActivity extends Activity {
             return false;
         }
 
-        if (arrayItems.get(getPosition(dialogMeaningWordPosition)).getName().equals(newWord) && arrayItems.get(getPosition(dialogMeaningWordPosition)).getMeaning().equals(newMeaning)) {
+        if (arrayItems.get(getPosition(dialogMeaningWordPosition)).getName().toLowerCase().equals(newWord.toLowerCase()) && arrayItems.get(getPosition(dialogMeaningWordPosition)).getMeaning().toLowerCase().equals(newMeaning.toLowerCase())) {
             Toast.makeText(this, "Nothing has changed", Toast.LENGTH_SHORT).show();
             return false;
         }
 
         for (int i = 0; i < arrayItems.size(); i++) {
-            if (newWord.equals(arrayItems.get(i).getName()) && newMeaning.equals(arrayItems.get(i).getMeaning())) {
+            if (newWord.toLowerCase().equals(arrayItems.get(i).getName().toLowerCase()) && !newWord.toLowerCase().equals(word.toLowerCase())) {
                 Toast.makeText(this, "The Word exists in the database", Toast.LENGTH_SHORT).show();
                 return false;
             }
         }
-
         return true;
     }
 
@@ -1390,13 +1407,13 @@ public class LeitnerActivity extends Activity {
         builder.setPositiveButton(R.string.correct, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                answer_Correct(position);
+//                answer_Correct(position);
             }
         });
         builder.setNegativeButton(R.string.Incorrect, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                answer_Incorrect(position);
+//                answer_Incorrect(position);
             }
         });
         builder.setNeutralButton(R.string.edit, new DialogInterface.OnClickListener() {
@@ -1411,7 +1428,6 @@ public class LeitnerActivity extends Activity {
 //        }else {
         builder.setIcon(android.R.drawable.ic_dialog_info);
 //        }
-        int x = 1;
         dialogMeaning = builder.create();
         dialogMeaning.show();
         dialogMeaningWordPosition = position;
@@ -1425,8 +1441,9 @@ public class LeitnerActivity extends Activity {
         TextView tvCountInCorrect = (TextView) dialogMeaning.findViewById(R.id.leitnerCountInCorrect);
         TextView tvNameMeaning = (TextView) dialogMeaning.findViewById(R.id.leitnerNameAndMeaning);
 
-        int index = indexDeck(item.getIndex());
+        answerViewed = false;
 
+        int index = indexDeck(item.getIndex());
         tvPosition.setText("at deck '" + Integer.toString(item.getDeck()) + "', index '" + Integer.toString(index) + "'");
         tvCountCorrect.setText(Integer.toString(item.getCountCorrect()));
         tvCount.setText(Integer.toString(item.getCount()));
@@ -1446,13 +1463,47 @@ public class LeitnerActivity extends Activity {
 
         TextView tvPos = (TextView) dialogMeaning.findViewById(R.id.leitnerPos);
         tvPos.setText(Integer.toString(position + 1) + " of " + Integer.toString(itemsToShow.size()));
-
-
         dialogMeaning.setCanceledOnTouchOutside(true);
+
+        Button btnPositive = dialogMeaning.getButton(DialogInterface.BUTTON_POSITIVE);
+        Button btnNegative = dialogMeaning.getButton(DialogInterface.BUTTON_NEGATIVE);
+        btnPositive.setOnClickListener(new CustomListenerMeaning(dialogMeaning, position, true));
+        btnNegative.setOnClickListener(new CustomListenerMeaning(dialogMeaning, position, false));
+    }
+
+    class CustomListenerMeaning implements View.OnClickListener {
+        private final Dialog dialog;
+        private final int position;
+        private final boolean correct;
+        public CustomListenerMeaning(Dialog dialog, int position, boolean correct) {
+            this.dialog = dialog;
+            this.position = position;
+            this.correct = correct;
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (answerViewed) {
+                if (correct) {
+                    move_Next_Correct(position);
+                    update_Info_After_Answer(position, true);
+                } else {
+                    int realPosition = getPosition(position);
+                    arrayItems.get(realPosition).setDeck(1);
+                    arrayItems.get(realPosition).setIndex(0);
+
+                    update_Info_After_Answer(position, false);
+                }
+                dialog.dismiss();
+            } else {
+                Toast.makeText(LeitnerActivity.this, "First check the answer by clicking on the word then answer", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     public void name_click(View view) {
         name_Click(dialogMeaningWordPosition);
+        answerViewed = true;
     }
 
     void name_Click(int position) {
@@ -1541,11 +1592,6 @@ public class LeitnerActivity extends Activity {
                 return 16;
         }
         return 1;
-    }
-
-    void answer_Correct(int position) {
-        move_Next_Correct(position);
-        update_Info_After_Answer(position, true);
     }
 
     void move_Next_Correct(int position) {
@@ -1741,16 +1787,6 @@ public class LeitnerActivity extends Activity {
         return -1;
     }
 
-
-    void answer_Incorrect(int position) {
-        int realPosition = getPosition(position);
-        arrayItems.get(realPosition).setDeck(1);
-        arrayItems.get(realPosition).setIndex(0);
-
-        update_Info_After_Answer(position, false);
-    }
-
-
     void update_Info_After_Answer(int position, boolean correct) {
         int realPosition = getPosition(position);
         Item currentItem = arrayItems.get(realPosition);
@@ -1788,9 +1824,7 @@ public class LeitnerActivity extends Activity {
         listViewPosition = items.onSaveInstanceState();
         refreshListViewData();
 
-        if (position == itemsToShow.size() || (itemsToShow.get(position).getName().equals("   Nothing found"))) {
-        }else {
-            if (!dialogMeaning.isShowing())
+        if (position != itemsToShow.size() && (!itemsToShow.get(position).getName().equals("   Nothing found"))) {
                 dialogMeaning(position);
         }
     }
