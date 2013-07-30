@@ -444,14 +444,4 @@ class DatabaseHandlerLeitner extends SQLiteOpenHelper {
         return db.update(TABLE_LAST_CHECK_DAY_DATE, values, KEY_ID + "=" + id, null);
     }
 
-
-
-
-
-
-
-
-
-
-
 }

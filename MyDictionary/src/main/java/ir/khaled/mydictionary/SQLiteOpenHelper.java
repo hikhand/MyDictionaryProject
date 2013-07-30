@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Created by khaled on 6/28/13.
  */
-    class DatabaseHandler extends SQLiteOpenHelper {
+class DatabaseHandler extends SQLiteOpenHelper {
 
     // All Static variables
     // Database Version
@@ -191,7 +191,7 @@ import java.util.List;
 //    }
 //
 
-        // Getting single Item's word
+    // Getting single Item's word
     public int getItemId(String word, String meaning) {
         SQLiteDatabase db = this.getReadableDatabase();
 

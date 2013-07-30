@@ -27,14 +27,20 @@
         <item>justInMeanings</item>
     </array>
     <array name="sortMethodItems">
-        <item>Name</item>
-        <item>Date</item>
-        <item>Views</item>
+        <item>Name ascending</item>
+        <item>Name descending</item>
+        <item>Date ascending</item>
+        <item>Date descending</item>
+        <item>Views ascending</item>
+        <item>Views descending</item>
     </array>
     <array name="sortMethodValues">
-        <item>name</item>
-        <item>date</item>
-        <item>view</item>
+        <item>nameA</item>
+        <item>nameD</item>
+        <item>dateA</item>
+        <item>dateD</item>
+        <item>countA</item>
+        <item>countD</item>
     </array>
 
     <string name="action_mark">Mark Several</string>
@@ -69,5 +75,6 @@
     <string name="action_leitner">Leitner</string>
     <string name="action_dictionary">My Dictionary</string>
     <string name="action_count_today">Count Today</string>
+    <string name="action_sort">Sort By</string>
 
 </resources>

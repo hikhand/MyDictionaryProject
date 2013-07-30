@@ -2,7 +2,6 @@ package ir.khaled.mydictionary;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -29,10 +28,11 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.Spinner;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.view.inputmethod.EditorInfo;
@@ -71,8 +71,7 @@ public class MainActivity extends FragmentActivity {
     public EditText etNewMeaning;
     public EditText etSearch;
     public ListView items;
-    public Spinner sortBy;
-    public Spinner sortWay;
+
     ImageView imgAdd;
     public boolean isFromSearch;
 
@@ -86,6 +85,8 @@ public class MainActivity extends FragmentActivity {
     public AlertDialog dialogAskDelete;
     public AlertDialog dialogNewPost;
     public AlertDialog dialogExpire;
+    public AlertDialog dialogSortBy;
+    public AlertDialog dialogRate;
 
     boolean dialogAddNewIsOpen = false;
     boolean dialogMeaningIsOpen = false;
@@ -94,6 +95,8 @@ public class MainActivity extends FragmentActivity {
     boolean dialogAskDeleteIsOpen = false;
     boolean dialogNewPostIsOpen = false;
     boolean dialogExpireIsOpen = false;
+    boolean dialogSortByIsOpen = false;
+    boolean dialogRateIsOpen = false;
     String searchMethod;
     boolean showItemNumber = true;
     boolean showItemMeaning = false;
@@ -109,6 +112,7 @@ public class MainActivity extends FragmentActivity {
 
     String searchText = "";
 
+    Names V = null;
     @Override
     public void onBackPressed() {
         if (markSeveral) {
@@ -141,6 +145,13 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
+    @Override
+    public boolean onSearchRequested() {
+        etSearch.requestFocus();
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(etSearch, InputMethodManager.SHOW_IMPLICIT);
+        return false;
+    }
 
     @Override
     public void onCreate(Bundle icicle) {
@@ -151,15 +162,13 @@ public class MainActivity extends FragmentActivity {
         setElementsId();
         getPrefs();
 
-        header();
         if (icicle != null) {
             listViewPosition = icicle.getParcelable("listViewPosition");
             searchText = icicle.getString("etSearchText");
         }
-    etSearch.setText(searchText);
+        etSearch.setText(searchText);
 
         refreshListViewData(false);
-        sortByName();
 
         setImgAddVisibility();
         restore(icicle);
@@ -168,68 +177,62 @@ public class MainActivity extends FragmentActivity {
 
         checkSiteForPosts();
         checkSiteForVersionChange();
+
+        if (!mainPrefs.getBoolean("rated", false)) {
+            if (arrayItems.size() < 50 && !mainPrefs.getBoolean("rate20Viewed", false) && arrayItems.size() > 20) {
+                editorMainPrefs.putBoolean("rate20Viewed", true);
+                showDialogRate();
+            } else if (arrayItems.size() < 100 && !mainPrefs.getBoolean("rate50Viewed", false) && arrayItems.size() > 50) {
+                editorMainPrefs.putBoolean("rate50Viewed", true);
+                showDialogRate();
+            } else if (arrayItems.size() < 150 && !mainPrefs.getBoolean("rate100Viewed", false) && arrayItems.size() > 100) {
+                editorMainPrefs.putBoolean("rate100Viewed", true);
+                showDialogRate();
+            } else if (arrayItems.size() < 200 && !mainPrefs.getBoolean("rate150Viewed", false) && arrayItems.size() > 150) {
+                editorMainPrefs.putBoolean("rate150Viewed", true);
+                showDialogRate();
+            } else if (arrayItems.size() < 250 && !mainPrefs.getBoolean("rate200Viewed", false) && arrayItems.size() > 200) {
+                editorMainPrefs.putBoolean("rate200Viewed", true);
+                showDialogRate();
+            } else if (arrayItems.size() < 300 && !mainPrefs.getBoolean("rate250Viewed", false) && arrayItems.size() > 250) {
+                editorMainPrefs.putBoolean("rate250Viewed", true);
+                showDialogRate();
+            } else if (arrayItems.size() < 350 && !mainPrefs.getBoolean("rate300Viewed", false) && arrayItems.size() > 300) {
+                editorMainPrefs.putBoolean("rate300Viewed", true);
+                showDialogRate();
+            }
+            editorMainPrefs.commit();
+        }
     }
 
-//    void setElementsValue() {
-//        if (mainPrefs.getBoolean("expireStart", false)) {
-//            daysLeftExpire = mainPrefs.getInt("daysLeftExpire", 0);
-//            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
-//            todayDate = simpleDateFormat.format(new Date());
-//            lastDate = mainPrefs.getString("lastDate", "lastDate");
-//
-//            if (lastDate.equals(todayDate)) {
-//                todayNum = mainPrefs.getInt("lastDay", 0);
-//            } else {
-//                todayNum = mainPrefs.getInt("lastDay", 0) + 1;
-//                editorMainPrefs.putInt("lastDay", todayNum);
-//                editorMainPrefs.putString("lastDate", todayDate);
-//                editorMainPrefs.putInt("daysLeftExpire", daysLeftExpire)
-//                editorMainPrefs.commit();
-//            }
-//
-//        }
-//    }
+    void showDialogRate() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("Give us five stars");
+        builder.setMessage("Are you satisfied with the application ?\nWe would be thankful if you rate us and let us know your opinion about our work");
+        builder.setIcon(android.R.drawable.ic_dialog_alert);
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Uri uriUrl = Uri.parse("market://details?id=ir.khaled.mydictionary");
+                Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uriUrl);
+                startActivity(launchBrowser);
+                editorMainPrefs.putBoolean("rated", true);
+                editorMainPrefs.commit();
+            }
+        });
 
-    void header() {
-//        final View view = getLayoutInflater().inflate(R.layout.row_header, items, false);
-//        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-//                R.array.sortBy, android.R.layout.simple_spinner_item);
-//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//        sortBy = (Spinner) view.findViewById(R.id.sortBy);
-//        sortBy.setAdapter(adapter);
-//        ArrayAdapter<CharSequence> adapter1 = ArrayAdapter.createFromResource(this,
-//                R.array.sortWay, android.R.layout.simple_spinner_item);
-//        adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//        sortWay = (Spinner) view.findViewById(R.id.sortWay);
-//        sortWay.setAdapter(adapter1);
-//        items.addHeaderView(view, null, true);
-//
-//        sortBySelectedItem();
+        builder.setNegativeButton("Not now", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+        dialogRate = builder.create();
+        if (!dialogRate.isShowing())
+            dialogRate.show();
     }
 
-    void sortBySelectedItem() {
-//        sortBy.setSelection(sortMethod.equals("name") ? 0 : sortMethod.equals("date") ? 1 : 2);
-    }
 
-    void sortByName() {
-//        if (sortBy.getSelectedItem().toString().equals("name")) {
-//            ArrayList<String> words = new ArrayList<String>();
-//            for (int i = 0; i < arrayItemsToShow.size(); i++) {
-//                words.add(arrayItems.get(getPosition(i)).getWord());
-//            }
-//            Collections.sort(words);
-//
-//            for (int i = 0; i < arrayItemsToShow.size(); i++) {
-//                arrayItemsToShow.get(i).setWord(words.get(i));
-//                arrayItemsToShow.get(i).setChVisible(markSeveral);
-//                arrayItemsToShow.get(i).setWord(showItemNumber ? i + 1 + ". " + arrayItemsToShow.get(i).getWord() : arrayItemsToShow.get(i).getWord());
-//                arrayItemsToShow.get(i).setMeaningVisible(showItemMeaning);
-//            }
-//
-//            adapterWords1.notifyDataSetChanged();
-//            items.setAdapter(adapterWords1);
-//        }
-    }
+
 
     void listeners() {
         items.setOnItemClickListener(new OnItemClickListener() {
@@ -331,29 +334,6 @@ public class MainActivity extends FragmentActivity {
             }
         });
 
-//        sortBy.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                Toast.makeText(MainActivity.this, "Wowww", Toast.LENGTH_SHORT).show();
-//            }
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> parent) {
-//                Toast.makeText(MainActivity.this, "noWOW", Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//
-//        sortWay.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//
-//            }
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> parent) {
-//
-//            }
-//        });
     }
 
 
@@ -371,11 +351,11 @@ public class MainActivity extends FragmentActivity {
         showItemNumber = prefs.getBoolean("showItemNumber", true);
         showItemMeaning = prefs.getBoolean("showItemMeaning", false);
         isDistance = prefs.getString("timeMethod", "distance");
-        sortMethod = prefs.getString("sortMethod", "date");
+        sortMethod = prefs.getString("sortMethod", "dateA");
     }
 
     public void setElementsId() {
-
+        V  = new Names();
         database = new DatabaseHandler(this);
         databaseLeitner = new DatabaseHandlerLeitner(this);
         mainPrefs = getSharedPreferences("main", MODE_PRIVATE);
@@ -406,6 +386,8 @@ public class MainActivity extends FragmentActivity {
         dialogAskDelete = new AlertDialog.Builder(this).create();
         dialogNewPost = new AlertDialog.Builder(this).create();
         dialogExpire = new AlertDialog.Builder(this).create();
+        dialogSortBy = new AlertDialog.Builder(this).create();
+        dialogRate = new AlertDialog.Builder(this).create();
 
         if (checkedPositionsInt == null) {
             checkedPositionsInt = new ArrayList<Integer>();
@@ -448,6 +430,7 @@ public class MainActivity extends FragmentActivity {
         @Override
         public void onClick(View v) {
             if (isReadyToAddNew()) {
+                CheckBox chDontToLeitner = (CheckBox) dialog.findViewById(R.id.chDoOrDoNot);
                 etNewWord = (EditText) dialog.findViewById(R.id.etWord);
                 etNewMeaning = (EditText) dialog.findViewById(R.id.etMeaning);
                 String newWord = etNewWord.getText().toString();
@@ -457,6 +440,13 @@ public class MainActivity extends FragmentActivity {
                 String currentDateAndTime = simpleDateFormat.format(new Date());
 
                 database.addItem(new Custom(newWord, newMeaning, currentDateAndTime, 0));
+
+                if (chDontToLeitner.isChecked()) {
+                    databaseLeitner.addItem(new Item(newWord, newMeaning, currentDateAndTime), V.TABLE_DONT_ADD);
+                } else {
+                    databaseLeitner.addItem(new Item(newWord, newMeaning, currentDateAndTime), V.TABLE_LEITNER);
+                    databaseLeitner.addItem(new Item(newWord, newMeaning, currentDateAndTime), V.TABLE_DONT_ADD);
+                }
 
                 setImgAddVisibility();
                 listViewPosition = items.onSaveInstanceState();
@@ -557,14 +547,11 @@ public class MainActivity extends FragmentActivity {
 
         etNewWord = (EditText) dialogEdit.findViewById(R.id.etWord);
         etNewMeaning = (EditText) dialogEdit.findViewById(R.id.etMeaning);
-        if (fromSearch) {
-            etNewMeaning.setText(arrayItemsToShow.get(fakePosition).getMeaning());
             etNewWord.setText(arrayItems.get(realPosition).getWord());
+            etNewMeaning.setText(arrayItemsToShow.get(fakePosition).getMeaning());
 
-        } else {
-            etNewWord.setText(arrayItems.get(realPosition).getWord());
-            etNewMeaning.setText(arrayItemsToShow.get(fakePosition).getMeaning());
-        }
+        CheckBox chDontToLeitner = (CheckBox) dialogEdit.findViewById(R.id.chDoOrDoNot);
+        chDontToLeitner.setVisibility(View.GONE);
 
         TextView tvTotalCount = (TextView) dialogEdit.findViewById(R.id.tvTotalCount);
         TextView tvHeader = (TextView) dialogEdit.findViewById(R.id.tvHeader);
@@ -694,11 +681,22 @@ public class MainActivity extends FragmentActivity {
         arrayItemsToShow.clear();
         if (database.getItemsCount() > 0) {
             arrayItems.addAll(database.getAllItems());
-            for (Custom custom : database.getAllItems())
+            for (Custom custom : arrayItems)
                 arrayItemsToShow.add(convertToShow(custom));
-//            arrayItemsToShow.addAll(database.getAllItems());
 
-            sortAlphabetical();
+            if (sortMethod.equals("nameA")) {
+                sortNameA();
+            } else if (sortMethod.equals("nameD")) {
+                sortNameD();
+            } else if (sortMethod.equals("dateA")) {
+
+            } else if (sortMethod.equals("dateD")) {
+                sortDateD();
+            } else if (sortMethod.equals("countA")) {
+                sortCountA();
+            } else if (sortMethod.equals("countD")) {
+                sortCountD();
+            }
 
             if (arrayItemsToShow.size() > 0) {
                 for (int i = 0; i < arrayItemsToShow.size(); i++) {
@@ -727,13 +725,13 @@ public class MainActivity extends FragmentActivity {
             setImgAddVisibility();
         }
 
-        if (arrayItemsToShow.size() > 0 )
-            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+//        if (arrayItemsToShow.size() > 0 )
+//            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
 
     }
 
 
-    void sortAlphabetical() {
+    void sortNameA() {
         ArrayList<String> words = new ArrayList<String>();
         for (CustomShow item : arrayItemsToShow) {
             words.add(item.getWord());
@@ -753,6 +751,111 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
+    void sortNameD() {
+        sortNameA();
+        ArrayList<Custom> buff = new ArrayList<Custom>();
+        for (CustomShow item: arrayItemsToShow) {
+            buff.add(convertToCustom(item));
+        }
+        arrayItemsToShow.clear();
+        for (int i = buff.size()-1; i >= 0; i--) {
+            arrayItemsToShow.add(convertToShow(buff.get(i)));
+        }
+    }
+
+    void sortDateD() {
+        ArrayList<Custom> buff = new ArrayList<Custom>();
+        for (CustomShow item: arrayItemsToShow) {
+            buff.add(convertToCustom(item));
+        }
+        arrayItemsToShow.clear();
+        for (int i = buff.size()-1; i >= 0; i--) {
+            arrayItemsToShow.add(convertToShow(buff.get(i)));
+        }
+    }
+
+    void sortCountA() {
+        for (int i = 0; i < arrayItemsToShow.size()-1; i++) {
+            for (int j = 0; j < arrayItemsToShow.size()-1; j++) {
+                if (arrayItemsToShow.get(j).getCount() > arrayItemsToShow.get(j+1).getCount()) {
+                    CustomShow temp = arrayItemsToShow.get(j);
+                    CustomShow temp1 = arrayItemsToShow.get(j+1);
+                    arrayItemsToShow.set(j, temp1);
+                    arrayItemsToShow.set(j+1, temp);
+                }
+            }
+        }
+    }
+
+    void sortCountD() {
+        for (int i = 0; i < arrayItemsToShow.size()-1; i++) {
+            for (int j = 0; j < arrayItemsToShow.size()-1; j++) {
+                if (arrayItemsToShow.get(j).getCount() < arrayItemsToShow.get(j+1).getCount()) {
+                    CustomShow temp = arrayItemsToShow.get(j);
+                    CustomShow temp1 = arrayItemsToShow.get(j+1);
+                    arrayItemsToShow.set(j, temp1);
+                    arrayItemsToShow.set(j+1, temp);
+                }
+            }
+        }
+    }
+
+
+    void showDialogSortBy() {
+
+        LayoutInflater inflater = this.getLayoutInflater();
+        dialogSortBy = new AlertDialog.Builder(this)
+                .setView(inflater.inflate(R.layout.dialog_sort, null))
+                .setTitle("Sort By: ")
+                .setPositiveButton(R.string.ok,
+                        new Dialog.OnClickListener() {
+                            public void onClick(DialogInterface d, int which) {
+                                sortBy();
+                            }
+                        })
+                .create();
+        dialogSortBy.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+        dialogSortBy.show();
+    }
+
+    void sortBy() {
+        if (database.getItemsCount() > 0) {
+            listViewPosition = items.onSaveInstanceState();
+            RadioButton nameA = (RadioButton) dialogSortBy.findViewById(R.id.rbNameA);
+            RadioButton nameD = (RadioButton) dialogSortBy.findViewById(R.id.rbNameD);
+            RadioButton DateA = (RadioButton) dialogSortBy.findViewById(R.id.rbDateA);
+            RadioButton DateD = (RadioButton) dialogSortBy.findViewById(R.id.rbDateD);
+            RadioButton CountA = (RadioButton) dialogSortBy.findViewById(R.id.rbCountA);
+            RadioButton CountD = (RadioButton) dialogSortBy.findViewById(R.id.rbCountD);
+            if (nameA.isChecked()) {
+                sortNameA();
+            } else if (nameD.isChecked()) {
+                sortNameD();
+            } else if (DateA.isChecked()) {
+
+            } else if (DateD.isChecked()) {
+                sortDateD();
+            } else if (CountA.isChecked()) {
+                sortCountA();
+            } else if (CountD.isChecked()) {
+                sortCountD();
+            }
+        }
+        adapterWords1.notifyDataSetChanged();
+        items.setAdapter(adapterWords1);
+
+        if (listViewPosition != null)
+            items.onRestoreInstanceState(listViewPosition);
+
+        if (isFromSearch) {
+            listViewPosition = items.onSaveInstanceState();
+            search(etSearch.getText().toString());
+            items.onRestoreInstanceState(listViewPosition);
+        } else {
+            setImgAddVisibility();
+        }
+
+    }
 
     void setImgAddVisibility() {
         imgAdd = (ImageView) findViewById(R.id.imgAdd);
@@ -763,20 +866,6 @@ public class MainActivity extends FragmentActivity {
             imgAdd.setVisibility(View.GONE);
         }
     }
-
-
-    //Get An Item's Real Position
-    //
-    //
-
-//    int getPosition(final int position) {
-//        for (int i = 0; i < database.getItemsCount(); i++) {
-//            if (arrayItems.get(i).getId() == arrayItemsToShow.get(position).getId()) {
-//                return i;
-//            }
-//        }
-//        return 0;
-//    }
 
     int getPosition(int position) {
         int realPosition = 0;
@@ -885,6 +974,8 @@ public class MainActivity extends FragmentActivity {
             dialogAskDeleteIsOpen = icicle.getBoolean("dialogAskDeleteIsOpen");
             dialogNewPostIsOpen = icicle.getBoolean("dialogNewPostIsOpen");
             dialogExpireIsOpen = icicle.getBoolean("dialogExpireIsOpen");
+            dialogSortByIsOpen = icicle.getBoolean("dialogSortByIsOpen");
+            dialogRateIsOpen = icicle.getBoolean("dialogRateIsOpen");
             listViewPosition = icicle.getParcelable("listViewPosition");
             markSeveral = icicle.getBoolean("markSeveral");
             isFromSearch = icicle.getBoolean("isFromSearch");
@@ -906,7 +997,7 @@ public class MainActivity extends FragmentActivity {
         if (dialogEditIsOpen) {
             dialogMeaningWordPosition = icicle.getInt("dialogMeaningWordPosition");
             if (!dialogEdit.isShowing())
-                    dialogEdit(isFromSearch, dialogMeaningWordPosition, getPosition(dialogMeaningWordPosition));
+                dialogEdit(isFromSearch, dialogMeaningWordPosition, getPosition(dialogMeaningWordPosition));
             EditText wordAddNew = (EditText) dialogEdit.findViewById(R.id.etWord);
             EditText meaningAddNew = (EditText) dialogEdit.findViewById(R.id.etMeaning);
             wordAddNew.setText(icicle.getString("dialogEditWordText"));
@@ -925,6 +1016,14 @@ public class MainActivity extends FragmentActivity {
 
         if (dialogExpireIsOpen) {
             showDialogExpire();
+        }
+
+        if (dialogSortByIsOpen) {
+            showDialogSortBy();
+        }
+
+        if (dialogRateIsOpen) {
+            showDialogRate();
         }
 
         if (markSeveral) {
@@ -1002,6 +1101,14 @@ public class MainActivity extends FragmentActivity {
 
         if (dialogExpire.isShowing()) {
             icicle.putBoolean("dialogExpireIsOpen", dialogExpire.isShowing());
+        }
+
+        if (dialogSortBy.isShowing()) {
+            icicle.putBoolean("dialogSortByIsOpen", dialogSortBy.isShowing());
+        }
+
+        if (dialogRate.isShowing()) {
+            icicle.putBoolean("dialogRateIsOpen", dialogRate.isShowing());
         }
 
         if (markSeveral) {
@@ -1164,10 +1271,9 @@ public class MainActivity extends FragmentActivity {
             case R.id.action_settings:
                 MainActivity.this.startActivity(new Intent(MainActivity.this, Preferences.class));
                 return true;
-            case R.id.action_about:
-                MainActivity.this.startActivity(new Intent(MainActivity.this, AboutActivity.class));
-                return true;
-
+//            case R.id.action_about:
+//                MainActivity.this.startActivity(new Intent(MainActivity.this, AboutActivity.class));
+//                return true;
 
             case R.id.action_mark:
                 if (arrayItemsToShow.size() > 0) {
@@ -1181,6 +1287,10 @@ public class MainActivity extends FragmentActivity {
                 }
                 return true;
 
+//            case R.id.action_sort:
+//                showDialogSortBy();
+
+//                return true;
 
             case R.id.action_delete:
                 menu_Delete();
@@ -1268,9 +1378,6 @@ public class MainActivity extends FragmentActivity {
 
         dialogMeaning.setCanceledOnTouchOutside(true);
     }
-
-
-
 
     public void tvDateOnClick(View view) {
         changeDateToDistanceOnClick();
@@ -1485,10 +1592,10 @@ public class MainActivity extends FragmentActivity {
                 etDate.setText(strDistance);
             }
 
-                isDistanceTemp = "distance";
+            isDistanceTemp = "distance";
         } else {
             etDate.setText(arrayItems.get(getPosition(dialogMeaningWordPosition)).getDate());
-                isDistanceTemp = "date";
+            isDistanceTemp = "date";
         }
     }
 
@@ -1662,7 +1769,7 @@ public class MainActivity extends FragmentActivity {
     }
 
     void checkSiteForVersionChange() {
-        final String currentVersion = mainPrefs.getString("currentVersion", "2.0.2");
+        final String currentVersion = mainPrefs.getString("currentVersion", "2.0.3");
         class FtpTask extends AsyncTask<Void, Integer, Void> {
             FTPClient con;
             boolean succeed = false;

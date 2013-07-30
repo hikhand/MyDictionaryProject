@@ -3,6 +3,10 @@
           android:title="@string/action_mark"
           android:showAsAction="never"/>
 
+    <!--<item android:id="@+id/action_sort"-->
+          <!--android:title="@string/action_sort"-->
+          <!--android:showAsAction="never"/>-->
+
     <item android:id="@+id/action_leitner"
           android:title="@string/action_leitner"
           android:showAsAction="never"/>
@@ -11,8 +15,8 @@
           android:title="@string/action_settings"
           android:showAsAction="never"/>
 
-    <item android:id="@+id/action_about"
-          android:title="About"
-          android:orderInCategory="100"
-          android:showAsAction="never"/>
+    <!--<item android:id="@+id/action_about"-->
+          <!--android:title="About"-->
+          <!--android:orderInCategory="100"-->
+          <!--android:showAsAction="never"/>-->
 </menu>
