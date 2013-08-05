@@ -70,28 +70,14 @@ class DatabaseHandler extends SQLiteOpenHelper {
 
         ContentValues values = new ContentValues();
 
-//        values.put(KEY_ID, item.getId());
         values.put(KEY_WORD, item.getWord());
         values.put(KEY_MEANING, item.getMeaning());
         values.put(KEY_DATE, item.getDate());
         values.put(KEY_COUNT, item.getCount());
 
-
-        Log.d("id value : ", Integer.toString(item.getId()));
-
-//        db.insert(TABLE_WORDS, null, values);
         db.insert(TABLE_WORDS, null, values);
-//        db.insertWithOnConflict(TABLE_WORDS, null, values, SQLiteDatabase.CONFLICT_IGNORE);
         db.close();
 
-//        ContentValues values = new ContentValues();
-//        values.put(KEY_WORD, item.getWord()); // Contact Phone Number
-//        values.put(KEY_MEANING, item.getMeaning()); // Contact Phone Number
-//        values.put(KEY_DATE, item.getDate()); // Contact Phone Number
-//        values.put(KEY_COUNT, item.getCount());
-//        // Inserting Row
-//        db.insert(TABLE_WORDS, null, values);
-//        db.close(); // Closing database connection
     }
 
 

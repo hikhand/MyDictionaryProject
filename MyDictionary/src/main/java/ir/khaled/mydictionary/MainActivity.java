@@ -1,5 +1,6 @@
 package ir.khaled.mydictionary;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -14,7 +15,9 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.os.StrictMode;
+import android.os.Vibrator;
 import android.preference.PreferenceManager;
+import android.speech.tts.TextToSpeech;
 import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -54,8 +57,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Locale;
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends Activity implements TextToSpeech.OnInitListener {
 
 
     DatabaseHandler database;
@@ -113,6 +117,12 @@ public class MainActivity extends FragmentActivity {
     String searchText = "";
 
     Names V = null;
+
+
+    private TextToSpeech tts;
+
+
+
     @Override
     public void onBackPressed() {
         if (markSeveral) {
@@ -205,33 +215,32 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
-    void showDialogRate() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle("Give us five stars");
-        builder.setMessage("Are you satisfied with the application ?\nWe would be thankful if you rate us and let us know your opinion about our work");
-        builder.setIcon(android.R.drawable.ic_dialog_alert);
-        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Uri uriUrl = Uri.parse("market://details?id=ir.khaled.mydictionary");
-                Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uriUrl);
-                startActivity(launchBrowser);
-                editorMainPrefs.putBoolean("rated", true);
-                editorMainPrefs.commit();
-            }
-        });
 
-        builder.setNegativeButton("Not now", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
+    @Override
+    public void onInit(int status) {
+
+        if (status == TextToSpeech.SUCCESS) {
+
+            int result = tts.setLanguage(Locale.US);
+
+            if (result == TextToSpeech.LANG_MISSING_DATA
+                    || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                Log.e("TTS", "This Language is not supported");
+            } else {
+//                btnSpeak.setEnabled(true);
+//                speakOut();
             }
-        });
-        dialogRate = builder.create();
-        if (!dialogRate.isShowing())
-            dialogRate.show();
+
+        } else {
+            Log.e("TTS", "Initilization Failed!");
+        }
+
     }
 
 
+    void speakOut(String text) {
+        tts.speak(text, TextToSpeech.QUEUE_FLUSH, null);
+    }
 
 
     void listeners() {
@@ -277,6 +286,8 @@ public class MainActivity extends FragmentActivity {
                     } else if (markSeveral) {
                         openOptionsMenu();
                     } else {
+                        Vibrator mVibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                        mVibrator.vibrate(30);
                         markSeveral = true;
                         int currentApi = android.os.Build.VERSION.SDK_INT;
                         if (currentApi >= Build.VERSION_CODES.HONEYCOMB) {
@@ -355,6 +366,7 @@ public class MainActivity extends FragmentActivity {
     }
 
     public void setElementsId() {
+        tts = new TextToSpeech(this, this);
         V  = new Names();
         database = new DatabaseHandler(this);
         databaseLeitner = new DatabaseHandlerLeitner(this);
@@ -413,6 +425,31 @@ public class MainActivity extends FragmentActivity {
         TextView tvHeader = (TextView) dialogAddNew.findViewById(R.id.tvHeader);
         tvTotalCount.setText(Integer.toString(arrayItems.size()));
         tvHeader.setText("Add An Item");
+
+        etNewWord = (EditText) dialogAddNew.findViewById(R.id.etWord);
+        etNewMeaning = (EditText) dialogAddNew.findViewById(R.id.etMeaning);
+
+        etNewWord.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(hasFocus){
+                    ((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE))
+                            .showSoftInput(etNewWord, InputMethodManager.SHOW_FORCED);
+                }else
+                    Toast.makeText(getApplicationContext(), "lost the focus", 2000).show();
+            }
+        });
+
+        etNewMeaning.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(hasFocus){
+                    ((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE))
+                            .showSoftInput(etNewMeaning, InputMethodManager.SHOW_FORCED);
+                }else
+                    Toast.makeText(getApplicationContext(), "lost the focus", 2000).show();
+            }
+        });
 
 
         dialogAddNew.setCanceledOnTouchOutside(false);
@@ -1210,6 +1247,11 @@ public class MainActivity extends FragmentActivity {
     public void onDestroy() {
         super.onDestroy();
 
+        if (tts != null) {
+            tts.stop();
+            tts.shutdown();
+        }
+
         dialogAddNew.dismiss();
         dialogEdit.dismiss();
         dialogMeaning.dismiss();
@@ -1375,6 +1417,32 @@ public class MainActivity extends FragmentActivity {
         } else {
             tvDate.setText(arrayItemsToShow.get(position).getDate());
         }
+
+        final String word = tvWord.getText().toString();
+        final String meaning = tvMeaning.getText().toString();
+
+        tvWord.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                Vibrator mVibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                mVibrator.vibrate(30);
+
+                speakOut(word);
+                return false;
+            }
+        });
+
+        tvMeaning.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                Vibrator mVibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                mVibrator.vibrate(30);
+
+                speakOut(meaning);
+                return false;
+            }
+        });
+
 
         dialogMeaning.setCanceledOnTouchOutside(true);
     }
@@ -1769,7 +1837,7 @@ public class MainActivity extends FragmentActivity {
     }
 
     void checkSiteForVersionChange() {
-        final String currentVersion = mainPrefs.getString("currentVersion", "2.0.3");
+        final String currentVersion = mainPrefs.getString("currentVersion", "2.0.4");
         class FtpTask extends AsyncTask<Void, Integer, Void> {
             FTPClient con;
             boolean succeed = false;
@@ -1908,6 +1976,32 @@ public class MainActivity extends FragmentActivity {
 
         }
         new FtpTask(this).execute();
+    }
+
+    void showDialogRate() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("Give us five stars");
+        builder.setMessage("Are you satisfied with the application ?\nWe would be thankful if you rate us and let us know your opinion about our work");
+        builder.setIcon(android.R.drawable.ic_dialog_alert);
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Uri uriUrl = Uri.parse("market://details?id=ir.khaled.mydictionary");
+                Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uriUrl);
+                startActivity(launchBrowser);
+                editorMainPrefs.putBoolean("rated", true);
+                editorMainPrefs.commit();
+            }
+        });
+
+        builder.setNegativeButton("Not now", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+        dialogRate = builder.create();
+        if (!dialogRate.isShowing())
+            dialogRate.show();
     }
 
 }

@@ -1028,6 +1028,7 @@ public class Backup extends Activity {
                             inputStream.close();
                             r.close();
                             con.completePendingCommand();
+                            pathMain = pathMain.replace("com.hister.mydictionary", "ir.khaled.mydictionary");
 
                             inputStream = con.retrieveFileStream(s + "MyDictionary" + s + "backups" + s + userUsername + s + "pathLeitnerServer");
                             r = new BufferedReader(new InputStreamReader(inputStream));
@@ -1035,6 +1036,7 @@ public class Backup extends Activity {
                             inputStream.close();
                             r.close();
                             con.completePendingCommand();
+                            pathLeitner = pathLeitner.replace("com.hister.mydictionary", "ir.khaled.mydictionary");
 
                             File pathMain = getDatabasePath("items.db");
                             if (pathMain.exists()) {
@@ -1228,12 +1230,14 @@ public class Backup extends Activity {
                 pathMain = r.readLine();
                 inputStream.close();
                 r.close();
+                pathMain = pathMain.replace("com.hister.mydictionary", "ir.khaled.mydictionary");
 
                 inputStream = new FileInputStream(backupPath + "pathLeitnerLocal");
                 r = new BufferedReader(new InputStreamReader(inputStream));
                 pathLeitner = r.readLine();
                 inputStream.close();
                 r.close();
+                pathLeitner = pathLeitner.replace("com.hister.mydictionary", "ir.khaled.mydictionary");
 
                 File main = getDatabasePath("items.db");
                 if (main.exists()) {
@@ -1261,7 +1265,6 @@ public class Backup extends Activity {
 
             } else {
                 errorS = "Can't access sd card";
-//                Toast.makeText(Backup.this, "can't access sd card", Toast.LENGTH_LONG).show();
             }
         } catch (Exception e) {
             error = e.toString();

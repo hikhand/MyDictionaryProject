@@ -43,40 +43,58 @@
             android:layout_marginRight="12dp"
             android:padding="1dp"/>
 
-    <EditText
-            android:id="@+id/etWord"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:hint="@string/word"
-            android:singleLine="true"
-            android:inputType="textCapSentences"
-            android:textIsSelectable="false"
-            android:layout_below="@+id/imageView"/>
-
-    <EditText
-            android:id="@+id/etMeaning"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/meaning"
-            android:singleLine="false"
-            android:inputType="textCapSentences"
-            android:textIsSelectable="false"
-            android:layout_below="@+id/etWord"
-            android:layout_alignLeft="@+id/etWord"
-            android:layout_alignRight="@+id/etWord"
-            android:layout_marginTop="5dp"/>
-
-    <CheckBox
+    <ScrollView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Do not add to leitner"
-            android:id="@+id/chDoOrDoNot"
-            android:layout_below="@+id/etMeaning"
-            android:layout_alignParentLeft="true"
-            android:layout_marginTop="5dp"
-            android:checked="false"
-            android:layout_alignLeft="@+id/etWord"/>
+            android:id="@+id/scrollView"
+            android:layout_below="@+id/imageView">
+
+        <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+
+            <EditText
+                    android:id="@+id/etMeaning"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/meaning"
+                    android:singleLine="false"
+                    android:inputType="textMultiLine|textCapSentences"
+                    android:textIsSelectable="true"
+                    android:layout_below="@+id/etWord"
+                    android:layout_alignLeft="@+id/etWord"
+                    android:layout_alignRight="@+id/etWord"
+                    android:layout_marginTop="5dp"
+                    android:maxLines="100"
+                    android:enabled="true"
+                    android:editable="true"/>
+
+            <EditText
+                    android:id="@+id/etWord"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:hint="@string/word"
+                    android:singleLine="false"
+                    android:inputType="textMultiLine|textCapSentences"
+                    android:textIsSelectable="false"
+                    android:maxLines="100"
+                    android:editable="true"
+                    android:enabled="true"/>
+
+            <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Do not add to leitner"
+                    android:id="@+id/chDoOrDoNot"
+                    android:layout_below="@+id/etMeaning"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginTop="5dp"
+                    android:checked="false"
+                    android:layout_alignLeft="@+id/etWord"/>
+        </RelativeLayout>
+    </ScrollView>
+
 </RelativeLayout>

@@ -17,7 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Version 2.0.3 pro"
+            android:text="Version 2.0.4 pro"
             android:id="@+id/textView"
             android:layout_below="@+id/imageView"
             android:layout_centerHorizontal="true"

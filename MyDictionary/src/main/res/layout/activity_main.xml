@@ -10,10 +10,11 @@
             android:layout_height="wrap_content"
             android:id="@+id/listView"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="55dp"
-            android:layout_marginBottom="5dp"
+            android:layout_marginTop="45dp"
+            android:layout_marginBottom="0dp"
             android:drawSelectorOnTop="false"
-            android:choiceMode="multipleChoice"/>
+            android:choiceMode="multipleChoice"
+            />
 
     <Button
             android:layout_width="wrap_content"
@@ -24,10 +25,9 @@
             android:layout_centerHorizontal="true"
             android:onClick="AddNew"
             android:layout_alignParentRight="false"
-            android:layout_marginTop="5dp"
             android:layout_marginRight="5dp"
             android:layout_alignParentLeft="true"
-            android:layout_marginLeft="5dp"/>
+            android:layout_marginLeft="0dp"/>
 
     <EditText
             android:layout_width="wrap_content"
@@ -35,8 +35,6 @@
             android:id="@+id/etSearch"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="false"
-            android:layout_marginTop="8dp"
-            android:layout_marginLeft="5dp"
             android:singleLine="true"
             android:layout_toRightOf="@+id/button"
             android:layout_alignParentRight="true"
@@ -45,7 +43,9 @@
             android:imeOptions="actionSearch"
             android:layout_marginRight="5dp"
             android:layout_alignBottom="@+id/button"
-            android:hint="Search here"/>
+            android:hint="Search here"
+            android:layout_marginTop="8dp"
+            android:layout_alignBaseline="@+id/button"/>
 
     <ImageView
             android:layout_width="wrap_content"

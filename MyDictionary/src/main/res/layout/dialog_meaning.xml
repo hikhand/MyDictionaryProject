@@ -49,7 +49,8 @@
             android:layout_marginTop="25dp"
             android:fillViewport="false"
             android:layout_alignParentLeft="true"
-            android:layout_marginRight="10dp">
+            android:layout_marginRight="10dp"
+            >
 
         <TextView
                 android:layout_width="wrap_content"
@@ -59,11 +60,11 @@
                 android:layout_below="@+id/dmDate"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="10dp"
-                android:text="im the word im the "
+                android:text="im the word im the im the word im the im the word im the im the word im the im the word im the im the word im the im the word im the im the word im the im the word im the im the word im the "
                 android:textStyle="italic"
                 android:textColor="#777577"
                 android:gravity="left"
-                android:maxHeight="150dp"/>
+                android:maxHeight="170dp"/>
     </ScrollView>
 
     <ImageView
@@ -79,7 +80,6 @@
             android:layout_height="wrap_content"
             android:id="@+id/scrollView"
             android:layout_below="@+id/imageView"
-            android:layout_marginTop="10dp"
             android:fillViewport="false"
             android:layout_marginLeft="15dp"
             android:layout_marginRight="12dp"
@@ -92,9 +92,9 @@
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:id="@+id/dmMeaning"
                 android:text="and im the meaning and im the meaning and im the meaning and im the meaning"
-                android:textIsSelectable="false"
                 android:textSize="24dp"
-                android:textColor="#363636"/>
+                android:textColor="#363636"
+                android:paddingTop="8dp"/>
     </ScrollView>
 
 </RelativeLayout>

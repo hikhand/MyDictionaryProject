@@ -36,7 +36,8 @@
             android:layout_alignBottom="@+id/text1"
             android:visibility="visible"
             android:layout_marginBottom="5dp"
-            android:gravity="right"/>
+            android:gravity="right"
+            android:singleLine="true"/>
 
     <CheckBox
             android:layout_width="wrap_content"

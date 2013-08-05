@@ -27,22 +27,22 @@
     <option name="TOOL_WINDOW_LOG_LEVEL" value="ERROR" />
   </component>
   <component name="BookmarkManager">
-    <bookmark url="file://$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/LeitnerActivity.java" line="238" />
+    <bookmark url="file://$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/LeitnerActivity.java" line="272" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ed822939-832a-4899-8eb7-98fb85400bdc" name="Default" comment="">
-      <change type="DELETED" beforePath="D:\My Dictionary\MyDictionaryProject\MyDictionary\src\main\res\menu\main_activity1.xml" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MyDictionary/src/main/AndroidManifest.xml" afterPath="$PROJECT_DIR$/MyDictionary/src/main/AndroidManifest.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/DataBaseHandlerLeitner.java" afterPath="$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/DataBaseHandlerLeitner.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/Backup.java" afterPath="$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/Backup.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/LeitnerActivity.java" afterPath="$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/LeitnerActivity.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/MainActivity.java" afterPath="$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/MainActivity.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/SQLiteOpenHelper.java" afterPath="$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/SQLiteOpenHelper.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MyDictionary/src/main/res/layout/about.xml" afterPath="$PROJECT_DIR$/MyDictionary/src/main/res/layout/about.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MyDictionary/src/main/res/layout/activity_leitner.xml" afterPath="$PROJECT_DIR$/MyDictionary/src/main/res/layout/activity_leitner.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MyDictionary/src/main/res/layout/activity_main.xml" afterPath="$PROJECT_DIR$/MyDictionary/src/main/res/layout/activity_main.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MyDictionary/src/main/res/layout/dialog_addnew.xml" afterPath="$PROJECT_DIR$/MyDictionary/src/main/res/layout/dialog_addnew.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MyDictionary/src/main/res/menu/leitner.xml" afterPath="$PROJECT_DIR$/MyDictionary/src/main/res/menu/leitner.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MyDictionary/src/main/res/menu/main.xml" afterPath="$PROJECT_DIR$/MyDictionary/src/main/res/menu/main.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MyDictionary/src/main/res/layout/preferences.xml" afterPath="$PROJECT_DIR$/MyDictionary/src/main/res/layout/preferences.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MyDictionary/src/main/res/values/strings.xml" afterPath="$PROJECT_DIR$/MyDictionary/src/main/res/values/strings.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MyDictionary/src/main/res/layout/dialog_meaning.xml" afterPath="$PROJECT_DIR$/MyDictionary/src/main/res/layout/dialog_meaning.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/dictionaries/khaled.xml" afterPath="$PROJECT_DIR$/.idea/dictionaries/khaled.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MyDictionary/src/main/res/layout/row.xml" afterPath="$PROJECT_DIR$/MyDictionary/src/main/res/layout/row.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="MyDictionary.iws" />
@@ -69,7 +69,6 @@
     <disable_hints />
   </component>
   <component name="DebuggerManager">
-    <ui_properties default_suspend_policy="SuspendAll" default_condition_enabled="true" />
     <breakpoint_any default_suspend_policy="SuspendAll" default_condition_enabled="true">
       <breakpoint>
         <option name="NOTIFY_CAUGHT" value="true" />
@@ -106,6 +105,7 @@
         <option name="LOG_MESSAGE" value="" />
       </breakpoint>
     </breakpoint_any>
+    <ui_properties default_suspend_policy="SuspendAll" default_condition_enabled="true" />
     <method_breakpoints default_suspend_policy="SuspendAll" default_condition_enabled="true" />
     <line_breakpoints default_suspend_policy="SuspendAll" default_condition_enabled="true" />
     <breakpoint_rules />
@@ -116,204 +116,7 @@
     <favorites_list name="MyDictionary" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file leaf-file-name="LeitnerActivity.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/LeitnerActivity.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="303" column="0" selection-start="10593" selection-end="10593" vertical-scroll-proportion="0.0" vertical-offset="1686" max-vertical-offset="6324">
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#1264#1298#0" expanded="false" />
-                <element signature="method#onSearchRequested#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#onCreate#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#setElementsId#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="e#3938#3963#0" expanded="false" />
-                <element signature="method#setElementsValue#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#putNewFromMdToDatabase#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#refreshListViewData#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#sortNameA#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#sortNameD#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#sortCountA#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#sortCountD#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#summery_OnClick#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#dialogSummery#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="class#13136:13318" expanded="false" />
-                <element signature="method#onClick#0;class#13136:13318" expanded="false" />
-                <element signature="method#refreshShow#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#refreshLessThan30#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#refreshMoreThan30#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#convertToItemShow#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#convertToItem#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#listeners#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="e#32810#32910#0" expanded="false" />
-                <element signature="class#35285:35979" expanded="false" />
-                <element signature="method#beforeTextChanged#0;class#35285:35979" expanded="false" />
-                <element signature="method#onTextChanged#0;class#35285:35979" expanded="false" />
-                <element signature="method#afterTextChanged#0;class#35285:35979" expanded="false" />
-                <element signature="method#notifyCheckedPositionsInt#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#dialogEdit#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="class#36700:36838" expanded="false" />
-                <element signature="method#onClick#0;class#36700:36838" expanded="false" />
-                <element signature="class#CustomListenerEdit#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#CustomListenerEdit#0;class#CustomListenerEdit#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#onClick#0;class#CustomListenerEdit#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#dialogAskDelete#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#AddNew#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#dialogAddNew#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="class#42594:42756" expanded="false" />
-                <element signature="method#onClick#0;class#42594:42756" expanded="false" />
-                <element signature="class#CustomListenerAddNew#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#CustomListenerAddNew#0;class#CustomListenerAddNew#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#onClick#0;class#CustomListenerAddNew#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#isReadyToAddNew#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#getDistance#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#getPosition#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#getPosition#1;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#delete#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#isReadyEdit#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#isStringJustSpace#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#getPrefs#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#clearMarks#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#menu_Delete#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#dialogAskDeleteByMark#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="class#59063:59213" expanded="false" />
-                <element signature="method#onClick#0;class#59063:59213" expanded="false" />
-                <element signature="method#tvAddDateOnClick#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#tvLastDateOnClick#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#dialogMeaning#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="e#61482#61541#0" expanded="false" />
-                <element signature="class#CustomListenerMeaning#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#CustomListenerMeaning#0;class#CustomListenerMeaning#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#onClick#0;class#CustomListenerMeaning#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#name_click#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#name_Click#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="e#65434#65535#0" expanded="false" />
-                <element signature="method#indexDeck#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#move_Next_Correct#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#whichIndexTurnDeck#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#lastIndexMore30#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#nextIndexMore30#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#update_Info_After_Answer#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#updateIndexesLastDayLessThan30#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#updateIndexLastDayMoreThan30#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#onSaveInstanceState#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#restore#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#onBackPressed#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#onPause#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#onStop#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="e#125762#125853#0" expanded="false" />
-                <element signature="method#onResume#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#onDestroy#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#onCreateOptionsMenu#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="method#onPrepareOptionsMenu#0;class#LeitnerActivity#0" expanded="false" />
-                <element signature="e#127811#127879#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MainActivity.java" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/MainActivity.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="1763" column="11" selection-start="71056" selection-end="71056" vertical-scroll-proportion="0.2792128" vertical-offset="13050" max-vertical-offset="14467">
-              <folding>
-                <element signature="method#onBackPressed#0;class#MainActivity#0" expanded="false" />
-                <element signature="method#onSearchRequested#0;class#MainActivity#0" expanded="false" />
-                <element signature="e#7541#8007#0" expanded="true" />
-                <element signature="e#7996#7997#0" expanded="true" />
-                <element signature="e#8513#8560#0" expanded="false" />
-                <element signature="method#beforeTextChanged#0;class#12067:12766" expanded="false" />
-                <element signature="method#onTextChanged#0;class#12067:12766" expanded="false" />
-                <element signature="method#afterTextChanged#0;class#12067:12766" expanded="false" />
-                <element signature="method#notifyCheckedPositionsInt#0;class#MainActivity#0" expanded="false" />
-                <element signature="method#getPrefs#0;class#MainActivity#0" expanded="false" />
-                <element signature="method#dialogAddNew#0;class#MainActivity#0" expanded="false" />
-                <element signature="class#15423:15585" expanded="false" />
-                <element signature="method#onClick#0;class#15423:15585" expanded="false" />
-                <element signature="class#CustomListenerAddNew#0;class#MainActivity#0" expanded="false" />
-                <element signature="method#CustomListenerAddNew#0;class#CustomListenerAddNew#0;class#MainActivity#0" expanded="false" />
-                <element signature="method#onClick#0;class#CustomListenerAddNew#0;class#MainActivity#0" expanded="false" />
-                <element signature="method#search#0;class#MainActivity#0" expanded="false" />
-                <element signature="method#convertToShow#0;class#MainActivity#0" expanded="false" />
-                <element signature="method#convertToCustom#0;class#MainActivity#0" expanded="false" />
-                <element signature="method#dialogEdit#0;class#MainActivity#0" expanded="false" />
-                <element signature="class#21059:21197" expanded="false" />
-                <element signature="method#onClick#0;class#21059:21197" expanded="false" />
-                <element signature="class#CustomListenerEdit#0;class#MainActivity#0" expanded="false" />
-                <element signature="method#CustomListenerEdit#0;class#CustomListenerEdit#0;class#MainActivity#0" expanded="false" />
-                <element signature="method#onClick#0;class#CustomListenerEdit#0;class#MainActivity#0" expanded="false" />
-                <element signature="e#25271#25336#0" expanded="false" />
-                <element signature="method#dialogAskDelete#0;class#MainActivity#0" expanded="false" />
-                <element signature="method#refreshItemsCount#0;class#MainActivity#0" expanded="false" />
-                <element signature="method#delete#0;class#MainActivity#0" expanded="false" />
-                <element signature="method#refreshListViewData#0;class#MainActivity#0" expanded="false" />
-                <element signature="e#30712#30755#0" expanded="false" />
-                <element signature="method#sortNameA#0;class#MainActivity#0" expanded="false" />
-                <element signature="method#sortNameD#0;class#MainActivity#0" expanded="false" />
-                <element signature="method#sortDateD#0;class#MainActivity#0" expanded="false" />
-                <element signature="method#sortCountA#0;class#MainActivity#0" expanded="false" />
-                <element signature="method#sortCountD#0;class#MainActivity#0" expanded="false" />
-                <element signature="method#setImgAddVisibility#0;class#MainActivity#0" expanded="false" />
-                <element signature="method#getPosition#0;class#MainActivity#0" expanded="false" />
-                <element signature="method#getPosition#1;class#MainActivity#0" expanded="false" />
-                <element signature="method#isReadyToAddNew#0;class#MainActivity#0" expanded="false" />
-                <element signature="method#isReadyEdit#0;class#MainActivity#0" expanded="false" />
-                <element signature="method#isStringJustSpace#0;class#MainActivity#0" expanded="false" />
-                <element signature="method#clearMarks#0;class#MainActivity#0" expanded="false" />
-                <element signature="method#AddNew#0;class#MainActivity#0" expanded="false" />
-                <element signature="method#dialogAskDeleteByMark#0;class#MainActivity#0" expanded="false" />
-                <element signature="class#48064:48214" expanded="false" />
-                <element signature="method#onClick#0;class#48064:48214" expanded="false" />
-                <element signature="method#menu_Delete#0;class#MainActivity#0" expanded="false" />
-                <element signature="method#onPause#0;class#MainActivity#0" expanded="false" />
-                <element signature="method#onStop#0;class#MainActivity#0" expanded="false" />
-                <element signature="method#onResume#0;class#MainActivity#0" expanded="false" />
-                <element signature="method#onDestroy#0;class#MainActivity#0" expanded="false" />
-                <element signature="method#onCreateOptionsMenu#0;class#MainActivity#0" expanded="false" />
-                <element signature="method#onPrepareOptionsMenu#0;class#MainActivity#0" expanded="false" />
-                <element signature="e#51409#51446#0" expanded="false" />
-                <element signature="method#dialogMeaning#0;class#MainActivity#0" expanded="false" />
-                <element signature="e#54312#54371#0" expanded="false" />
-                <element signature="method#tvDateOnClick#0;class#MainActivity#0" expanded="false" />
-                <element signature="method#changeDateToDistanceOnClick#0;class#MainActivity#0" expanded="false" />
-                <element signature="method#backup#0;class#MainActivity#0" expanded="false" />
-                <element signature="method#upload#0;class#MainActivity#0" expanded="false" />
-                <element signature="e#65777#65800#0" expanded="false" />
-                <element signature="e#66906#67017#0" expanded="false" />
-                <element signature="method#FtpTask#0;class#67769:69901" expanded="false" />
-                <element signature="method#onPreExecute#0;class#67769:69901" expanded="false" />
-                <element signature="method#doInBackground#0;class#67769:69901" expanded="false" />
-                <element signature="method#onProgressUpdate#0;class#67769:69901" expanded="false" />
-                <element signature="method#FtpTask#0;class#71369:73328" expanded="false" />
-                <element signature="method#onPreExecute#0;class#71369:73328" expanded="false" />
-                <element signature="method#doInBackground#0;class#71369:73328" expanded="false" />
-                <element signature="method#onProgressUpdate#0;class#71369:73328" expanded="false" />
-                <element signature="method#countMe#0;class#MainActivity#0" expanded="false" />
-                <element signature="class#74691:76342" expanded="false" />
-                <element signature="method#FtpTask#0;class#74691:76342" expanded="false" />
-                <element signature="method#onPreExecute#0;class#74691:76342" expanded="false" />
-                <element signature="method#doInBackground#0;class#74691:76342" expanded="false" />
-                <element signature="method#onPostExecute#0;class#74691:76342" expanded="false" />
-                <element signature="method#onProgressUpdate#0;class#74691:76342" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="AndroidManifest.xml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/AndroidManifest.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="31" column="74" selection-start="1211" selection-end="1211" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1088">
-              <folding>
-                <element signature="e#453#471#0" expanded="true" />
-                <element signature="e#1563#1594#0" expanded="true" />
-                <element signature="e#1982#2014#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <leaf />
   </component>
   <component name="FindManager">
     <FindUsagesManager>
@@ -637,22 +440,22 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/Backup.java" />
-        <option value="$PROJECT_DIR$/MyDictionary/build.gradle" />
-        <option value="$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/N.java" />
-        <option value="$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/Names.java" />
-        <option value="$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/DataBaseHandlerLeitner.java" />
-        <option value="$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/SQLiteOpenHelper.java" />
-        <option value="$PROJECT_DIR$/MyDictionary/src/main/res/layout/dialog_addnew.xml" />
-        <option value="$PROJECT_DIR$/MyDictionary/src/main/res/values/strings.xml" />
-        <option value="$PROJECT_DIR$/MyDictionary/src/main/res/layout/dialog_sort.xml" />
         <option value="$PROJECT_DIR$/MyDictionary/src/main/res/menu/main.xml" />
         <option value="$PROJECT_DIR$/MyDictionary/src/main/res/menu/leitner.xml" />
-        <option value="$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/LeitnerActivity.java" />
-        <option value="$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/MainActivity.java" />
-        <option value="$PROJECT_DIR$/MyDictionary/src/main/AndroidManifest.xml" />
         <option value="$PROJECT_DIR$/MyDictionary/src/main/res/layout/preferences.xml" />
+        <option value="$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/SQLiteOpenHelper.java" />
+        <option value="$PROJECT_DIR$/MyDictionary/src/main/res/drawable/rectangle.xml" />
+        <option value="$PROJECT_DIR$/MyDictionary/src/main/res/layout/dialog_summery.xml" />
+        <option value="$PROJECT_DIR$/MyDictionary/src/main/res/layout/activity_main.xml" />
+        <option value="$PROJECT_DIR$/MyDictionary/src/main/res/layout/row.xml" />
+        <option value="$PROJECT_DIR$/MyDictionary/src/main/res/layout/dialog_addnew.xml" />
+        <option value="$PROJECT_DIR$/MyDictionary/src/main/res/layout/activity_leitner.xml" />
+        <option value="$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/Backup.java" />
+        <option value="$PROJECT_DIR$/MyDictionary/src/main/res/layout/dialog_meaning.xml" />
+        <option value="$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/LeitnerActivity.java" />
+        <option value="$PROJECT_DIR$/MyDictionary/src/main/AndroidManifest.xml" />
         <option value="$PROJECT_DIR$/MyDictionary/src/main/res/layout/about.xml" />
+        <option value="$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/MainActivity.java" />
       </list>
     </option>
   </component>
@@ -721,165 +524,27 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="ProjectPane">
-        <subPane>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MyDictionary" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MyDictionary" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MyDictionaryProject" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MyDictionary" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MyDictionaryProject" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MyDictionary" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MyDictionary" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MyDictionaryProject" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MyDictionary" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MyDictionary" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MyDictionaryProject" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MyDictionary" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="res" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MyDictionary" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MyDictionaryProject" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MyDictionary" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="res" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="layout" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MyDictionary" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MyDictionaryProject" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MyDictionary" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="mydictionary" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
-      </pane>
-      <pane id="Scope" />
       <pane id="PackagesPane" />
+      <pane id="Scope" />
+      <pane id="ProjectPane">
+        <subPane />
+      </pane>
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="project.structure.last.edited" value="Modules" />
+    <property name="project.structure.last.edited" value="Libraries" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="OverrideImplement.combined" value="true" />
     <property name="options.splitter.main.proportions" value="0.3" />
-    <property name="ExportedApkPath" value="D:\My Dictionary\MyDictionaryProject\MyDictionary\MyDictionary2.0.3.apk" />
+    <property name="ExportedApkPath" value="D:\My Dictionary\MyDictionaryProject\MyDictionary\MyDictionary2.0.4.apk" />
     <property name="recentsLimit" value="5" />
     <property name="MemberChooser.sorted" value="false" />
     <property name="UI_DESIGNER_EDITOR_MODE.PaletteToolWindowManager.SHOW" value="true" />
     <property name="ExportedModule" value="MyDictionary" />
     <property name="UI_DESIGNER_EDITOR_MODE.PaletteToolWindowManager.WIDTH" value="442" />
-    <property name="last_opened_file_path" value="D:/My Dictionary Free/MyDictionaryFreeProject" />
+    <property name="last_opened_file_path" value="D:/My Dictionary Free/MyDictionaryFreeProject/MyDictionaryFree/libs/adad-1.3.jar!/" />
     <property name="GoToClass.toSaveIncludeLibraries" value="false" />
+    <property name="ANDROID_EXTENDED_DEVICE_CHOOSER_AVD" value="n4" />
     <property name="OverrideImplement.overriding.sorted" value="false" />
     <property name="FullScreen" value="false" />
     <property name="MemberChooser.showClasses" value="true" />
@@ -887,7 +552,7 @@
     <property name="GoToClass.includeLibraries" value="false" />
     <property name="options.splitter.details.proportions" value="0.2" />
     <property name="GoToFile.includeJavaFiles" value="false" />
-    <property name="UI_DESIGNER_EDITOR_MODE.UIDesignerToolWindowManager2.WIDTH" value="290" />
+    <property name="UI_DESIGNER_EDITOR_MODE.UIDesignerToolWindowManager2.WIDTH" value="289" />
     <property name="options.lastSelected" value="vcs.Git" />
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="ANDROID_EXTENDED_DEVICE_CHOOSER_SERIALS" value="SH17EV802157" />
@@ -1078,64 +743,64 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1296" height="1010" extended-state="6" />
+    <frame x="-8" y="-8" width="1296" height="1010" extended-state="0" />
     <editor active="false" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32786885" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3274648" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3298217" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3309859" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.30907172" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.30985916" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.30868545" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3298217" sideWeight="0.6889671" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="true" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3325527" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.44248825" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.44131455" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3298217" sideWeight="0.6619718" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3298122" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24959481" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3298217" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.26418152" sideWeight="0.6690141" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.36403033" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.26012966" sideWeight="0.6690141" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.36267605" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Documentation" active="false" anchor="right" auto_hide="true" internal_type="DOCKED" type="FLOATING" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" x="96" y="96" width="1088" height="802" />
       <window_info id="Problems" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3298122" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="combo" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3298217" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3309859" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3325527" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
     <layout-to-restore>
-      <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Documentation" active="false" anchor="right" auto_hide="true" internal_type="DOCKED" type="FLOATING" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" x="96" y="96" width="1088" height="802" />
-      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32937366" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3274648" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Problems" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3298122" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3673709" sideWeight="0.5" order="9" side_tool="true" content_ui="tabs" />
-      <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3088553" sideWeight="0.5" order="9" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3298217" sideWeight="0.6619718" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="true" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3298122" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.27633712" sideWeight="0.6889671" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3673709" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3298217" sideWeight="0.6619718" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.26012966" sideWeight="0.6690141" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.36267605" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="combo" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3298217" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32629108" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.31103286" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3347732" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
-      <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.44248825" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
+      <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3298217" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3309859" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.30907172" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3298217" sideWeight="0.6889671" order="3" side_tool="true" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3325527" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.44131455" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24959481" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3298217" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout-to-restore>
   </component>
@@ -1204,116 +869,121 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/Names.java">
+    <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/res/drawable/rectangle.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="2" column="3" selection-start="36" selection-end="36" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="272">
-          <folding />
-        </state>
+        <state line="8" column="39" selection-start="420" selection-end="420" vertical-scroll-proportion="0.1646489" vertical-offset="0" max-vertical-offset="826" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/res/layout/dialog_addnew.xml">
-      <provider editor-type-id="text-editor">
-        <state line="81" column="17" selection-start="3266" selection-end="3266" vertical-scroll-proportion="0.0" vertical-offset="676" max-vertical-offset="1479">
-          <folding>
-            <element signature="e#2092#2106#0" expanded="false" />
-            <element signature="e#2555#2573#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
+    <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/res/layout/activity_leitner.xml">
       <provider selected="true" editor-type-id="android-designer">
         <state />
       </provider>
+      <provider editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1139" />
+      </provider>
     </entry>
-    <entry file="jar://$APPLICATION_HOME_DIR$/sdk/platforms/android-17/android.jar!/android/app/Activity.class">
+    <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/Backup.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="265" column="19" selection-start="10117" selection-end="10117" vertical-scroll-proportion="0.0" vertical-offset="4217" max-vertical-offset="7429" />
+        <state line="1267" column="0" selection-start="54799" selection-end="54799" vertical-scroll-proportion="0.67070216" vertical-offset="3662" max-vertical-offset="4692" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/res/layout/dialog_meaning_leitner.xml">
+      <provider selected="true" editor-type-id="android-designer">
+        <state />
+      </provider>
+      <provider editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2890" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/res/layout/dialog_signup.xml">
-      <provider editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1326">
-          <folding />
-        </state>
-      </provider>
       <provider selected="true" editor-type-id="android-designer">
         <state />
+      </provider>
+      <provider editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1326" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/res/layout/dialog_sort.xml">
-      <provider editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="221">
-          <folding />
-        </state>
-      </provider>
       <provider selected="true" editor-type-id="android-designer">
         <state />
       </provider>
+      <provider editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="918" />
+      </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/res/values/strings.xml">
+    <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/res/layout/dialog_summery.xml">
+      <provider selected="true" editor-type-id="android-designer">
+        <state />
+      </provider>
+      <provider editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="221" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/AboutActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="30" column="29" selection-start="1082" selection-end="1092" vertical-scroll-proportion="0.0" vertical-offset="75" max-vertical-offset="1445">
+        <state line="11" column="13" selection-start="202" selection-end="202" vertical-scroll-proportion="0.1646489" vertical-offset="0" max-vertical-offset="826" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/AndroidManifest.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="4" column="27" selection-start="207" selection-end="207" vertical-scroll-proportion="0.08232445" vertical-offset="0" max-vertical-offset="1088">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/res/menu/leitner.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="17" column="0" selection-start="633" selection-end="811" vertical-scroll-proportion="0.34987894" vertical-offset="0" max-vertical-offset="826">
-          <folding />
-        </state>
+    <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/res/layout/dialog_meaning.xml">
+      <provider selected="true" editor-type-id="android-designer">
+        <state />
       </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/res/menu/main.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="17" column="0" selection-start="613" selection-end="791" vertical-scroll-proportion="0.34987894" vertical-offset="0" max-vertical-offset="826">
-          <folding />
-        </state>
+      <provider editor-type-id="text-editor">
+        <state line="77" column="4" selection-start="3222" selection-end="3222" vertical-scroll-proportion="0.0" vertical-offset="695" max-vertical-offset="1785" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/LeitnerActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="303" column="0" selection-start="10593" selection-end="10593" vertical-scroll-proportion="0.0" vertical-offset="1686" max-vertical-offset="6324">
+        <state line="913" column="0" selection-start="37197" selection-end="37197" vertical-scroll-proportion="0.6375" vertical-offset="2057" max-vertical-offset="9605">
           <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#1264#1298#0" expanded="false" />
+            <element signature="e#1451#1485#0" expanded="false" />
             <element signature="method#onSearchRequested#0;class#LeitnerActivity#0" expanded="false" />
+            <element signature="method#onInit#0;class#LeitnerActivity#0" expanded="false" />
+            <element signature="e#3755#3799#0" expanded="false" />
+            <element signature="method#speakOut#0;class#LeitnerActivity#0" expanded="false" />
             <element signature="method#onCreate#0;class#LeitnerActivity#0" expanded="false" />
             <element signature="method#setElementsId#0;class#LeitnerActivity#0" expanded="false" />
-            <element signature="e#3938#3963#0" expanded="false" />
+            <element signature="e#4829#4854#0" expanded="false" />
             <element signature="method#setElementsValue#0;class#LeitnerActivity#0" expanded="false" />
             <element signature="method#putNewFromMdToDatabase#0;class#LeitnerActivity#0" expanded="false" />
             <element signature="method#refreshListViewData#0;class#LeitnerActivity#0" expanded="false" />
             <element signature="method#sortNameA#0;class#LeitnerActivity#0" expanded="false" />
             <element signature="method#sortNameD#0;class#LeitnerActivity#0" expanded="false" />
+            <element signature="method#sortDateD#0;class#LeitnerActivity#0" expanded="false" />
             <element signature="method#sortCountA#0;class#LeitnerActivity#0" expanded="false" />
             <element signature="method#sortCountD#0;class#LeitnerActivity#0" expanded="false" />
             <element signature="method#summery_OnClick#0;class#LeitnerActivity#0" expanded="false" />
             <element signature="method#dialogSummery#0;class#LeitnerActivity#0" expanded="false" />
-            <element signature="class#13136:13318" expanded="false" />
-            <element signature="method#onClick#0;class#13136:13318" expanded="false" />
             <element signature="method#refreshShow#0;class#LeitnerActivity#0" expanded="false" />
             <element signature="method#refreshLessThan30#0;class#LeitnerActivity#0" expanded="false" />
             <element signature="method#refreshMoreThan30#0;class#LeitnerActivity#0" expanded="false" />
             <element signature="method#convertToItemShow#0;class#LeitnerActivity#0" expanded="false" />
             <element signature="method#convertToItem#0;class#LeitnerActivity#0" expanded="false" />
-            <element signature="method#listeners#0;class#LeitnerActivity#0" expanded="false" />
-            <element signature="e#32810#32910#0" expanded="false" />
-            <element signature="class#35285:35979" expanded="false" />
-            <element signature="method#beforeTextChanged#0;class#35285:35979" expanded="false" />
-            <element signature="method#onTextChanged#0;class#35285:35979" expanded="false" />
-            <element signature="method#afterTextChanged#0;class#35285:35979" expanded="false" />
+            <element signature="e#36081#36181#0" expanded="false" />
+            <element signature="e#36581#38041#0" expanded="true" />
+            <element signature="e#38030#38031#0" expanded="true" />
+            <element signature="class#38705:39399" expanded="false" />
+            <element signature="method#beforeTextChanged#0;class#38705:39399" expanded="false" />
+            <element signature="method#onTextChanged#0;class#38705:39399" expanded="false" />
+            <element signature="method#afterTextChanged#0;class#38705:39399" expanded="false" />
             <element signature="method#notifyCheckedPositionsInt#0;class#LeitnerActivity#0" expanded="false" />
             <element signature="method#dialogEdit#0;class#LeitnerActivity#0" expanded="false" />
-            <element signature="class#36700:36838" expanded="false" />
-            <element signature="method#onClick#0;class#36700:36838" expanded="false" />
-            <element signature="class#CustomListenerEdit#0;class#LeitnerActivity#0" expanded="false" />
+            <element signature="class#40120:40258" expanded="false" />
+            <element signature="method#onClick#0;class#40120:40258" expanded="false" />
             <element signature="method#CustomListenerEdit#0;class#CustomListenerEdit#0;class#LeitnerActivity#0" expanded="false" />
             <element signature="method#onClick#0;class#CustomListenerEdit#0;class#LeitnerActivity#0" expanded="false" />
             <element signature="method#dialogAskDelete#0;class#LeitnerActivity#0" expanded="false" />
             <element signature="method#AddNew#0;class#LeitnerActivity#0" expanded="false" />
             <element signature="method#dialogAddNew#0;class#LeitnerActivity#0" expanded="false" />
-            <element signature="class#42594:42756" expanded="false" />
-            <element signature="method#onClick#0;class#42594:42756" expanded="false" />
+            <element signature="class#46014:46176" expanded="false" />
+            <element signature="method#onClick#0;class#46014:46176" expanded="false" />
             <element signature="class#CustomListenerAddNew#0;class#LeitnerActivity#0" expanded="false" />
             <element signature="method#CustomListenerAddNew#0;class#CustomListenerAddNew#0;class#LeitnerActivity#0" expanded="false" />
             <element signature="method#onClick#0;class#CustomListenerAddNew#0;class#LeitnerActivity#0" expanded="false" />
@@ -1324,22 +994,23 @@
             <element signature="method#delete#0;class#LeitnerActivity#0" expanded="false" />
             <element signature="method#isReadyEdit#0;class#LeitnerActivity#0" expanded="false" />
             <element signature="method#isStringJustSpace#0;class#LeitnerActivity#0" expanded="false" />
+            <element signature="method#search#0;class#LeitnerActivity#0" expanded="false" />
             <element signature="method#getPrefs#0;class#LeitnerActivity#0" expanded="false" />
             <element signature="method#clearMarks#0;class#LeitnerActivity#0" expanded="false" />
             <element signature="method#menu_Delete#0;class#LeitnerActivity#0" expanded="false" />
             <element signature="method#dialogAskDeleteByMark#0;class#LeitnerActivity#0" expanded="false" />
-            <element signature="class#59063:59213" expanded="false" />
-            <element signature="method#onClick#0;class#59063:59213" expanded="false" />
+            <element signature="class#62483:62633" expanded="false" />
+            <element signature="method#onClick#0;class#62483:62633" expanded="false" />
             <element signature="method#tvAddDateOnClick#0;class#LeitnerActivity#0" expanded="false" />
             <element signature="method#tvLastDateOnClick#0;class#LeitnerActivity#0" expanded="false" />
-            <element signature="method#dialogMeaning#0;class#LeitnerActivity#0" expanded="false" />
-            <element signature="e#61482#61541#0" expanded="false" />
+            <element signature="e#64902#64961#0" expanded="false" />
+            <element signature="e#67287#67775#0" expanded="true" />
+            <element signature="e#67764#67765#0" expanded="true" />
             <element signature="class#CustomListenerMeaning#0;class#LeitnerActivity#0" expanded="false" />
             <element signature="method#CustomListenerMeaning#0;class#CustomListenerMeaning#0;class#LeitnerActivity#0" expanded="false" />
             <element signature="method#onClick#0;class#CustomListenerMeaning#0;class#LeitnerActivity#0" expanded="false" />
             <element signature="method#name_click#0;class#LeitnerActivity#0" expanded="false" />
-            <element signature="method#name_Click#0;class#LeitnerActivity#0" expanded="false" />
-            <element signature="e#65434#65535#0" expanded="false" />
+            <element signature="e#69901#70100#0" expanded="false" />
             <element signature="method#indexDeck#0;class#LeitnerActivity#0" expanded="false" />
             <element signature="method#move_Next_Correct#0;class#LeitnerActivity#0" expanded="false" />
             <element signature="method#whichIndexTurnDeck#0;class#LeitnerActivity#0" expanded="false" />
@@ -1349,156 +1020,50 @@
             <element signature="method#updateIndexesLastDayLessThan30#0;class#LeitnerActivity#0" expanded="false" />
             <element signature="method#updateIndexLastDayMoreThan30#0;class#LeitnerActivity#0" expanded="false" />
             <element signature="method#onSaveInstanceState#0;class#LeitnerActivity#0" expanded="false" />
-            <element signature="method#restore#0;class#LeitnerActivity#0" expanded="false" />
-            <element signature="method#onBackPressed#0;class#LeitnerActivity#0" expanded="false" />
             <element signature="method#onPause#0;class#LeitnerActivity#0" expanded="false" />
             <element signature="method#onStop#0;class#LeitnerActivity#0" expanded="false" />
-            <element signature="e#125762#125853#0" expanded="false" />
+            <element signature="e#129633#129724#0" expanded="false" />
             <element signature="method#onResume#0;class#LeitnerActivity#0" expanded="false" />
             <element signature="method#onDestroy#0;class#LeitnerActivity#0" expanded="false" />
-            <element signature="method#onCreateOptionsMenu#0;class#LeitnerActivity#0" expanded="false" />
-            <element signature="method#onPrepareOptionsMenu#0;class#LeitnerActivity#0" expanded="false" />
-            <element signature="e#127811#127879#0" expanded="false" />
+            <element signature="e#131772#131840#0" expanded="false" />
+            <element signature="e#132265#132302#0" expanded="false" />
+            <element signature="e#134247#134290#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/Preferences.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="13" column="13" selection-start="318" selection-end="318" vertical-scroll-proportion="0.11371238" vertical-offset="0" max-vertical-offset="897">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/Adapter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="16" column="13" selection-start="479" selection-end="479" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1020">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/AboutActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="11" column="13" selection-start="202" selection-end="202" vertical-scroll-proportion="0.1516165" vertical-offset="0" max-vertical-offset="897">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/res/layout/about.xml">
-      <provider editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2142">
-          <folding />
-        </state>
-      </provider>
+    <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/res/layout/dialog_addnew.xml">
       <provider selected="true" editor-type-id="android-designer">
         <state />
       </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/res/layout/preferences.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="9" column="21" selection-start="524" selection-end="524" vertical-scroll-proportion="0.17545871" vertical-offset="0" max-vertical-offset="1377">
-          <folding />
-        </state>
-      </provider>
-      <provider editor-type-id="android-designer">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/AndroidManifest.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="31" column="74" selection-start="1211" selection-end="1211" vertical-scroll-proportion="0.0" vertical-offset="174" max-vertical-offset="1088">
-          <folding>
-            <element signature="e#453#471#0" expanded="true" />
-            <element signature="e#1563#1594#0" expanded="true" />
-            <element signature="e#1982#2014#0" expanded="true" />
-          </folding>
-        </state>
+      <provider editor-type-id="text-editor">
+        <state line="22" column="37" selection-start="967" selection-end="967" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1785" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/MainActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="1763" column="11" selection-start="71056" selection-end="71056" vertical-scroll-proportion="0.2792128" vertical-offset="13050" max-vertical-offset="14467">
-          <folding>
-            <element signature="method#onBackPressed#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#onSearchRequested#0;class#MainActivity#0" expanded="false" />
-            <element signature="e#7541#8007#0" expanded="true" />
-            <element signature="e#7996#7997#0" expanded="true" />
-            <element signature="e#8513#8560#0" expanded="false" />
-            <element signature="method#beforeTextChanged#0;class#12067:12766" expanded="false" />
-            <element signature="method#onTextChanged#0;class#12067:12766" expanded="false" />
-            <element signature="method#afterTextChanged#0;class#12067:12766" expanded="false" />
-            <element signature="method#notifyCheckedPositionsInt#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#getPrefs#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#dialogAddNew#0;class#MainActivity#0" expanded="false" />
-            <element signature="class#15423:15585" expanded="false" />
-            <element signature="method#onClick#0;class#15423:15585" expanded="false" />
-            <element signature="class#CustomListenerAddNew#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#CustomListenerAddNew#0;class#CustomListenerAddNew#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#onClick#0;class#CustomListenerAddNew#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#search#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#convertToShow#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#convertToCustom#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#dialogEdit#0;class#MainActivity#0" expanded="false" />
-            <element signature="class#21059:21197" expanded="false" />
-            <element signature="method#onClick#0;class#21059:21197" expanded="false" />
-            <element signature="class#CustomListenerEdit#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#CustomListenerEdit#0;class#CustomListenerEdit#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#onClick#0;class#CustomListenerEdit#0;class#MainActivity#0" expanded="false" />
-            <element signature="e#25271#25336#0" expanded="false" />
-            <element signature="method#dialogAskDelete#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#refreshItemsCount#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#delete#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#refreshListViewData#0;class#MainActivity#0" expanded="false" />
-            <element signature="e#30712#30755#0" expanded="false" />
-            <element signature="method#sortNameA#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#sortNameD#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#sortDateD#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#sortCountA#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#sortCountD#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#setImgAddVisibility#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#getPosition#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#getPosition#1;class#MainActivity#0" expanded="false" />
-            <element signature="method#isReadyToAddNew#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#isReadyEdit#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#isStringJustSpace#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#clearMarks#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#AddNew#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#dialogAskDeleteByMark#0;class#MainActivity#0" expanded="false" />
-            <element signature="class#48064:48214" expanded="false" />
-            <element signature="method#onClick#0;class#48064:48214" expanded="false" />
-            <element signature="method#menu_Delete#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#onPause#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#onStop#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#onResume#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#onDestroy#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#onCreateOptionsMenu#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#onPrepareOptionsMenu#0;class#MainActivity#0" expanded="false" />
-            <element signature="e#51409#51446#0" expanded="false" />
-            <element signature="method#dialogMeaning#0;class#MainActivity#0" expanded="false" />
-            <element signature="e#54312#54371#0" expanded="false" />
-            <element signature="method#tvDateOnClick#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#changeDateToDistanceOnClick#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#backup#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#upload#0;class#MainActivity#0" expanded="false" />
-            <element signature="e#65777#65800#0" expanded="false" />
-            <element signature="e#66906#67017#0" expanded="false" />
-            <element signature="method#FtpTask#0;class#67769:69901" expanded="false" />
-            <element signature="method#onPreExecute#0;class#67769:69901" expanded="false" />
-            <element signature="method#doInBackground#0;class#67769:69901" expanded="false" />
-            <element signature="method#onProgressUpdate#0;class#67769:69901" expanded="false" />
-            <element signature="method#FtpTask#0;class#71369:73328" expanded="false" />
-            <element signature="method#onPreExecute#0;class#71369:73328" expanded="false" />
-            <element signature="method#doInBackground#0;class#71369:73328" expanded="false" />
-            <element signature="method#onProgressUpdate#0;class#71369:73328" expanded="false" />
-            <element signature="method#countMe#0;class#MainActivity#0" expanded="false" />
-            <element signature="class#74691:76342" expanded="false" />
-            <element signature="method#FtpTask#0;class#74691:76342" expanded="false" />
-            <element signature="method#onPreExecute#0;class#74691:76342" expanded="false" />
-            <element signature="method#doInBackground#0;class#74691:76342" expanded="false" />
-            <element signature="method#onPostExecute#0;class#74691:76342" expanded="false" />
-            <element signature="method#onProgressUpdate#0;class#74691:76342" expanded="false" />
-          </folding>
-        </state>
+        <state line="1838" column="37" selection-start="73221" selection-end="73221" vertical-scroll-proportion="0.0" vertical-offset="2948" max-vertical-offset="3774" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/java/ir/khaled/mydictionary/SQLiteOpenHelper.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="4573" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/res/layout/activity_main.xml">
+      <provider selected="true" editor-type-id="android-designer">
+        <state />
+      </provider>
+      <provider editor-type-id="text-editor">
+        <state line="60" column="0" selection-start="2321" selection-end="2321" vertical-scroll-proportion="0.0" vertical-offset="361" max-vertical-offset="1122" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MyDictionary/src/main/res/layout/about.xml">
+      <provider selected="true" editor-type-id="android-designer">
+        <state />
+      </provider>
+      <provider editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2142" />
       </provider>
     </entry>
   </component>
