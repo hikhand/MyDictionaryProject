@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * Created by khaled on 4/07/13 at 2:12 AM.
  */
-class DatabaseHandlerLeitner extends SQLiteOpenHelper {
+class DatabaseLeitner extends SQLiteOpenHelper {
 
     // All Static variables
     // Database Version
@@ -50,7 +50,7 @@ class DatabaseHandlerLeitner extends SQLiteOpenHelper {
     private static final String KEY_MAIN_LAST_DATE = "lastDate";
     private static final String KEY_MAIN_LAST_DAY = "lastDay";
 
-    public DatabaseHandlerLeitner(Context context) {
+    public DatabaseLeitner(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
 //        DATABASE_NAME = databaseName;
     }

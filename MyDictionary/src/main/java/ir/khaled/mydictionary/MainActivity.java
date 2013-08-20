@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -63,7 +65,7 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
 
 
     DatabaseHandler database;
-    DatabaseHandlerLeitner databaseLeitner;
+    DatabaseLeitner databaseLeitner;
     SharedPreferences prefs;
     SharedPreferences mainPrefs;
     SharedPreferences.Editor editorMainPrefs;
@@ -121,6 +123,7 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
 
     private TextToSpeech tts;
 
+    String s;
 
 
     @Override
@@ -168,6 +171,7 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
         super.onCreate(icicle);
         setContentView(R.layout.activity_main);
 
+        s = File.separator;
 
         setElementsId();
         getPrefs();
@@ -176,7 +180,13 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
             listViewPosition = icicle.getParcelable("listViewPosition");
             searchText = icicle.getString("etSearchText");
         }
-        etSearch.setText(searchText);
+
+        if (etSearch == null || searchText.equals(null)) {
+            etSearch = (EditText) findViewById(R.id.leitnerSearchET);
+            etSearch.setText("");
+        } else {
+            etSearch.setText(searchText);
+        }
 
         refreshListViewData(false);
 
@@ -186,7 +196,12 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
         listeners();
 
         checkSiteForPosts();
-        checkSiteForVersionChange();
+
+        try {
+            checkSiteForVersionChange();
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
 
         if (!mainPrefs.getBoolean("rated", false)) {
             if (arrayItems.size() < 50 && !mainPrefs.getBoolean("rate20Viewed", false) && arrayItems.size() > 20) {
@@ -213,6 +228,7 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
             }
             editorMainPrefs.commit();
         }
+        MainActivity.this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
 
 
@@ -369,7 +385,7 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
         tts = new TextToSpeech(this, this);
         V  = new Names();
         database = new DatabaseHandler(this);
-        databaseLeitner = new DatabaseHandlerLeitner(this);
+        databaseLeitner = new DatabaseLeitner(this);
         mainPrefs = getSharedPreferences("main", MODE_PRIVATE);
         editorMainPrefs = mainPrefs.edit();
 
@@ -429,14 +445,18 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
         etNewWord = (EditText) dialogAddNew.findViewById(R.id.etWord);
         etNewMeaning = (EditText) dialogAddNew.findViewById(R.id.etMeaning);
 
+        etNewWord.setFocusableInTouchMode(true);
+        etNewMeaning.setFocusableInTouchMode(true);
+
         etNewWord.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if(hasFocus){
-                    ((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE))
+                if (hasFocus) {
+                    ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
                             .showSoftInput(etNewWord, InputMethodManager.SHOW_FORCED);
-                }else
-                    Toast.makeText(getApplicationContext(), "lost the focus", 2000).show();
+                }
+//                else
+//                    Toast.makeText(getApplicationContext(), "lost the focus", 2000).show();
             }
         });
 
@@ -446,8 +466,81 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
                 if(hasFocus){
                     ((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE))
                             .showSoftInput(etNewMeaning, InputMethodManager.SHOW_FORCED);
-                }else
-                    Toast.makeText(getApplicationContext(), "lost the focus", 2000).show();
+                }
+//                else
+//                    Toast.makeText(getApplicationContext(), "lost the focus", 2000).show();
+            }
+        });
+
+
+
+        etNewWord.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                etNewWord.getText().toString();
+                String s = etNewWord.getText().toString();
+                int length = s.length();
+                String c = "";
+                if (length > 1) {
+                    c = s.substring(length-1, length);
+                    if (c.equals("@")) {
+                        etNewMeaning.requestFocus();
+                        etNewMeaning.setSelection(etNewMeaning.getText().toString().length());
+                        etNewWord.setText(s.substring(0, length - 1));
+                    }
+                } else if (length == 1){
+                    c = s;
+                    if (c.equals("@")) {
+                        etNewMeaning.requestFocus();
+                        etNewMeaning.setSelection(etNewMeaning.getText().toString().length());
+                        etNewWord.setText("");
+                    }
+                }
+            }
+        });
+
+        etNewMeaning.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                etNewMeaning.getText().toString();
+                String s = etNewMeaning.getText().toString();
+                int length = s.length();
+                String c = "";
+                if (length > 1) {
+                    c = s.substring(length-1, length);
+                    if (c.equals("@")) {
+                        etNewWord.requestFocus();
+                        etNewWord.setSelection(etNewWord.getText().toString().length());
+                        etNewMeaning.setText(s.substring(0, length - 1));
+                    }
+                } else if (length == 1){
+                    c = s;
+                    if (c.equals("@")) {
+                        etNewWord.requestFocus();
+                        etNewWord.setSelection(etNewWord.getText().toString().length());
+                        etNewMeaning.setText("");
+                    }
+                }
             }
         });
 
@@ -490,6 +583,8 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
                 refreshListViewData(false);
                 dialog.dismiss();
                 Toast.makeText(MainActivity.this, "Successfully added.", Toast.LENGTH_SHORT).show();
+                dialogAddNew.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+                MainActivity.this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
             }
         }
     }
@@ -514,6 +609,7 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
             if (found > 0) {
                 adapterWords1.notifyDataSetChanged();
                 items.setAdapter(adapterWords1);
+                sort();
             } else {
                 arrayItemsToShow.add(convertToShow(new Custom("   Nothing found", "My Dictionary", "KHaledBLack73", false)));
                 adapterWords1.notifyDataSetChanged();
@@ -584,8 +680,105 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
 
         etNewWord = (EditText) dialogEdit.findViewById(R.id.etWord);
         etNewMeaning = (EditText) dialogEdit.findViewById(R.id.etMeaning);
-            etNewWord.setText(arrayItems.get(realPosition).getWord());
-            etNewMeaning.setText(arrayItemsToShow.get(fakePosition).getMeaning());
+        etNewWord.setText(arrayItems.get(realPosition).getWord());
+        etNewMeaning.setText(arrayItemsToShow.get(fakePosition).getMeaning());
+
+
+        etNewWord.setFocusableInTouchMode(true);
+        etNewMeaning.setFocusableInTouchMode(true);
+
+        etNewWord.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
+                            .showSoftInput(etNewWord, InputMethodManager.SHOW_FORCED);
+                }
+
+            }
+        });
+
+        etNewMeaning.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(hasFocus){
+                    ((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE))
+                            .showSoftInput(etNewMeaning, InputMethodManager.SHOW_FORCED);
+                }
+
+            }
+        });
+
+        etNewWord.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                etNewWord.getText().toString();
+                String s = etNewWord.getText().toString();
+                int length = s.length();
+                String c = "";
+                if (length > 1) {
+                    c = s.substring(length-1, length);
+                    if (c.equals("@")) {
+                        etNewMeaning.requestFocus();
+                        etNewMeaning.setSelection(etNewMeaning.getText().toString().length());
+                        etNewWord.setText(s.substring(0, length - 1));
+                    }
+                } else if (length == 1){
+                    c = s;
+                    if (c.equals("@")) {
+                        etNewMeaning.requestFocus();
+                        etNewMeaning.setSelection(etNewMeaning.getText().toString().length());
+                        etNewWord.setText("");
+                    }
+                }
+            }
+        });
+
+        etNewMeaning.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                etNewMeaning.getText().toString();
+                String s = etNewMeaning.getText().toString();
+                int length = s.length();
+                String c = "";
+                if (length > 1) {
+                    c = s.substring(length-1, length);
+                    if (c.equals("@")) {
+                        etNewWord.requestFocus();
+                        etNewWord.setSelection(etNewWord.getText().toString().length());
+                        etNewMeaning.setText(s.substring(0, length - 1));
+                    }
+                } else if (length == 1){
+                    c = s;
+                    if (c.equals("@")) {
+                        etNewWord.requestFocus();
+                        etNewWord.setSelection(etNewWord.getText().toString().length());
+                        etNewMeaning.setText("");
+                    }
+                }
+            }
+        });
+
 
         CheckBox chDontToLeitner = (CheckBox) dialogEdit.findViewById(R.id.chDoOrDoNot);
         chDontToLeitner.setVisibility(View.GONE);
@@ -639,6 +832,8 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
                 refreshListViewData(false);
                 dialog.dismiss();
                 Toast.makeText(MainActivity.this, "Successfully edited.", Toast.LENGTH_SHORT).show();
+                dialogEdit.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+                MainActivity.this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
             }
         }
     }
@@ -721,19 +916,7 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
             for (Custom custom : arrayItems)
                 arrayItemsToShow.add(convertToShow(custom));
 
-            if (sortMethod.equals("nameA")) {
-                sortNameA();
-            } else if (sortMethod.equals("nameD")) {
-                sortNameD();
-            } else if (sortMethod.equals("dateA")) {
-
-            } else if (sortMethod.equals("dateD")) {
-                sortDateD();
-            } else if (sortMethod.equals("countA")) {
-                sortCountA();
-            } else if (sortMethod.equals("countD")) {
-                sortCountD();
-            }
+            sort();
 
             if (arrayItemsToShow.size() > 0) {
                 for (int i = 0; i < arrayItemsToShow.size(); i++) {
@@ -767,6 +950,21 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
 
     }
 
+    void sort() {
+        if (sortMethod.equals("nameA")) {
+            sortNameA();
+        } else if (sortMethod.equals("nameD")) {
+            sortNameD();
+        } else if (sortMethod.equals("dateA")) {
+
+        } else if (sortMethod.equals("dateD")) {
+            sortDateD();
+        } else if (sortMethod.equals("countA")) {
+            sortCountA();
+        } else if (sortMethod.equals("countD")) {
+            sortCountD();
+        }
+    }
 
     void sortNameA() {
         ArrayList<String> words = new ArrayList<String>();
@@ -839,60 +1037,60 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
 
 
     void showDialogSortBy() {
-
-        LayoutInflater inflater = this.getLayoutInflater();
-        dialogSortBy = new AlertDialog.Builder(this)
-                .setView(inflater.inflate(R.layout.dialog_sort, null))
-                .setTitle("Sort By: ")
-                .setPositiveButton(R.string.ok,
-                        new Dialog.OnClickListener() {
-                            public void onClick(DialogInterface d, int which) {
-                                sortBy();
-                            }
-                        })
-                .create();
-        dialogSortBy.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-        dialogSortBy.show();
+//
+//        LayoutInflater inflater = this.getLayoutInflater();
+//        dialogSortBy = new AlertDialog.Builder(this)
+//                .setView(inflater.inflate(R.layout.dialog_sort, null))
+//                .setTitle("Sort By: ")
+//                .setPositiveButton(R.string.ok,
+//                        new Dialog.OnClickListener() {
+//                            public void onClick(DialogInterface d, int which) {
+//                                sortBy();
+//                            }
+//                        })
+//                .create();
+//        dialogSortBy.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+//        dialogSortBy.show();
     }
 
-    void sortBy() {
-        if (database.getItemsCount() > 0) {
-            listViewPosition = items.onSaveInstanceState();
-            RadioButton nameA = (RadioButton) dialogSortBy.findViewById(R.id.rbNameA);
-            RadioButton nameD = (RadioButton) dialogSortBy.findViewById(R.id.rbNameD);
-            RadioButton DateA = (RadioButton) dialogSortBy.findViewById(R.id.rbDateA);
-            RadioButton DateD = (RadioButton) dialogSortBy.findViewById(R.id.rbDateD);
-            RadioButton CountA = (RadioButton) dialogSortBy.findViewById(R.id.rbCountA);
-            RadioButton CountD = (RadioButton) dialogSortBy.findViewById(R.id.rbCountD);
-            if (nameA.isChecked()) {
-                sortNameA();
-            } else if (nameD.isChecked()) {
-                sortNameD();
-            } else if (DateA.isChecked()) {
-
-            } else if (DateD.isChecked()) {
-                sortDateD();
-            } else if (CountA.isChecked()) {
-                sortCountA();
-            } else if (CountD.isChecked()) {
-                sortCountD();
-            }
-        }
-        adapterWords1.notifyDataSetChanged();
-        items.setAdapter(adapterWords1);
-
-        if (listViewPosition != null)
-            items.onRestoreInstanceState(listViewPosition);
-
-        if (isFromSearch) {
-            listViewPosition = items.onSaveInstanceState();
-            search(etSearch.getText().toString());
-            items.onRestoreInstanceState(listViewPosition);
-        } else {
-            setImgAddVisibility();
-        }
-
-    }
+//    void sortBy() {
+//        if (database.getItemsCount() > 0) {
+//            listViewPosition = items.onSaveInstanceState();
+//            RadioButton nameA = (RadioButton) dialogSortBy.findViewById(R.id.rbNameA);
+//            RadioButton nameD = (RadioButton) dialogSortBy.findViewById(R.id.rbNameD);
+//            RadioButton DateA = (RadioButton) dialogSortBy.findViewById(R.id.rbDateA);
+//            RadioButton DateD = (RadioButton) dialogSortBy.findViewById(R.id.rbDateD);
+//            RadioButton CountA = (RadioButton) dialogSortBy.findViewById(R.id.rbCountA);
+//            RadioButton CountD = (RadioButton) dialogSortBy.findViewById(R.id.rbCountD);
+//            if (nameA.isChecked()) {
+//                sortNameA();
+//            } else if (nameD.isChecked()) {
+//                sortNameD();
+//            } else if (DateA.isChecked()) {
+//
+//            } else if (DateD.isChecked()) {
+//                sortDateD();
+//            } else if (CountA.isChecked()) {
+//                sortCountA();
+//            } else if (CountD.isChecked()) {
+//                sortCountD();
+//            }
+//        }
+//        adapterWords1.notifyDataSetChanged();
+//        items.setAdapter(adapterWords1);
+//
+//        if (listViewPosition != null)
+//            items.onRestoreInstanceState(listViewPosition);
+//
+//        if (isFromSearch) {
+//            listViewPosition = items.onSaveInstanceState();
+//            search(etSearch.getText().toString());
+//            items.onRestoreInstanceState(listViewPosition);
+//        } else {
+//            setImgAddVisibility();
+//        }
+//
+//    }
 
     void setImgAddVisibility() {
         imgAdd = (ImageView) findViewById(R.id.imgAdd);
@@ -1372,6 +1570,9 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
                 MainActivity.this.startActivity(new Intent(MainActivity.this, LeitnerActivity.class));
                 return true;
 
+            case R.id.action_package:
+                MainActivity.this.startActivity(new Intent(MainActivity.this, PackageActivity.class));
+                return true;
         }
         return super.onMenuItemSelected(featureId, item);
     }
@@ -1689,59 +1890,6 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
         }
     }
 
-    public void upload() {
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-
-        FTPClient con;
-
-        try {
-            File sdCard = Environment.getExternalStorageDirectory();
-            File dir = new File(sdCard.toString());
-
-            con = new FTPClient();
-            con.connect(InetAddress.getByName("ftp.khaled.ir"));
-
-            if (con.login("windowsp", "KHaledBLack73")) {
-//                try {
-//                    File sd = Environment.getExternalStorageDirectory();
-//                    File data = Environment.getDataDirectory();
-//
-//                    if (sd.canWrite()) {
-//                        String currentDBPath = "//data//ir.khaled.mydictionary//shared_prefs//Words.xml";
-//                        String backupDBPath = "{database name}";
-//                        File currentDB = new File(data, currentDBPath);
-//                        File backupDB = new File(sd, backupDBPath);
-//
-//                        if (currentDB.exists()) {
-//                            FileChannel src = new FileInputStream(currentDB).getChannel();
-//                            FileChannel dst = new FileOutputStream(backupDB).getChannel();
-//                            dst.transferFrom(src, 0, src.size());
-//                            src.close();
-//                            dst.close();
-//                        }
-//                    }
-//                } catch (Exception e) {
-//                }
-
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-//        TelephonyManager tm = (TelephonyManager)getBaseContext().getSystemService(Context.TELEPHONY_SERVICE);
-//        final String DeviceId, SerialNum, androidId;
-//        DeviceId = tm.getDeviceId();
-//        SerialNum = tm.getSimSerialNumber();
-//        androidId = Secure.getString(getContentResolver(),Secure.ANDROID_ID);
-//
-//        UUID deviceUuid = new UUID(androidId.hashCode(), ((long)DeviceId.hashCode() << 32) | SerialNum.hashCode());
-//        String mydeviceId = deviceUuid.toString();
-//        Log.v("My Id", "Android DeviceId is: " +DeviceId);
-//        Log.v("My Id", "Android SerialNum is: " +SerialNum);
-//        Log.v("My Id", "Android androidId is: " +androidId);
-//        Log.v("My Id", "Android androidId is: " +mydeviceId);
-    }
-
 
     void checkSiteForPosts() {
         final int last = mainPrefs.getInt("lastPost", 0);
@@ -1751,7 +1899,6 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
             String error = "";
             String errorS = "";
             private Context context;
-            String s = File.separator;
 
             String lastPostStr = "";
             int lastPostNum = 0;
@@ -1768,13 +1915,13 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
                     con = new FTPClient();
                     con.connect(InetAddress.getByName("5.9.0.183"));
 
-                    if (con.login("windowsp", "KHaledBLack73")) {
+                    if (con.login("mdftp@khaled.ir", "3k2oy8HRhs")) {
                         con.enterLocalPassiveMode(); // important!
 
                         InputStream inputStream;
                         BufferedReader r;
 
-                        inputStream = con.retrieveFileStream(s + "MyDictionary" + s + "lastpost" + s + "lastpost");
+                        inputStream = con.retrieveFileStream(s + "lastpost" + s + "lastpost");
                         r = new BufferedReader(new InputStreamReader(inputStream));
                         lastPostStr = r.readLine();
                         inputStream.close();
@@ -1836,15 +1983,15 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
         dialogNewPost.setCanceledOnTouchOutside(false);
     }
 
-    void checkSiteForVersionChange() {
-        final String currentVersion = mainPrefs.getString("currentVersion", "2.0.4");
+    void checkSiteForVersionChange() throws PackageManager.NameNotFoundException {
+        PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+        final String currentVersion = pInfo.versionName;
         class FtpTask extends AsyncTask<Void, Integer, Void> {
             FTPClient con;
             boolean succeed = false;
             String error = "";
             String errorS = "";
             private Context context;
-            String s = File.separator;
 
             String newVersion = "";
 
@@ -1860,13 +2007,13 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
                     con = new FTPClient();
                     con.connect(InetAddress.getByName("5.9.0.183"));
 
-                    if (con.login("windowsp", "KHaledBLack73")) {
+                    if (con.login("mdftp@khaled.ir", "3k2oy8HRhs")) {
                         con.enterLocalPassiveMode(); // important!
 
                         InputStream inputStream;
                         BufferedReader r;
 
-                        inputStream = con.retrieveFileStream(s + "MyDictionary" + s + "versionPro" + s + "lastVersion");
+                        inputStream = con.retrieveFileStream(s + "versionPro" + s + "lastVersion");
                         r = new BufferedReader(new InputStreamReader(inputStream));
                         newVersion = r.readLine();
                         inputStream.close();
@@ -1929,14 +2076,14 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
     void countMe() {
         class FtpTask extends AsyncTask<Void, Integer, Void> {
             FTPClient con;
-            int rand = 0;
+            double rand = 0;
             private Context context;
 
             public FtpTask(Context context) { this.context = context; }
 
             protected void onPreExecute()
             {
-                rand = (int) (Math.random() * ((999999999) + 1));
+                rand = Math.random() * ((999999999) + 1);
             }
 
             protected Void doInBackground(Void... args) {
@@ -1944,16 +2091,15 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
                     con = new FTPClient();
                     con.connect(InetAddress.getByName("5.9.0.183"));
 
-                    if (con.login("windowsp", "KHaledBLack73")) {
+                    if (con.login("mdftp@khaled.ir", "3k2oy8HRhs")) {
                         con.enterLocalPassiveMode(); // important!
                         con.setFileType(FTP.BINARY_FILE_TYPE);
-//                        FileInputStream inMain;
-                        String userPath = File.separator + "MyDictionary" + File.separator + "usersPro" + File.separator + Integer.toString(rand);
+                        String userPath = s + "usersPro" + s + Double.toString(rand);
 
 
                         FileOutputStream outputStream;
                         outputStream = openFileOutput("userNumber", Context.MODE_PRIVATE);
-                        outputStream.write(Integer.toString(rand).getBytes());
+                        outputStream.write(Double.toString(rand).getBytes());
                         outputStream.close();
 
                         con.storeFile(userPath, openFileInput("userNumber"));

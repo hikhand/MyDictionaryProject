@@ -39,7 +39,7 @@
             android:layout_marginRight="5dp"
             android:hint="Enter your email address"
             android:singleLine="true"
-            android:inputType="textCapSentences"
+            android:inputType="textCapSentences|textEmailAddress"
             android:textIsSelectable="false"
             android:layout_below="@+id/imageView"
             android:visibility="visible"/>

@@ -24,7 +24,8 @@
             android:onClick="AddNew"
             android:layout_alignParentRight="false"
             android:layout_alignParentLeft="true"
-            />
+            android:layout_marginLeft="2dp"
+            android:layout_marginTop="2dp"/>
 
     <EditText
             android:layout_width="wrap_content"
@@ -44,7 +45,7 @@
             android:layout_alignBottom="@+id/leitnerAddNewBtn"
             android:hint="Search here"
             android:layout_toLeftOf="@+id/leitnerSummeryTV"
-            android:layout_alignBaseline="@+id/leitnerAddNewBtn"/>
+            />
 
     <TextView
             android:layout_width="wrap_content"

@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/relativeLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#f2f2f2">
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="9999"
+            android:id="@+id/packageCountCorrect"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentLeft="false"
+            android:layout_marginRight="12dp"
+            android:textColor="#4dbc42"
+            android:layout_marginTop="7dp"
+            android:padding="1dp"/>
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="9999"
+            android:id="@+id/packageCount"
+            android:layout_alignParentTop="false"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentLeft="false"
+            android:layout_marginRight="12dp"
+            android:padding="1dp"
+            android:layout_below="@+id/packageCountCorrect"
+            android:layout_marginTop="1dp"/>
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="9999"
+            android:id="@+id/packageCountInCorrect"
+            android:layout_alignParentTop="false"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentLeft="false"
+            android:padding="1dp"
+            android:textColor="#bf0000"
+            android:layout_below="@+id/packageCount"
+            android:layout_marginRight="12dp"/>
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="9999/99/99 99:99"
+            android:id="@+id/packageLastDate"
+            android:layout_alignParentTop="false"
+            android:layout_marginRight="0dp"
+            android:layout_alignParentRight="false"
+            android:layout_marginLeft="0dp"
+            android:gravity="center"
+            android:layout_alignParentLeft="true"
+            android:layout_marginTop="0dp"
+            android:clickable="true"
+            android:onClick="tvLastDateOnClick"
+            android:paddingLeft="13dp"
+            android:paddingRight="30dp"
+            android:paddingTop="18dp"
+            android:paddingBottom="10dp"/>
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/packagePosition"
+            android:layout_marginTop="57dp"
+            android:text="at deck '0', index '0'"
+            android:gravity="left"
+            android:textColor="#363636"
+            android:layout_alignParentLeft="false"
+            android:layout_marginRight="10dp"
+            android:layout_alignParentTop="false"
+            android:layout_alignParentBottom="false"
+            android:layout_alignWithParentIfMissing="false"
+            android:layout_marginLeft="25dp"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentRight="false"/>
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="front:"
+            android:id="@+id/packagePos"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="13dp"
+            android:textColor="#928e87"
+            android:layout_above="@+id/imageView"/>
+
+    <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="#FFFFBB33"
+            android:id="@+id/imageView"
+            android:layout_below="@+id/packagePosition"
+            android:layout_marginTop="5dp"/>
+
+    <ScrollView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/scrollView"
+            android:layout_below="@+id/imageView"
+            >
+
+        <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_alignParentEnd="false"
+                android:layout_below="@+id/imageView"
+                android:clickable="false"
+                android:paddingBottom="8dp"
+                android:paddingLeft="4dp"
+                android:paddingTop="8dp"
+                android:paddingRight="4dp">
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="Large Text"
+                    android:id="@+id/packageName"
+                    android:layout_centerHorizontal="true"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="Large Text"
+                    android:id="@+id/packageName1"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="5dp"/>
+
+            <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="معنی فارسی: "
+                    android:id="@+id/pMeaningFa"
+                    android:gravity="right"
+                    android:textColor="#EB2727"
+                    android:visibility="visible"
+                    android:clickable="true"
+                    android:onClick="meaningFa_click"
+                    android:layout_below="@+id/packageName1"/>
+
+            <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="Medium Text"
+                    android:id="@+id/packageMeaningFa"
+                    android:gravity="right"
+                    android:layout_below="@+id/pMeaningFa"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
+                    android:visibility="visible"
+                    android:layout_marginTop="-5dp"/>
+
+            <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="English meaning: "
+                    android:id="@+id/pMeaningEn"
+                    android:layout_below="@+id/packageMeaningFa"
+                    android:gravity="left"
+                    android:textColor="#d19932"
+                    android:visibility="visible"
+                    android:onClick="meaningEn_click"
+                    android:clickable="true"
+                    android:layout_marginTop="10dp"/>
+
+            <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="Medium Text"
+                    android:id="@+id/packageMeaningEn"
+                    android:layout_below="@+id/pMeaningEn"
+                    android:layout_marginTop="-5dp"
+                    android:gravity="left"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
+                    android:visibility="visible"
+                    android:clickable="false"/>
+
+            <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="English examples: "
+                    android:id="@+id/pExamplesEn"
+                    android:layout_below="@+id/packageMeaningEn"
+                    android:textColor="#58adbf"
+                    android:visibility="visible"
+                    android:onClick="examplesEn_click"
+                    android:clickable="true"
+                    android:layout_marginTop="10dp"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="Medium Text"
+                    android:id="@+id/packageExamplesEn"
+                    android:layout_below="@+id/pExamplesEn"
+                    android:paddingLeft="4dp"
+                    android:paddingRight="4dp"
+                    android:visibility="visible"
+                    android:layout_marginTop="-5dp"/>
+
+            <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="معنی مثال ها: "
+                    android:id="@+id/pExamplesFa"
+                    android:layout_below="@+id/packageExamplesEn"
+                    android:gravity="right"
+                    android:textColor="#542437"
+                    android:visibility="visible"
+                    android:onClick="examplesFa_click"
+                    android:clickable="true"
+                    android:layout_marginTop="10dp"/>
+
+            <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="Medium Text"
+                    android:id="@+id/packageExamplesFa"
+                    android:layout_below="@+id/pExamplesFa"
+                    android:gravity="right"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
+                    android:visibility="visible"
+                    android:layout_marginTop="-5dp"/>
+
+        </RelativeLayout>
+    </ScrollView>
+
+</RelativeLayout>

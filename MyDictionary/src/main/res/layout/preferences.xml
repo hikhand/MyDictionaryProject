@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen android:layout_height="match_parent" android:layout_width="match_parent" xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory
-            android:title="First Category">
-        <!--<CheckBoxPreference-->
-        <!--android:title="Checkbox Preference"-->
-        <!--android:defaultValue="false"-->
-        <!--android:summary="This preference can be true or false"-->
-        <!--android:key="checkboxPref" />-->
+            android:title="General" android:key="generalCat">
         <ListPreference
                 android:title="Search Method"
                 android:key="searchMethod"
@@ -35,6 +30,27 @@
                 android:key="showItemMeaning"
                 android:summary="whether show the item's meaning in the list or not"
                 android:defaultValue="true"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Leitner Packages" android:key="packageCat">
+        <ListPreference
+                android:title="Package"
+                android:key="package"
+                android:defaultValue="package504.db"
+                android:entries="@array/packages"
+                android:entryValues="@array/packagesValues"
+                />
+
+        <ListPreference
+                android:title="Add per day"
+                android:summary="choose how many cards be added per day"
+                android:key="addPerDay"
+                android:defaultValue="s10"
+                android:entries="@array/addPerDayItems"
+                android:entryValues="@array/addPerDayValues" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="More" android:key="more">
 
         <Preference android:title="Backup" >
             <intent android:action="ir.khaled.mydictionary.Backup" />
@@ -44,7 +60,6 @@
             <intent android:action="ir.khaled.mydictionary.AboutActivity" />
         </Preference>
     </PreferenceCategory>
-
     <!--<PreferenceCategory-->
     <!--android:title="Second Category">-->
     <!--<EditTextPreference-->

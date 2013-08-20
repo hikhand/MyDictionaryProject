@@ -43,7 +43,7 @@ import java.util.Locale;
 public class LeitnerActivity extends Activity implements TextToSpeech.OnInitListener{
 
     DatabaseHandler databaseMain;
-    DatabaseHandlerLeitner databaseLeitner;
+    DatabaseLeitner databaseLeitner;
 
     SharedPreferences prefs;
 //    SharedPreferences mainPrefs;
@@ -72,6 +72,7 @@ public class LeitnerActivity extends Activity implements TextToSpeech.OnInitList
     boolean markSeveral = false;
     boolean showItemNumber = true;
     boolean isFromSearch = false;
+    boolean isFromSearchDot = false;
     boolean isLongClick = false;
     boolean isToMarkAll = true;
     boolean dialogAddNewIsOpen = false;
@@ -80,7 +81,6 @@ public class LeitnerActivity extends Activity implements TextToSpeech.OnInitList
     boolean dialogSummeryIsOpen = false;
     boolean dialogEditIsOpen = false;
     boolean answerViewed = false;
-    boolean isLongClickCard = false;
 
     int dialogMeaningWordPosition = 0;
     int todayNum = 0;
@@ -94,7 +94,6 @@ public class LeitnerActivity extends Activity implements TextToSpeech.OnInitList
     String todayDate = "";
     String lastDate = "";
     String sortMethod = "";
-    
     String searchText = "";
 
     Parcelable listViewPosition = null;
@@ -118,17 +117,12 @@ public class LeitnerActivity extends Activity implements TextToSpeech.OnInitList
     public void onInit(int status) {
 
         if (status == TextToSpeech.SUCCESS) {
-
             int result = tts.setLanguage(Locale.US);
-
             if (result == TextToSpeech.LANG_MISSING_DATA
                     || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                 Log.e("TTS", "This Language is not supported");
             } else {
-//                btnSpeak.setEnabled(true);
-//                speakOut();
             }
-
         } else {
             Log.e("TTS", "Initilization Failed!");
         }
@@ -151,27 +145,26 @@ public class LeitnerActivity extends Activity implements TextToSpeech.OnInitList
             listViewPosition = savedInstanceState.getParcelable("listViewPosition");
             searchText = savedInstanceState.getString("etSearchText");
         }
-        etSearch.setText(searchText);
-
+        if (etSearch == null || searchText.equals(null)) {
+            etSearch = (EditText) findViewById(R.id.leitnerSearchET);
+            etSearch.setText("");
+        } else {
+            etSearch.setText(searchText);
+        }
 
         setElementsValue();
         getPrefs();
         putNewFromMdToDatabase();
-//        listViewPosition = items.onSaveInstanceState();
         refreshListViewData();
         listeners();
         restore(savedInstanceState);
     }
 
     void setElementsId() {
-//        setIndexesId();
-
-//        mainPrefs = getSharedPreferences("main", MODE_PRIVATE);
-//        editorMainPrefs = mainPrefs.edit();
         tts = new TextToSpeech(this, this);
 
         databaseMain = new DatabaseHandler(this);
-        databaseLeitner = new DatabaseHandlerLeitner(this);
+        databaseLeitner = new DatabaseLeitner(this);
 
         dialogAddNew = new AlertDialog.Builder(this).create();
         dialogMeaning = new AlertDialog.Builder(this).create();
@@ -251,19 +244,7 @@ public class LeitnerActivity extends Activity implements TextToSpeech.OnInitList
 
             refreshShow();
 
-            if (sortMethod.equals("nameA")) {
-                sortNameA();
-            } else if (sortMethod.equals("nameD")) {
-                sortNameD();
-            } else if (sortMethod.equals("dateA")) {
-
-            } else if (sortMethod.equals("dateD")) {
-                sortDateD();
-            } else if (sortMethod.equals("countA")) {
-                sortCountA();
-            } else if (sortMethod.equals("countD")) {
-                sortCountD();
-            }
+            sort();
 
             if (itemsToShow.size() > 0) {
                 int k = 1;
@@ -294,12 +275,29 @@ public class LeitnerActivity extends Activity implements TextToSpeech.OnInitList
             items.onRestoreInstanceState(listViewPosition);
         }
 
+        TextView tvSummery = (TextView) findViewById(R.id.leitnerSummeryTV);
         if (itemsToShow.size() > 0) {
-//            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-            TextView tvSummery = (TextView) findViewById(R.id.leitnerSummeryTV);
             if (!itemsToShow.get(0).getName().equals("   Nothing found") && !itemsToShow.get(0).getMeaning().equals("My Dictionary"))
                 tvSummery.setText("'" + Integer.toString(itemsToShow.size()) + "'");
             else tvSummery.setText("'" + Integer.toString(itemsToShow.size()-1) + "'");
+        } else {
+            tvSummery.setText("'0'");
+        }
+    }
+
+    void sort() {
+        if (sortMethod.equals("nameA")) {
+            sortNameA();
+        } else if (sortMethod.equals("nameD")) {
+            sortNameD();
+        } else if (sortMethod.equals("dateA")) {
+
+        } else if (sortMethod.equals("dateD")) {
+            sortDateD();
+        } else if (sortMethod.equals("countA")) {
+            sortCountA();
+        } else if (sortMethod.equals("countD")) {
+            sortCountD();
         }
     }
 
@@ -978,8 +976,6 @@ public class LeitnerActivity extends Activity implements TextToSpeech.OnInitList
     }
 
 
-
-
     void dialogEdit(boolean fromSearch, int fakePosition) {
         final int fakPositionToSendToDialogDelete = fakePosition;
         final int realPosition = getPosition(fakePosition);
@@ -1020,8 +1016,109 @@ public class LeitnerActivity extends Activity implements TextToSpeech.OnInitList
         EditText etNewWord = (EditText) dialogEdit.findViewById(R.id.etWord);
         EditText etNewMeaning = (EditText) dialogEdit.findViewById(R.id.etMeaning);
 
-            etNewWord.setText(arrayItems.get(realPosition).getName());
-            etNewMeaning.setText(itemsToShow.get(fakePosition).getMeaning());
+        etNewWord.setText(arrayItems.get(realPosition).getName());
+        etNewMeaning.setText(itemsToShow.get(fakePosition).getMeaning());
+
+
+        etNewWord.setFocusableInTouchMode(true);
+        etNewMeaning.setFocusableInTouchMode(true);
+
+        etNewWord.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(hasFocus){
+                    EditText etNewWord = (EditText) dialogEdit.findViewById(R.id.etWord);
+                    ((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE))
+                            .showSoftInput(etNewWord, InputMethodManager.SHOW_FORCED);
+                }
+            }
+        });
+
+        etNewMeaning.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(hasFocus){
+                    EditText etNewMeaning = (EditText) dialogEdit.findViewById(R.id.etMeaning);
+                    ((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE))
+                            .showSoftInput(etNewMeaning, InputMethodManager.SHOW_FORCED);
+                }
+            }
+        });
+
+        etNewWord.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                EditText etNewWord = (EditText) dialogEdit.findViewById(R.id.etWord);
+                EditText etNewMeaning = (EditText) dialogEdit.findViewById(R.id.etMeaning);
+                etNewWord.getText().toString();
+                String s = etNewWord.getText().toString();
+                int length = s.length();
+                String c = "";
+                if (length > 1) {
+                    c = s.substring(length-1, length);
+                    if (c.equals("@")) {
+                        etNewMeaning.requestFocus();
+                        etNewMeaning.setSelection(etNewMeaning.getText().toString().length());
+                        etNewWord.setText(s.substring(0, length - 1));
+                    }
+                } else if (length == 1){
+                    c = s;
+                    if (c.equals("@")) {
+                        etNewMeaning.requestFocus();
+                        etNewMeaning.setSelection(etNewMeaning.getText().toString().length());
+                        etNewWord.setText("");
+                    }
+                }
+            }
+        });
+
+        etNewMeaning.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                EditText etNewWord = (EditText) dialogEdit.findViewById(R.id.etWord);
+                EditText etNewMeaning = (EditText) dialogEdit.findViewById(R.id.etMeaning);
+                etNewMeaning.getText().toString();
+                String s = etNewMeaning.getText().toString();
+                int length = s.length();
+                String c = "";
+                if (length > 1) {
+                    c = s.substring(length-1, length);
+                    if (c.equals("@")) {
+                        etNewWord.requestFocus();
+                        etNewWord.setSelection(etNewWord.getText().toString().length());
+                        etNewMeaning.setText(s.substring(0, length - 1));
+                    }
+                } else if (length == 1){
+                    c = s;
+                    if (c.equals("@")) {
+                        etNewWord.requestFocus();
+                        etNewWord.setSelection(etNewWord.getText().toString().length());
+                        etNewMeaning.setText("");
+                    }
+                }
+            }
+        });
+
 
         CheckBox chDontToLeitner = (CheckBox) dialogEdit.findViewById(R.id.chDoOrDoNot);
         chDontToLeitner.setVisibility(View.GONE);
@@ -1043,7 +1140,6 @@ public class LeitnerActivity extends Activity implements TextToSpeech.OnInitList
         private final Dialog dialog;
         private String word;
         private String meaning;
-
 
         public CustomListenerEdit(Dialog dialog, String word, String meaning) {
             this.dialog = dialog;
@@ -1070,6 +1166,8 @@ public class LeitnerActivity extends Activity implements TextToSpeech.OnInitList
                 refreshListViewData();
                 dialog.dismiss();
                 Toast.makeText(LeitnerActivity.this, "Successfully edited.", Toast.LENGTH_SHORT).show();
+                dialogEdit.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+                LeitnerActivity.this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
             }
         }
     }
@@ -1131,6 +1229,108 @@ public class LeitnerActivity extends Activity implements TextToSpeech.OnInitList
 
         CheckBox chDontToLeitner = (CheckBox) dialogAddNew.findViewById(R.id.chDoOrDoNot);
         chDontToLeitner.setText("Add to Dictionary too");
+
+        EditText etNewWord = (EditText) dialogAddNew.findViewById(R.id.etWord);
+        EditText etNewMeaning = (EditText) dialogAddNew.findViewById(R.id.etMeaning);
+
+        etNewWord.setFocusableInTouchMode(true);
+        etNewMeaning.setFocusableInTouchMode(true);
+
+        etNewWord.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(hasFocus){
+                    EditText etNewWord = (EditText) dialogAddNew.findViewById(R.id.etWord);
+                    ((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE))
+                            .showSoftInput(etNewWord, InputMethodManager.SHOW_FORCED);
+                }
+            }
+        });
+
+        etNewMeaning.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(hasFocus){
+                    EditText etNewMeaning = (EditText) dialogAddNew.findViewById(R.id.etMeaning);
+                    ((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE))
+                            .showSoftInput(etNewMeaning, InputMethodManager.SHOW_FORCED);
+                }
+            }
+        });
+
+        etNewWord.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                EditText etNewWord = (EditText) dialogAddNew.findViewById(R.id.etWord);
+                EditText etNewMeaning = (EditText) dialogAddNew.findViewById(R.id.etMeaning);
+                etNewWord.getText().toString();
+                String s = etNewWord.getText().toString();
+                int length = s.length();
+                String c = "";
+                if (length > 1) {
+                    c = s.substring(length-1, length);
+                    if (c.equals("@")) {
+                        etNewMeaning.requestFocus();
+                        etNewMeaning.setSelection(etNewMeaning.getText().toString().length());
+                        etNewWord.setText(s.substring(0, length - 1));
+                    }
+                } else if (length == 1){
+                    c = s;
+                    if (c.equals("@")) {
+                        etNewMeaning.requestFocus();
+                        etNewMeaning.setSelection(etNewMeaning.getText().toString().length());
+                        etNewWord.setText("");
+                    }
+                }
+            }
+        });
+
+        etNewMeaning.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                EditText etNewWord = (EditText) dialogAddNew.findViewById(R.id.etWord);
+                EditText etNewMeaning = (EditText) dialogAddNew.findViewById(R.id.etMeaning);
+                etNewMeaning.getText().toString();
+                String s = etNewMeaning.getText().toString();
+                int length = s.length();
+                String c = "";
+                if (length > 1) {
+                    c = s.substring(length-1, length);
+                    if (c.equals("@")) {
+                        etNewWord.requestFocus();
+                        etNewWord.setSelection(etNewWord.getText().toString().length());
+                        etNewMeaning.setText(s.substring(0, length - 1));
+                    }
+                } else if (length == 1){
+                    c = s;
+                    if (c.equals("@")) {
+                        etNewWord.requestFocus();
+                        etNewWord.setSelection(etNewWord.getText().toString().length());
+                        etNewMeaning.setText("");
+                    }
+                }
+            }
+        });
 
         dialogAddNew.setCanceledOnTouchOutside(false);
         Button theButton = dialogAddNew.getButton(DialogInterface.BUTTON_POSITIVE);
@@ -1388,50 +1588,100 @@ public class LeitnerActivity extends Activity implements TextToSpeech.OnInitList
     }
 
     void search(String key) {
-        int found = 0;
-        itemsToShow.clear();
-        refreshShow();
+        char first[] = key.toCharArray();
+        if (key.length() > 0 && first[0] == '.') {
+            int found = 0;
+            itemsToShow.clear();
 
-        adapter.notifyDataSetChanged();
-
-        if (itemsToShow.size() > 0) {
-            int i = 0;
-            while (i < itemsToShow.size()) {
+            if (arrayItems.size() > 0) {
                 key = key.toUpperCase();
-                String word = itemsToShow.get(i).getName().toUpperCase();
-                String meaning = itemsToShow.get(i).getMeaning().toUpperCase();
-
-                if (searchMethod.equals("wordsAndMeanings") ? !word.contains(key) && !meaning.contains(key) :
-                        searchMethod.equals("justWords") ? !word.contains(key) :
-                                !meaning.contains(key)) {
-                    itemsToShow.remove(i);
-                    i = 0;
-                } else {
-                    found++;
-                    i++;
+                key = key.substring(1);
+                for (Item arrayItem : arrayItems) {
+                    String word = arrayItem.getName().toUpperCase();
+                    String meaning = arrayItem.getMeaning().toUpperCase();
+                    if (searchMethod.equals("wordsAndMeanings") ? word.contains(key) || meaning.contains(key) :
+                            searchMethod.equals("justWords") ? word.contains(key) :
+                                    meaning.contains(key)) {
+                        found++;
+                        itemsToShow.add(convertToItemShow(arrayItem));
+                    }
+                }
+                if (found > 0) {
+                    items.setAdapter(adapter);
+                    adapter.notifyDataSetChanged();
+                    sort();
                 }
             }
-            if (found > 0) {
-                items.setAdapter(adapter);
+            isFromSearchDot = true;
+            isFromSearch = true;
+
+            if (itemsToShow.size() > 0) {
+                for (int i = 0; i < itemsToShow.size(); i++) {
+                    if (!(itemsToShow.get(i).getName().equals("   Nothing found") &&
+                            itemsToShow.get(i).getMeaning().equals("My Dictionary") && itemsToShow.get(i).getAddDate().equals("KHaledBLack73"))) {
+                        itemsToShow.get(i).setChVisible(markSeveral);
+                        //whether show item's number or not
+                        if (!(itemsToShow.get(i).getName().equals("   Nothing found") && itemsToShow.get(i).getMeaning().equals("My Dictionary") && itemsToShow.get(i).getAddDate().equals("KHaledBLack73")))
+                            itemsToShow.get(i).setName(showItemNumber ? i + 1 + ". " + itemsToShow.get(i).getName() : itemsToShow.get(i).getName());
+                    }
+                }
+                notifyCheckedPositionsInt();
+                TextView tvSummery = (TextView) findViewById(R.id.leitnerSummeryTV);
+                if (!itemsToShow.get(0).getName().equals("   Nothing found") && !itemsToShow.get(0).getMeaning().equals("My Dictionary")) {
+                    tvSummery.setText("'" + Integer.toString(itemsToShow.size()) + "'");
+                } else tvSummery.setText("'" + Integer.toString(itemsToShow.size() - 1) + "'");
+            } else {
+                TextView tvSummery = (TextView) findViewById(R.id.leitnerSummeryTV);
+                tvSummery.setText("'0'");
+                itemsToShow.add(new ItemShow("   Nothing found", "My Dictionary", "KHaledBLack73"));
             }
+        } else if (key.length() > 0) {
+            int found = 0;
+            itemsToShow.clear();
+            refreshShow();
+
             adapter.notifyDataSetChanged();
-        }
-        isFromSearch = true;
 
-        if (itemsToShow.size() > 0) {
-            for (int i = 0; i < itemsToShow.size(); i++) {
-                if (!(itemsToShow.get(i).getName().equals("   Nothing found") &&
-                        itemsToShow.get(i).getMeaning().equals("My Dictionary") && itemsToShow.get(i).getAddDate().equals("KHaledBLack73"))) {
-                    itemsToShow.get(i).setChVisible(markSeveral);
-                    //whether show item's number or not
-                    if (!(itemsToShow.get(i).getName().equals("   Nothing found") && itemsToShow.get(i).getMeaning().equals("My Dictionary") && itemsToShow.get(i).getAddDate().equals("KHaledBLack73")))
-                        itemsToShow.get(i).setName(showItemNumber ? i + 1 + ". " + itemsToShow.get(i).getName() : itemsToShow.get(i).getName());
+            if (itemsToShow.size() > 0) {
+                int i = 0;
+                key = key.toUpperCase();
+                while (i < itemsToShow.size()) {
+                    String word = itemsToShow.get(i).getName().toUpperCase();
+                    String meaning = itemsToShow.get(i).getMeaning().toUpperCase();
+
+                    if (searchMethod.equals("wordsAndMeanings") ? !word.contains(key) && !meaning.contains(key) :
+                            searchMethod.equals("justWords") ? !word.contains(key) :
+                                    !meaning.contains(key)) {
+                        itemsToShow.remove(i);
+                        i = 0;
+                    } else {
+                        found++;
+                        i++;
+                    }
                 }
+                if (found > 0) {
+                    items.setAdapter(adapter);
+                }
+                adapter.notifyDataSetChanged();
             }
-            notifyCheckedPositionsInt();
-        } else {
-            itemsToShow.add(new ItemShow("   Nothing found", "My Dictionary", "KHaledBLack73"));
+            isFromSearch = true;
+
+            if (itemsToShow.size() > 0) {
+                for (int i = 0; i < itemsToShow.size(); i++) {
+                    if (!(itemsToShow.get(i).getName().equals("   Nothing found") &&
+                            itemsToShow.get(i).getMeaning().equals("My Dictionary") && itemsToShow.get(i).getAddDate().equals("KHaledBLack73"))) {
+                        itemsToShow.get(i).setChVisible(markSeveral);
+                        //whether show item's number or not
+                        if (!(itemsToShow.get(i).getName().equals("   Nothing found") && itemsToShow.get(i).getMeaning().equals("My Dictionary") && itemsToShow.get(i).getAddDate().equals("KHaledBLack73")))
+                            itemsToShow.get(i).setName(showItemNumber ? i + 1 + ". " + itemsToShow.get(i).getName() : itemsToShow.get(i).getName());
+                    }
+                }
+                notifyCheckedPositionsInt();
+            } else {
+                itemsToShow.add(new ItemShow("   Nothing found", "My Dictionary", "KHaledBLack73"));
+            }
         }
+
     }
 
     void getPrefs() {
@@ -1453,7 +1703,6 @@ public class LeitnerActivity extends Activity implements TextToSpeech.OnInitList
 
 
     void menu_Delete() {
-
         boolean arrayItemsCheckedIsEmpty = !checkedPositionsInt.contains(0);
         if (arrayItemsCheckedIsEmpty) {
             Toast.makeText(LeitnerActivity.this, "You haven't selected any item.", Toast.LENGTH_SHORT).show();
@@ -1524,17 +1773,15 @@ public class LeitnerActivity extends Activity implements TextToSpeech.OnInitList
             tvAddDate.setText(arrayItems.get(getPosition(dialogMeaningWordPosition)).getAddDate());
             isDistanceTempAdd = "date";
         }
-
-
     }
 
     public void tvLastDateOnClick(View view) {
         TextView tvLastDate = (TextView) dialogMeaning.findViewById(R.id.leitnerLastDate);
         if (isDistanceTempLast.equals("date")) {
             isDistanceTempLast = "distance";
-            tvLastDate.setText(getDistance(arrayItems.get(getPosition(dialogMeaningWordPosition)).getAddDate()));
+            tvLastDate.setText(getDistance(arrayItems.get(getPosition(dialogMeaningWordPosition)).getLastCheckDate()));
         } else {
-            tvLastDate.setText(arrayItems.get(getPosition(dialogMeaningWordPosition)).getAddDate());
+            tvLastDate.setText(arrayItems.get(getPosition(dialogMeaningWordPosition)).getLastCheckDate());
             isDistanceTempLast = "date";
         }
     }
@@ -1550,13 +1797,11 @@ public class LeitnerActivity extends Activity implements TextToSpeech.OnInitList
         builder.setPositiveButton(R.string.correct, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-//                answer_Correct(position);
             }
         });
         builder.setNegativeButton(R.string.Incorrect, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-//                answer_Incorrect(position);
             }
         });
         builder.setNeutralButton(R.string.edit, new DialogInterface.OnClickListener() {
@@ -1591,9 +1836,7 @@ public class LeitnerActivity extends Activity implements TextToSpeech.OnInitList
         tvCountCorrect.setText(Integer.toString(item.getCountCorrect()));
         tvCount.setText(Integer.toString(item.getCount()));
         tvCountInCorrect.setText(Integer.toString(item.getCountInCorrect()));
-//        tvNameMeaning.setText(item.getName());
         tvNameMeaning.setText(item.getName());
-//        tvNameMeaning.setText(showItemNumber ? item.getName().substring(Integer.toString(position).length()+2) : item.getName());
 
         isDistanceTempAdd = isDistance;
         isDistanceTempLast = isDistance;
@@ -1616,10 +1859,9 @@ public class LeitnerActivity extends Activity implements TextToSpeech.OnInitList
                 Vibrator mVibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                 mVibrator.vibrate(30);
 
-                isLongClickCard = true;
                 TextView tvCard = (TextView) dialogMeaning.findViewById(R.id.leitnerNameAndMeaning);
                 speakOut(tvCard.getText().toString());
-                return false;
+                return true;
             }
         });
 
@@ -1643,7 +1885,10 @@ public class LeitnerActivity extends Activity implements TextToSpeech.OnInitList
 
         @Override
         public void onClick(View v) {
-            if (answerViewed) {
+            if (!isFromSearch) {
+                isFromSearchDot = false;
+            }
+            if (answerViewed && !isFromSearchDot) {
                 if (correct) {
                     move_Next_Correct(position);
                     update_Info_After_Answer(position, true);
@@ -1655,6 +1900,8 @@ public class LeitnerActivity extends Activity implements TextToSpeech.OnInitList
                     update_Info_After_Answer(position, false);
                 }
                 dialog.dismiss();
+            } else if (isFromSearchDot) {
+                Toast.makeText(LeitnerActivity.this, "you can't answer on review mode.", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(LeitnerActivity.this, "First check the answer by clicking on the word then answer", Toast.LENGTH_SHORT).show();
             }
@@ -1667,21 +1914,12 @@ public class LeitnerActivity extends Activity implements TextToSpeech.OnInitList
     }
 
     void name_Click(int position) {
-        if (!isLongClickCard) {
             TextView tvNameMeaning = (TextView) dialogMeaning.findViewById(R.id.leitnerNameAndMeaning);
             if (tvNameMeaning.getText().toString().equals(arrayItems.get(getPosition(position)).getName())) {
                 tvNameMeaning.setText(itemsToShow.get(position).getMeaning());
             } else {
                 tvNameMeaning.setText(arrayItems.get(getPosition(position)).getName());
             }
-
-
-//        if (tvNameMeaning.getText().toString().equals(showItemNumber ? itemsToShow.get(position).getName().substring(Integer.toString(position).length()+2) : itemsToShow.get(position).getName())) {
-//            tvNameMeaning.setText(itemsToShow.get(position).getMeaning());
-//        } else {
-//            tvNameMeaning.setText(showItemNumber ? itemsToShow.get(position).getName().substring(Integer.toString(position).length()+2) : itemsToShow.get(position).getName());
-//        }
-        }
     }
 
     int indexDeck(int index) {

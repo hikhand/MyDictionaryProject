@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ListView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/packageListView"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="45dp"
+            android:drawSelectorOnTop="false"
+            android:choiceMode="multipleChoice"/>
+
+    <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/packageSearchET"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="5dp"
+            android:singleLine="true"
+            android:layout_alignParentRight="false"
+            android:inputType="text"
+            android:drawableRight="@android:drawable/ic_menu_search"
+            android:imeOptions="actionSearch"
+            android:layout_marginRight="2dp"
+            android:hint="Search here"
+            android:layout_toLeftOf="@+id/packageSummeryTV"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp"/>
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="00"
+            android:id="@+id/packageSummeryTV"
+            android:layout_centerHorizontal="true"
+            android:clickable="true"
+            android:onClick="summery_OnClick"
+            android:textColor="#3d3a3d"
+            android:layout_alignBaseline="@+id/packageSearchET"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="3dp"/>
+
+</RelativeLayout>

@@ -17,8 +17,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Version 2.0.4 pro"
-            android:id="@+id/textView"
+            android:text="Version 2.0.6 pro"
+            android:id="@+id/aboutVersion"
             android:layout_below="@+id/imageView"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="12dp"/>
@@ -29,7 +29,7 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="©2013 Khaled Bakhtiari"
             android:id="@+id/textView2"
-            android:layout_below="@+id/textView"
+            android:layout_below="@+id/aboutVersion"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="5dp"/>
 

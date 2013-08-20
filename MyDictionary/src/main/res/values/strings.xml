@@ -69,12 +69,36 @@
 
     <string name="title_activity_backup">Backup</string>
     <string name="title_activity_leitner">Leitner</string>
-
     <string name="correct">Correct</string>
     <string name="Incorrect">Incorrect</string>
     <string name="action_leitner">Leitner</string>
-    <string name="action_dictionary">My Dictionary</string>
+    <string name="action_dictionary">Close</string>
     <string name="action_count_today">Count Today</string>
     <string name="action_sort">Sort By</string>
+    <string name="title_activity_buy">Buy activity</string>
+    <string name="title_activity_package">Package Leitner</string>
+
+    <array name="addPerDayItems">
+        <item>5 cards</item>
+        <item>10 cards</item>
+        <item>15 cards</item>
+        <item>20 cards</item>
+    </array>
+    <array name="addPerDayValues">
+        <item>s5</item>
+        <item>s10</item>
+        <item>s15</item>
+        <item>s20</item>
+    </array>
+
+    <array name="packages">
+        <item>504 essential words</item>
+    </array>
+    <array name="packagesValues">
+        <item>package504.db</item>
+    </array>
+
+    <string name="action_package">Leitner package</string>
+
 
 </resources>

@@ -18,7 +18,6 @@
             android:layout_marginRight="12dp"
             android:padding="1dp"
             android:textColor="#53cb47"
-            android:layout_alignBaseline="@+id/leitnerAddDate"
             android:layout_marginTop="7dp"/>
 
     <TextView
@@ -32,8 +31,8 @@
             android:layout_alignParentLeft="false"
             android:layout_marginRight="12dp"
             android:padding="1dp"
-            android:layout_below="@+id/leitnerCountInCorrect"
-            android:layout_alignBaseline="@+id/leitnerLastDate"/>
+            android:layout_below="@+id/leitnerCountCorrect"
+            android:layout_marginTop="1dp"/>
 
     <TextView
             android:layout_width="wrap_content"
@@ -67,7 +66,7 @@
             android:paddingLeft="13dp"
             android:paddingRight="30dp"
             android:paddingTop="7dp"
-            android:paddingBottom="2dp"/>
+            />
 
     <TextView
             android:layout_width="wrap_content"
@@ -86,7 +85,7 @@
             android:onClick="tvLastDateOnClick"
             android:paddingLeft="13dp"
             android:paddingRight="30dp"
-            android:paddingTop="2dp"
+            android:paddingTop="4dp"
             android:paddingBottom="10dp"
             android:layout_below="@+id/leitnerAddDate"/>
 
@@ -157,9 +156,9 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="word:"
             android:id="@+id/leitnerPos"
-            android:layout_below="@+id/leitnerLastDate"
             android:layout_alignParentLeft="true"
             android:layout_marginLeft="13dp"
-            android:textColor="#928e87"/>
+            android:textColor="#928e87"
+            android:layout_above="@+id/imageView"/>
 
 </RelativeLayout>
