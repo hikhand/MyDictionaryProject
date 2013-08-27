@@ -32,7 +32,7 @@
             android:textColor="#010101"
             tools:ignore="NewApi"
             android:layout_marginRight="47dp"
-            android:textSize="12dp"
+            android:textSize="12sp"
             android:layout_alignBottom="@+id/text1"
             android:visibility="visible"
             android:layout_marginBottom="5dp"

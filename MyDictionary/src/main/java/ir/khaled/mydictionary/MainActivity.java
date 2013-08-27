@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -16,11 +17,9 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Parcelable;
-import android.os.StrictMode;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech;
-import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -32,12 +31,14 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.RadioButton;
+import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.view.inputmethod.EditorInfo;
@@ -83,7 +84,6 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
 
     ArrayList<Custom> arrayItems;
     ArrayList<CustomShow> arrayItemsToShow;
-
     public Adapter adapterWords1;
     public AlertDialog dialogAddNew;
     public AlertDialog dialogMeaning;
@@ -107,7 +107,8 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
     boolean showItemNumber = true;
     boolean showItemMeaning = false;
     String isDistance;
-    String isDistanceTemp;
+    String isDistanceTempAdd;
+    String isDistanceTempLast = "";
     String sortMethod;
     private boolean markSeveral = false;
     Parcelable listViewPosition = null;
@@ -118,7 +119,7 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
 
     String searchText = "";
 
-    Names V = null;
+    Names v = null;
 
 
     private TextToSpeech tts;
@@ -182,7 +183,7 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
         }
 
         if (etSearch == null || searchText.equals(null)) {
-            etSearch = (EditText) findViewById(R.id.leitnerSearchET);
+            etSearch = (EditText) findViewById(R.id.etSearch);
             etSearch.setText("");
         } else {
             etSearch.setText(searchText);
@@ -383,14 +384,14 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
 
     public void setElementsId() {
         tts = new TextToSpeech(this, this);
-        V  = new Names();
+        v = new Names();
         database = new DatabaseHandler(this);
         databaseLeitner = new DatabaseLeitner(this);
         mainPrefs = getSharedPreferences("main", MODE_PRIVATE);
         editorMainPrefs = mainPrefs.edit();
 
         if (mainPrefs.getBoolean("firstLogin", true)) {
-            databaseLeitner.addItem(new Item("1", "1", "1"), "leitner");
+            databaseLeitner.addItem(new Item("1", "1", "1", "1", "1"), "leitner");
             databaseLeitner.deleteItem(databaseLeitner.getItemId("1", "1"));
             editorMainPrefs.putBoolean("firstLogin", false);
             editorMainPrefs.commit();
@@ -442,6 +443,117 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
         tvTotalCount.setText(Integer.toString(arrayItems.size()));
         tvHeader.setText("Add An Item");
 
+        Spinner chSpinner1 = (Spinner) dialogAddNew.findViewById(R.id.tag1);
+        Spinner chSpinner2 = (Spinner) dialogAddNew.findViewById(R.id.tag2);
+        Spinner chSpinner3 = (Spinner) dialogAddNew.findViewById(R.id.tag3);
+        Spinner chSpinner4 = (Spinner) dialogAddNew.findViewById(R.id.tag4);
+        Spinner chSpinner5 = (Spinner) dialogAddNew.findViewById(R.id.tag5);
+
+        TextView tvRemove1 = (TextView) dialogAddNew.findViewById(R.id.tvRemove1);
+        TextView tvRemove2 = (TextView) dialogAddNew.findViewById(R.id.tvRemove2);
+        TextView tvRemove3 = (TextView) dialogAddNew.findViewById(R.id.tvRemove3);
+        TextView tvRemove4 = (TextView) dialogAddNew.findViewById(R.id.tvRemove4);
+        TextView tvRemove5 = (TextView) dialogAddNew.findViewById(R.id.tvRemove5);
+
+        EditText etExample = (EditText) dialogAddNew.findViewById(R.id.etExample);
+
+        chSpinner1.setVisibility(View.GONE);
+        chSpinner2.setVisibility(View.GONE);
+        chSpinner3.setVisibility(View.GONE);
+        chSpinner4.setVisibility(View.GONE);
+        chSpinner5.setVisibility(View.GONE);
+        tvRemove1.setVisibility(View.GONE);
+        tvRemove2.setVisibility(View.GONE);
+        tvRemove3.setVisibility(View.GONE);
+        tvRemove4.setVisibility(View.GONE);
+        tvRemove5.setVisibility(View.GONE);
+        etExample.setVisibility(View.GONE);
+
+        boolean first = false;
+        if (mainPrefs.getBoolean("firstLoginTag", true)) {
+            first = true;
+            editorMainPrefs.putBoolean("firstLoginTag", false);
+            editorMainPrefs.commit();
+        }
+
+        ArrayAdapter<String> tags = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_spinner_item);
+        ArrayList<String> tagsStr = database.getTags(first);
+        for (String str : tagsStr) {
+            tags.add(str);
+        }
+        tags.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        chSpinner1.setAdapter(tags);
+        chSpinner2.setAdapter(tags);
+        chSpinner3.setAdapter(tags);
+        chSpinner4.setAdapter(tags);
+        chSpinner5.setAdapter(tags);
+
+
+        tvRemove1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Spinner chSpinner1 = (Spinner) dialogAddNew.findViewById(R.id.tag1);
+                TextView tvRemove1 = (TextView) dialogAddNew.findViewById(R.id.tvRemove1);
+                chSpinner1.setVisibility(View.GONE);
+                tvRemove1.setVisibility(View.GONE);
+                TextView tvMore = (TextView) dialogAddNew.findViewById(R.id.tvAddMoreTag);
+                if (getTagsCount() == 0) tvMore.setText("Add tag");
+                if (getTagsCount() != 0) tvMore.setVisibility(View.VISIBLE);
+            }
+        });
+        tvRemove2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Spinner chSpinner2 = (Spinner) dialogAddNew.findViewById(R.id.tag2);
+                TextView tvRemove2 = (TextView) dialogAddNew.findViewById(R.id.tvRemove2);
+                chSpinner2.setVisibility(View.GONE);
+                tvRemove2.setVisibility(View.GONE);
+                TextView tvMore = (TextView) dialogAddNew.findViewById(R.id.tvAddMoreTag);
+                if (getTagsCount() == 0) tvMore.setText("Add tag");
+                if (getTagsCount() != 0) tvMore.setVisibility(View.VISIBLE);
+            }
+        });
+        tvRemove3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Spinner chSpinner3 = (Spinner) dialogAddNew.findViewById(R.id.tag3);
+                TextView tvRemove3 = (TextView) dialogAddNew.findViewById(R.id.tvRemove3);
+                chSpinner3.setVisibility(View.GONE);
+                tvRemove3.setVisibility(View.GONE);
+                TextView tvMore = (TextView) dialogAddNew.findViewById(R.id.tvAddMoreTag);
+                if (getTagsCount() == 0) tvMore.setText("Add tag");
+                if (getTagsCount() != 0) tvMore.setVisibility(View.VISIBLE);
+            }
+        });
+        tvRemove4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Spinner chSpinner4 = (Spinner) dialogAddNew.findViewById(R.id.tag4);
+                TextView tvRemove4 = (TextView) dialogAddNew.findViewById(R.id.tvRemove4);
+                chSpinner4.setVisibility(View.GONE);
+                tvRemove4.setVisibility(View.GONE);
+                TextView tvMore = (TextView) dialogAddNew.findViewById(R.id.tvAddMoreTag);
+                if (getTagsCount() == 0) tvMore.setText("Add tag");
+                if (getTagsCount() != 0) tvMore.setVisibility(View.VISIBLE);
+            }
+        });
+        tvRemove5.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Spinner chSpinner5 = (Spinner) dialogAddNew.findViewById(R.id.tag5);
+                TextView tvRemove5 = (TextView) dialogAddNew.findViewById(R.id.tvRemove5);
+                chSpinner5.setVisibility(View.GONE);
+                tvRemove5.setVisibility(View.GONE);
+                TextView tvMore = (TextView) dialogAddNew.findViewById(R.id.tvAddMoreTag);
+                if (getTagsCount() == 0) tvMore.setText("Add tag");
+                if (getTagsCount() != 0) tvMore.setVisibility(View.VISIBLE);
+            }
+        });
+
+
+
+
         etNewWord = (EditText) dialogAddNew.findViewById(R.id.etWord);
         etNewMeaning = (EditText) dialogAddNew.findViewById(R.id.etMeaning);
 
@@ -463,16 +575,14 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
         etNewMeaning.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if(hasFocus){
-                    ((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE))
+                if (hasFocus) {
+                    ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
                             .showSoftInput(etNewMeaning, InputMethodManager.SHOW_FORCED);
                 }
 //                else
 //                    Toast.makeText(getApplicationContext(), "lost the focus", 2000).show();
             }
         });
-
-
 
         etNewWord.addTextChangedListener(new TextWatcher() {
             @Override
@@ -487,18 +597,17 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
 
             @Override
             public void afterTextChanged(Editable editable) {
-                etNewWord.getText().toString();
                 String s = etNewWord.getText().toString();
                 int length = s.length();
                 String c = "";
                 if (length > 1) {
-                    c = s.substring(length-1, length);
+                    c = s.substring(length - 1, length);
                     if (c.equals("@")) {
                         etNewMeaning.requestFocus();
                         etNewMeaning.setSelection(etNewMeaning.getText().toString().length());
                         etNewWord.setText(s.substring(0, length - 1));
                     }
-                } else if (length == 1){
+                } else if (length == 1) {
                     c = s;
                     if (c.equals("@")) {
                         etNewMeaning.requestFocus();
@@ -522,28 +631,74 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
 
             @Override
             public void afterTextChanged(Editable editable) {
-                etNewMeaning.getText().toString();
                 String s = etNewMeaning.getText().toString();
                 int length = s.length();
                 String c = "";
                 if (length > 1) {
-                    c = s.substring(length-1, length);
+                    c = s.substring(length - 1, length);
                     if (c.equals("@")) {
-                        etNewWord.requestFocus();
-                        etNewWord.setSelection(etNewWord.getText().toString().length());
+                        EditText etExample = (EditText) dialogAddNew.findViewById(R.id.etExample);
+                        if (etExample.getVisibility() == View.VISIBLE) {
+                            etExample.requestFocus();
+                            etExample.setSelection(etExample.getText().toString().length());
+                        } else {
+                            etNewWord.requestFocus();
+                            etNewWord.setSelection(etNewWord.getText().toString().length());
+                        }
                         etNewMeaning.setText(s.substring(0, length - 1));
                     }
-                } else if (length == 1){
+                } else if (length == 1) {
                     c = s;
                     if (c.equals("@")) {
-                        etNewWord.requestFocus();
-                        etNewWord.setSelection(etNewWord.getText().toString().length());
+                        EditText etExample = (EditText) dialogAddNew.findViewById(R.id.etExample);
+                        if (etExample.getVisibility() == View.VISIBLE) {
+                            etExample.requestFocus();
+                            etExample.setSelection(etExample.getText().toString().length());
+
+                        } else {
+                            etNewWord.requestFocus();
+                            etNewWord.setSelection(etNewWord.getText().toString().length());
+                        }
                         etNewMeaning.setText("");
                     }
                 }
             }
         });
 
+        etExample.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                EditText etExample = (EditText) dialogAddNew.findViewById(R.id.etExample);
+                String s = etExample.getText().toString();
+                int length = s.length();
+                String c = "";
+                if (length > 1) {
+                    c = s.substring(length - 1, length);
+                    if (c.equals("@")) {
+                        etNewWord.requestFocus();
+                        etNewWord.setSelection(etNewWord.getText().toString().length());
+                        etExample.setText(s.substring(0, length - 1));
+                    }
+                } else if (length == 1) {
+                    c = s;
+                    if (c.equals("@")) {
+                        etNewWord.requestFocus();
+                        etNewWord.setSelection(etNewWord.getText().toString().length());
+                        etExample.setText("");
+                    }
+                }
+            }
+        });
 
         dialogAddNew.setCanceledOnTouchOutside(false);
         Button theButton = dialogAddNew.getButton(DialogInterface.BUTTON_POSITIVE);
@@ -563,24 +718,52 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
                 CheckBox chDontToLeitner = (CheckBox) dialog.findViewById(R.id.chDoOrDoNot);
                 etNewWord = (EditText) dialog.findViewById(R.id.etWord);
                 etNewMeaning = (EditText) dialog.findViewById(R.id.etMeaning);
+                EditText etNewExample = (EditText) dialog.findViewById(R.id.etExample);
                 String newWord = etNewWord.getText().toString();
                 String newMeaning = etNewMeaning.getText().toString();
+                String newExample = etNewExample.getText().toString();
 
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
                 String currentDateAndTime = simpleDateFormat.format(new Date());
 
-                database.addItem(new Custom(newWord, newMeaning, currentDateAndTime, 0));
+                Spinner spinner1 = (Spinner) dialogAddNew.findViewById(R.id.tag1);
+                Spinner spinner2 = (Spinner) dialogAddNew.findViewById(R.id.tag2);
+                Spinner spinner3 = (Spinner) dialogAddNew.findViewById(R.id.tag3);
+                Spinner spinner4 = (Spinner) dialogAddNew.findViewById(R.id.tag4);
+                Spinner spinner5 = (Spinner) dialogAddNew.findViewById(R.id.tag5);
+                ArrayList<String> tagsArray = new ArrayList<String>();
+                if (spinner1.getVisibility() == View.VISIBLE)
+                    tagsArray.add(spinner1.getSelectedItem().toString());
+                if (spinner2.getVisibility() == View.VISIBLE)
+                    tagsArray.add(spinner2.getSelectedItem().toString());
+                if (spinner3.getVisibility() == View.VISIBLE)
+                    tagsArray.add(spinner3.getSelectedItem().toString());
+                if (spinner4.getVisibility() == View.VISIBLE)
+                    tagsArray.add(spinner4.getSelectedItem().toString());
+                if (spinner5.getVisibility() == View.VISIBLE)
+                    tagsArray.add(spinner5.getSelectedItem().toString());
+                String tags = "";
+                for (int i = 0; i < tagsArray.size(); i++) {
+                    String str = tagsArray.get(i);
+                    if (i == 0) {
+                        tags = str;
+                    } else {
+                        tags += "," + str;
+                    }
+                }
 
-                if (chDontToLeitner.isChecked()) {
-                    databaseLeitner.addItem(new Item(newWord, newMeaning, currentDateAndTime), V.TABLE_DONT_ADD);
-                } else {
-                    databaseLeitner.addItem(new Item(newWord, newMeaning, currentDateAndTime), V.TABLE_LEITNER);
-                    databaseLeitner.addItem(new Item(newWord, newMeaning, currentDateAndTime), V.TABLE_DONT_ADD);
+                database.addItem(new Custom(newWord, newMeaning, newExample, tags, currentDateAndTime, currentDateAndTime, 0));
+
+                if (!chDontToLeitner.isChecked()) {
+                    databaseLeitner.addItem(new Item(newWord, newMeaning, newExample, tags, currentDateAndTime), MainActivity.this.v.TABLE_LEITNER);
                 }
 
                 setImgAddVisibility();
+                markSeveral = false;
+                setElementsId();
                 listViewPosition = items.onSaveInstanceState();
                 refreshListViewData(false);
+                clearMarks();
                 dialog.dismiss();
                 Toast.makeText(MainActivity.this, "Successfully added.", Toast.LENGTH_SHORT).show();
                 dialogAddNew.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
@@ -589,23 +772,508 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
         }
     }
 
+//    int getTagsCount() {
+//        int countTags = 1;
+//        Spinner spinner1 = (Spinner) dialogAddNew.findViewById(R.id.tag1);
+//        if (spinner1 != null) {
+//            Spinner chSpinner2 = (Spinner) dialogAddNew.findViewById(v.tag2Id);
+//            if (chSpinner2 != null) {
+//                countTags++;
+//                Spinner chSpinner3 = (Spinner) dialogAddNew.findViewById(v.tag3Id);
+//                if (chSpinner3 != null) {
+//                    countTags++;
+//                    Spinner chSpinner4 = (Spinner) dialogAddNew.findViewById(v.tag4Id);
+//                    if (chSpinner4 != null) {
+//                        countTags++;
+//                        Spinner chSpinner5 = (Spinner) dialogAddNew.findViewById(v.tag5Id);
+//                        if (chSpinner5 != null) {
+//                            countTags++;
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//        return countTags;
+//    }
+
+int x = 0;
+
+    int getTagsCountAfter() {
+        int countTags = 0;
+        AlertDialog dialog = dialogAddNew.isShowing() ? dialogAddNew : dialogEdit;
+        Spinner spinner1 = (Spinner) dialog.findViewById(R.id.tag1);
+        if (spinner1.getVisibility() == View.VISIBLE) {
+            countTags++;
+            Spinner chSpinner2 = (Spinner) dialog.findViewById(R.id.tag2);
+            if (chSpinner2.getVisibility() == View.VISIBLE) {
+                countTags++;
+                Spinner chSpinner3 = (Spinner) dialog.findViewById(R.id.tag3);
+                if (chSpinner3.getVisibility() == View.VISIBLE) {
+                    countTags++;
+                    Spinner chSpinner4 = (Spinner) dialog.findViewById(R.id.tag4);
+                    if (chSpinner4.getVisibility() == View.VISIBLE) {
+                        countTags++;
+                        Spinner chSpinner5 = (Spinner) dialog.findViewById(R.id.tag5);
+                        if (chSpinner5.getVisibility() == View.VISIBLE) {
+                            countTags++;
+                        }
+                    }
+                }
+            }
+        }
+        return countTags;
+    }
+
+    int getTagsCount() {
+        int countTags = 0;
+        AlertDialog dialog = dialogAddNew.isShowing() ? dialogAddNew : dialogEdit;
+
+        Spinner chSpinner1 = (Spinner) dialog.findViewById(R.id.tag1);
+        Spinner chSpinner2 = (Spinner) dialog.findViewById(R.id.tag2);
+        Spinner chSpinner3 = (Spinner) dialog.findViewById(R.id.tag3);
+        Spinner chSpinner4 = (Spinner) dialog.findViewById(R.id.tag4);
+        Spinner chSpinner5 = (Spinner) dialog.findViewById(R.id.tag5);
+
+        if (chSpinner1.getVisibility() == View.VISIBLE) countTags++;
+        if (chSpinner2.getVisibility() == View.VISIBLE) countTags++;
+        if (chSpinner3.getVisibility() == View.VISIBLE) countTags++;
+        if (chSpinner4.getVisibility() == View.VISIBLE) countTags++;
+        if (chSpinner5.getVisibility() == View.VISIBLE) countTags++;
+        return countTags;
+    }
+
+    public void addMoreTags_click(View view) {
+        int countTags = getTagsCountAfter();
+        AlertDialog dialog = dialogAddNew.isShowing() ? dialogAddNew : dialogEdit;
+        Spinner chSpinner1 = (Spinner) dialog.findViewById(R.id.tag1);
+        Spinner chSpinner2 = (Spinner) dialog.findViewById(R.id.tag2);
+        Spinner chSpinner3 = (Spinner) dialog.findViewById(R.id.tag3);
+        Spinner chSpinner4 = (Spinner) dialog.findViewById(R.id.tag4);
+        Spinner chSpinner5 = (Spinner) dialog.findViewById(R.id.tag5);
+        TextView tvRemove1 = (TextView) dialog.findViewById(R.id.tvRemove1);
+        TextView tvRemove2 = (TextView) dialog.findViewById(R.id.tvRemove2);
+        TextView tvRemove3 = (TextView) dialog.findViewById(R.id.tvRemove3);
+        TextView tvRemove4 = (TextView) dialog.findViewById(R.id.tvRemove4);
+        TextView tvRemove5 = (TextView) dialog.findViewById(R.id.tvRemove5);
+
+        TextView tvMore = (TextView) dialog.findViewById(R.id.tvAddMoreTag);
+        EditText etExample = (EditText) dialog.findViewById(R.id.etExample);
+
+        if (dialogAddNew.isShowing() && (etExample.getVisibility() == View.GONE)) {
+                etExample.setVisibility(View.VISIBLE);
+                countTags = 0;
+        } else if (etExample.getVisibility() == View.GONE){
+                etExample.setVisibility(View.VISIBLE);
+                countTags = 0;
+        }
+
+        switch (countTags) {
+            case 0:
+//                createTagSelector(R.id.tag1, v.img2Id, v.tag2Id);
+                chSpinner1.setVisibility(View.VISIBLE);
+                tvRemove1.setVisibility(View.VISIBLE);
+                tvMore.setText("Add more tags");
+                tvMore.setTextColor(Color.parseColor("#3183c2"));
+
+                RelativeLayout.LayoutParams lprams = (RelativeLayout.LayoutParams) tvMore.getLayoutParams();
+                lprams.setMargins(0, 2, 0, 0);
+                tvMore.setLayoutParams(lprams);
+                break;
+            case 1:
+//                createTagSelector(v.tag2Id, v.img3Id, v.tag3Id);
+                chSpinner2.setVisibility(View.VISIBLE);
+                tvRemove2.setVisibility(View.VISIBLE);
+                tvMore.setText("Add more tags");
+                tvMore.setTextColor(Color.parseColor("#3183c2"));
+                break;
+            case 2:
+//                createTagSelector(v.tag3Id, v.img4Id, v.tag4Id);
+                chSpinner3.setVisibility(View.VISIBLE);
+                tvRemove3.setVisibility(View.VISIBLE);
+                tvMore.setText("Add more tags");
+                tvMore.setTextColor(Color.parseColor("#3183c2"));
+                break;
+            case 3:
+//                createTagSelector(v.tag4Id, v.img5Id, v.tag5Id);
+                chSpinner4.setVisibility(View.VISIBLE);
+                tvRemove4.setVisibility(View.VISIBLE);
+                tvMore.setText("Add more tags");
+                tvMore.setTextColor(Color.parseColor("#3183c2"));
+                break;
+            case 4:
+//                Toast.makeText(MainActivity.this, "No more!", Toast.LENGTH_SHORT).show();
+                chSpinner5.setVisibility(View.VISIBLE);
+                tvRemove5.setVisibility(View.VISIBLE);
+                tvMore.setText("Add more tags");
+                tvMore.setVisibility(View.GONE);
+                break;
+        }
+//        countTags = 0;
+//
+//        RelativeLayout rLayout = (RelativeLayout) dialogAddNew.findViewById(R.id.dialog_addnew_contex);
+//
+//        RelativeLayout.LayoutParams lprams = new RelativeLayout.LayoutParams(
+//                RelativeLayout.LayoutParams.WRAP_CONTENT,
+//                RelativeLayout.LayoutParams.WRAP_CONTENT);
+//        final RelativeLayout.LayoutParams lPrams = lprams;
+//
+//        if (countTags == 1) {
+//            lprams = lPrams;
+//            ImageView image = new ImageView(MainActivity.this);
+//            image.setBackgroundResource(R.drawable.remove);
+//            lprams.addRule(RelativeLayout.BELOW, R.id.tag1);
+//            lprams.addRule(RelativeLayout.ALIGN_RIGHT, R.id.etWord);
+//            image.setId(v.img2Id);
+//            image.setLayoutParams(lprams);
+//            rLayout.addView(image);
+//
+//            lprams = lPrams;
+//            Spinner spinner2 = new Spinner(MainActivity.this);
+//            lprams.addRule(RelativeLayout.BELOW, R.id.tag1);
+//            lprams.addRule(RelativeLayout.ALIGN_LEFT, R.id.etWord);
+//            lprams.addRule(RelativeLayout.LEFT_OF, v.img2Id);
+//            spinner2.setId(v.tag2Id);
+//            spinner2.setLayoutParams(lprams);
+//            rLayout.addView(spinner2);
+//
+//            ArrayAdapter<String> tags = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_spinner_item);
+//            ArrayList<String> tagsStr = databaseMain.getTags();
+//            for (String str : tagsStr) {
+//                tags.add(str);
+//            }
+//            tags.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//            spinner2.setAdapter(tags);
+//
+//            TextView tvMoreTag = (TextView) dialogAddNew.findViewById(R.id.tvAddMoreTag);
+//            lprams = (RelativeLayout.LayoutParams) tvMoreTag.getLayoutParams();
+//            lprams.addRule(RelativeLayout.BELOW, spinner2.getId());
+//            tvMoreTag.setLayoutParams(lprams);
+//        }
+//
+//        if (countTags == 2) {
+//            lprams = lPrams;
+//            ImageView image = new ImageView(MainActivity.this);
+//            image.setBackgroundResource(R.drawable.remove);
+//            lprams.addRule(RelativeLayout.BELOW, v.tag2Id);
+//            lprams.addRule(RelativeLayout.ALIGN_RIGHT, R.id.etWord);
+//            image.setId(v.img3Id);
+//            image.setLayoutParams(lprams);
+//            rLayout.addView(image);
+//
+//            lprams = lPrams;
+//            Spinner spinner3 = new Spinner(MainActivity.this);
+//            lprams.addRule(RelativeLayout.BELOW, v.tag2Id);
+//            lprams.addRule(RelativeLayout.ALIGN_LEFT, R.id.etWord);
+//            lprams.addRule(RelativeLayout.LEFT_OF, v.img3Id);
+//            spinner3.setId(v.tag2Id);
+//            spinner3.setLayoutParams(lprams);
+//            rLayout.addView(spinner3);
+//
+//            ArrayAdapter<String> tags = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_spinner_item);
+//            ArrayList<String> tagsStr = databaseMain.getTags();
+//            for (String str : tagsStr) {
+//                tags.add(str);
+//            }
+//            tags.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//            spinner3.setAdapter(tags);
+//
+//            TextView tvMoreTag = (TextView) dialogAddNew.findViewById(R.id.tvAddMoreTag);
+//            lprams = (RelativeLayout.LayoutParams) tvMoreTag.getLayoutParams();
+//            lprams.addRule(RelativeLayout.BELOW, spinner3.getId());
+//            tvMoreTag.setLayoutParams(lprams);
+//        }
+//
+//        if (countTags == 3) {
+//            lprams = lPrams;
+//            ImageView image = new ImageView(MainActivity.this);
+//            image.setBackgroundResource(R.drawable.remove);
+//            lprams.addRule(RelativeLayout.BELOW, R.id.tag1);
+//            lprams.addRule(RelativeLayout.ALIGN_RIGHT, R.id.etWord);
+//            image.setId(v.img2Id);
+//            image.setLayoutParams(lprams);
+//            rLayout.addView(image);
+//
+//
+//            lprams = lPrams;
+//            Spinner spinner4 = new Spinner(MainActivity.this);
+//            lprams.addRule(RelativeLayout.BELOW, v.tag3Id);
+//            lprams.addRule(RelativeLayout.ALIGN_LEFT, R.id.etWord);
+//            lprams.addRule(RelativeLayout.ALIGN_RIGHT, R.id.etWord);
+//            spinner4.setId(v.tag4Id);
+//            spinner4.setLayoutParams(lprams);
+//            rLayout.addView(spinner4);
+//
+//            TextView tvMoreTag = (TextView) dialogAddNew.findViewById(R.id.tvAddMoreTag);
+//            lprams = (RelativeLayout.LayoutParams) tvMoreTag.getLayoutParams();
+//
+//            lprams.addRule(RelativeLayout.BELOW, spinner4.getId());
+//
+//            tvMoreTag.setLayoutParams(lprams);
+//
+//            ArrayAdapter<String> tags = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_spinner_item);
+//            ArrayList<String> tagsStr = databaseMain.getTags();
+//            for (String str : tagsStr) {
+//                tags.add(str);
+//            }
+//            tags.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//            spinner4.setAdapter(tags);
+//        }
+//
+//        if (countTags == 4) {
+//            lprams = lPrams;
+//            ImageView image = new ImageView(MainActivity.this);
+//            image.setBackgroundResource(R.drawable.remove);
+//            lprams.addRule(RelativeLayout.BELOW, R.id.tag1);
+//            lprams.addRule(RelativeLayout.ALIGN_RIGHT, R.id.etWord);
+//            image.setId(v.img2Id);
+//            image.setLayoutParams(lprams);
+//            rLayout.addView(image);
+//
+//
+//            lprams = lPrams;
+//            Spinner spinner5 = new Spinner(MainActivity.this);
+//            lprams.addRule(RelativeLayout.BELOW, v.tag4Id);
+//            lprams.addRule(RelativeLayout.ALIGN_LEFT, R.id.etWord);
+//            lprams.addRule(RelativeLayout.ALIGN_RIGHT, R.id.etWord);
+//            spinner5.setId(v.tag5Id);
+//            spinner5.setLayoutParams(lprams);
+//            rLayout.addView(spinner5);
+//
+//            TextView tvMoreTag = (TextView) dialogAddNew.findViewById(R.id.tvAddMoreTag);
+//            lprams = (RelativeLayout.LayoutParams) tvMoreTag.getLayoutParams();
+//
+//            lprams.addRule(RelativeLayout.BELOW, spinner5.getId());
+//
+//            tvMoreTag.setLayoutParams(lprams);
+//
+//            ArrayAdapter<String> tags = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_spinner_item);
+//            ArrayList<String> tagsStr = databaseMain.getTags();
+//            for (String str : tagsStr) {
+//                tags.add(str);
+//            }
+//            tags.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//            spinner5.setAdapter(tags);
+//
+//            tvMoreTag.setTextColor(Color.GRAY);
+//        }
+//
+//        if (countTags == 5) {
+//            Toast.makeText(MainActivity.this, "No more!", Toast.LENGTH_SHORT).show();
+//        }
+    }
+
+//    void createTagSelector(int idLastSp, int idImg, int idSp) {
+//        RelativeLayout rLayout = (RelativeLayout) dialogAddNew.findViewById(R.id.dialog_addnew_contex);
+//
+//        RelativeLayout.LayoutParams lpramsImg = new RelativeLayout.LayoutParams(
+//                RelativeLayout.LayoutParams.WRAP_CONTENT,
+//                RelativeLayout.LayoutParams.WRAP_CONTENT);
+//
+//        ImageView image = new ImageView(MainActivity.this);
+//        image.setImageResource(R.drawable.remove);
+//        lpramsImg.addRule(RelativeLayout.BELOW, idLastSp);
+//        lpramsImg.addRule(RelativeLayout.ALIGN_RIGHT, R.id.etWord);
+//        image.setId(idImg);
+//        image.setLayoutParams(lpramsImg);
+//        rLayout.addView(image);
+//
+//        RelativeLayout.LayoutParams lpramsSp = new RelativeLayout.LayoutParams(
+//                RelativeLayout.LayoutParams.WRAP_CONTENT,
+//                RelativeLayout.LayoutParams.WRAP_CONTENT);
+//
+//        Spinner spinner = new Spinner(MainActivity.this);
+//        lpramsSp.addRule(RelativeLayout.BELOW, idLastSp);
+//        lpramsSp.addRule(RelativeLayout.ALIGN_LEFT, R.id.etWord);
+//        lpramsSp.addRule(RelativeLayout.LEFT_OF, idImg);
+//        spinner.setId(idSp);
+//        spinner.setLayoutParams(lpramsSp);
+//        rLayout.addView(spinner);
+//
+//        ArrayAdapter<String> tags = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_spinner_item);
+//        ArrayList<String> tagsStr = databaseMain.getTags();
+//        for (String str : tagsStr) {
+//            tags.add(str);
+//        }
+//        tags.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//        spinner.setAdapter(tags);
+//
+//        TextView tvMoreTag = (TextView) dialogAddNew.findViewById(R.id.tvAddMoreTag);
+//        RelativeLayout.LayoutParams lpramsM = (RelativeLayout.LayoutParams) tvMoreTag.getLayoutParams();
+//        lpramsM.addRule(RelativeLayout.BELOW, spinner.getId());
+//        tvMoreTag.setLayoutParams(lpramsM);
+//        imgRemoveOnClickListener();
+//    }
+//    void imgRemoveOnClickListener() {
+//        ImageView img1 = (ImageView) dialogAddNew.findViewById(R.id.img1);
+//        ImageView img2 = (ImageView) dialogAddNew.findViewById(v.img2Id);
+//        ImageView img3 = (ImageView) dialogAddNew.findViewById(v.img3Id);
+//        ImageView img4 = (ImageView) dialogAddNew.findViewById(v.img4Id);
+//        ImageView img5 = (ImageView) dialogAddNew.findViewById(v.img5Id);
+//
+//        if (img1 != null) {
+//            img1.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    Toast.makeText(MainActivity.this, "1 clicked", Toast.LENGTH_SHORT).show();
+//                }
+//            });
+//        }
+//
+//        if (img2 != null) {
+//            img2.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    Toast.makeText(MainActivity.this, "2 clicked", Toast.LENGTH_SHORT).show();
+//
+//                }
+//            });
+//        }
+//
+//        if (img3 != null) {
+//            img3.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    Toast.makeText(MainActivity.this, "3 clicked", Toast.LENGTH_SHORT).show();
+//                }
+//            });
+//        }
+//
+//        if (img4 != null) {
+//            img4.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    Toast.makeText(MainActivity.this, "4 clicked", Toast.LENGTH_SHORT).show();
+//
+//                }
+//            });
+//        }
+//
+//        if (img5 != null) {
+//            img5.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//
+//                }
+//            });
+//        }
+//    }
+
     public void search(String key) {
+        char first[] = key.toCharArray();
+        if (key.length() > 0 && first[0] == '.') {
+            searchAdvanced(key);
+        } else if ((key.length() > 0)) {
+            int found = 0;
+            if (arrayItems.size() > 0) {
+                arrayItemsToShow.clear();
+                for (int i = 0; i < arrayItems.size(); i++) {
+                    key = key.toUpperCase();
+                    String word = arrayItems.get(i).getWord().toUpperCase();
+                    String meaning = arrayItems.get(i).getMeaning().toUpperCase();
+
+                    if (searchMethod.equals("wordsAndMeanings") ? word.contains(key) || meaning.contains(key) :
+                            searchMethod.equals("justWords") ? word.contains(key) :
+                                    meaning.contains(key)) {
+
+                        arrayItemsToShow.add(convertToShow(arrayItems.get(i)));
+                        found++;
+                    }
+                }
+                if (found > 0) {
+                    adapterWords1.notifyDataSetChanged();
+                    items.setAdapter(adapterWords1);
+                    sort();
+                } else {
+                    arrayItemsToShow.add(convertToShow(new Custom("   Nothing found", "My Dictionary", "KHaledBLack73", false)));
+                    adapterWords1.notifyDataSetChanged();
+                }
+            }
+
+            isFromSearch = true;
+
+            if (arrayItemsToShow.size() > 0) {
+                for (int i = 0; i < arrayItemsToShow.size(); i++) {
+                    if (!(arrayItemsToShow.get(i).getWord().equals("   Nothing found") &&
+                            arrayItemsToShow.get(i).getMeaning().equals("My Dictionary") && arrayItemsToShow.get(i).getDate().equals("KHaledBLack73"))) {
+                        arrayItemsToShow.get(i).setChVisible(markSeveral);
+                        //whether show item's number or not
+                        if (!(arrayItemsToShow.get(i).getWord().equals("   Nothing found") && arrayItemsToShow.get(i).getMeaning().equals("My Dictionary") && arrayItemsToShow.get(i).getDate().equals("KHaledBLack73")))
+                            arrayItemsToShow.get(i).setWord(showItemNumber ? i + 1 + ". " + arrayItemsToShow.get(i).getWord() : arrayItemsToShow.get(i).getWord());
+                        //whether show item's meaning or not
+                        arrayItemsToShow.get(i).setMeaningVisible(showItemMeaning);
+                    }
+                }
+
+                notifyCheckedPositionsInt();
+            }
+        }
+    }
+
+    void searchAdvanced(String key) {
+        char first[] = key.toCharArray();
+        if (key.length() > 1 && (first[1] == 't' || first[1] == 'T')) {
+            searchByTag(key);
+        } else {
+//            int found = 0;
+//            if (arrayItems.size() > 0) {
+//                arrayItemsToShow.clear();
+//                for (int i = 0; i < arrayItems.size(); i++) {
+//                    key = key.toUpperCase();
+//                    String word = arrayItems.get(i).getWord().toUpperCase();
+//                    String meaning = arrayItems.get(i).getMeaning().toUpperCase();
+//
+//                    if (searchMethod.equals("wordsAndMeanings") ? word.contains(key) || meaning.contains(key) :
+//                            searchMethod.equals("justWords") ? word.contains(key) :
+//                                    meaning.contains(key)) {
+//
+//                        arrayItemsToShow.add(convertToShow(arrayItems.get(i)));
+//                        found++;
+//                    }
+//                }
+//                if (found > 0) {
+//                    adapterWords1.notifyDataSetChanged();
+//                    items.setAdapter(adapterWords1);
+//                    sort();
+//                } else {
+//                    arrayItemsToShow.add(convertToShow(new Custom("   Nothing found", "My Dictionary", "KHaledBLack73", false)));
+//                    adapterWords1.notifyDataSetChanged();
+//                }
+//            }
+//
+//            isFromSearch = true;
+//
+//            if (arrayItemsToShow.size() > 0) {
+//                for (int i = 0; i < arrayItemsToShow.size(); i++) {
+//                    if (!(arrayItemsToShow.get(i).getWord().equals("   Nothing found") &&
+//                            arrayItemsToShow.get(i).getMeaning().equals("My Dictionary") && arrayItemsToShow.get(i).getDate().equals("KHaledBLack73"))) {
+//                        arrayItemsToShow.get(i).setChVisible(markSeveral);
+//                        //whether show item's number or not
+//                        if (!(arrayItemsToShow.get(i).getWord().equals("   Nothing found") && arrayItemsToShow.get(i).getMeaning().equals("My Dictionary") && arrayItemsToShow.get(i).getDate().equals("KHaledBLack73")))
+//                            arrayItemsToShow.get(i).setWord(showItemNumber ? i + 1 + ". " + arrayItemsToShow.get(i).getWord() : arrayItemsToShow.get(i).getWord());
+//                        //whether show item's meaning or not
+//                        arrayItemsToShow.get(i).setMeaningVisible(showItemMeaning);
+//                    }
+//                }
+//
+//                notifyCheckedPositionsInt();
+//            }
+        }
+    }
+
+    void searchByTag(String key) {
         int found = 0;
         if (arrayItems.size() > 0) {
             arrayItemsToShow.clear();
-            for (int i = 0; i < arrayItems.size(); i++) {
-                key = key.toUpperCase();
-                String word = arrayItems.get(i).getWord().toUpperCase();
-                String meaning = arrayItems.get(i).getMeaning().toUpperCase();
-
-                if (searchMethod.equals("wordsAndMeanings") ? word.contains(key) || meaning.contains(key) :
-                        searchMethod.equals("justWords") ? word.contains(key) :
-                                meaning.contains(key)) {
-
-                    arrayItemsToShow.add(convertToShow(arrayItems.get(i)));
+            key = key.toLowerCase();
+            key = key.substring(2);
+            for (Custom j : arrayItems) {
+                String tags = j.getTags().toLowerCase();
+                if (tags.contains(key)) {
                     found++;
+                    arrayItemsToShow.add(convertToShow(j));
                 }
             }
+
             if (found > 0) {
                 adapterWords1.notifyDataSetChanged();
                 items.setAdapter(adapterWords1);
@@ -636,10 +1304,10 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
     }
 
     CustomShow convertToShow(Custom custom) {
-        return new CustomShow(custom.getId(), custom.getWord(), custom.getMeaning(), custom.getDate(), custom.getCount());
+        return new CustomShow(custom.getId(), custom.getWord(), custom.getMeaning(), custom.getExample(), custom.getTags(), custom.getDate(), custom.getLastDate(), custom.getCount());
     }
     Custom convertToCustom(CustomShow j) {
-        return new Custom(j.getId(), j.getWord(), j.getMeaning(), j.getDate(), j.getCount());
+        return new Custom(j.getId(), j.getWord(), j.getMeaning(), j.getExample(), j.getTags(), j.getDate(), j.getLastDate(), j.getCount());
     }
 
     void dialogEdit(boolean fromSearch, int fakePosition, int realPosition) {
@@ -662,7 +1330,7 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
                         newMeaningEdit = dialogEditMeaning.getText().toString();
                         dialogEdit.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
                         if (!dialogAskDelete.isShowing())
-                            dialogAskDelete(fakPositionToSendToDialogDelete);
+                            dialogAskDelete(fakPositionToSendToDialogDelete, true);
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -680,8 +1348,158 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
 
         etNewWord = (EditText) dialogEdit.findViewById(R.id.etWord);
         etNewMeaning = (EditText) dialogEdit.findViewById(R.id.etMeaning);
-        etNewWord.setText(arrayItems.get(realPosition).getWord());
-        etNewMeaning.setText(arrayItemsToShow.get(fakePosition).getMeaning());
+        EditText etExample = (EditText) dialogEdit.findViewById(R.id.etExample);
+
+        Custom j = arrayItems.get(realPosition);
+
+        etNewWord.setText(j.getWord());
+        etNewMeaning.setText(j.getMeaning());
+        etExample.setText(j.getExample());
+
+
+        Spinner chSpinner1 = (Spinner) dialogEdit.findViewById(R.id.tag1);
+        Spinner chSpinner2 = (Spinner) dialogEdit.findViewById(R.id.tag2);
+        Spinner chSpinner3 = (Spinner) dialogEdit.findViewById(R.id.tag3);
+        Spinner chSpinner4 = (Spinner) dialogEdit.findViewById(R.id.tag4);
+        Spinner chSpinner5 = (Spinner) dialogEdit.findViewById(R.id.tag5);
+
+        TextView tvRemove1 = (TextView) dialogEdit.findViewById(R.id.tvRemove1);
+        TextView tvRemove2 = (TextView) dialogEdit.findViewById(R.id.tvRemove2);
+        TextView tvRemove3 = (TextView) dialogEdit.findViewById(R.id.tvRemove3);
+        TextView tvRemove4 = (TextView) dialogEdit.findViewById(R.id.tvRemove4);
+        TextView tvRemove5 = (TextView) dialogEdit.findViewById(R.id.tvRemove5);
+
+        TextView tvMore = (TextView) dialogEdit.findViewById(R.id.tvAddMoreTag);
+
+        chSpinner1.setVisibility(View.GONE);
+        chSpinner2.setVisibility(View.GONE);
+        chSpinner3.setVisibility(View.GONE);
+        chSpinner4.setVisibility(View.GONE);
+        chSpinner5.setVisibility(View.GONE);
+        tvRemove1.setVisibility(View.GONE);
+        tvRemove2.setVisibility(View.GONE);
+        tvRemove3.setVisibility(View.GONE);
+        tvRemove4.setVisibility(View.GONE);
+        tvRemove5.setVisibility(View.GONE);
+        etExample.setVisibility(View.GONE);
+
+        ArrayAdapter<String> tags = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_spinner_item);
+        ArrayList<String> tagsStr = database.getTags(false);
+        for (String str : tagsStr) {
+            tags.add(str);
+        }
+        tags.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        chSpinner1.setAdapter(tags);
+        chSpinner2.setAdapter(tags);
+        chSpinner3.setAdapter(tags);
+        chSpinner4.setAdapter(tags);
+        chSpinner5.setAdapter(tags);
+
+        if (etExample.getText().toString().equals("")) {
+            etExample.setVisibility(View.GONE);
+        } else {
+            etExample.setVisibility(View.VISIBLE);
+        }
+
+        String tag[] = j.getTags().split(",");
+        int countTags = tag.length;
+        if (j.getTags().equals("")) {
+            countTags = 0;
+        }
+
+        if (countTags > 0) {
+            chSpinner1.setVisibility(View.VISIBLE);
+            tvRemove1.setVisibility(View.VISIBLE);
+            chSpinner1.setSelection(tags.getPosition(tag[0]));
+            tvMore.setVisibility(View.VISIBLE);
+            if (etExample.getVisibility() == View.VISIBLE) {
+                tvMore.setText("Add more tags");
+            }
+        }
+        if (countTags > 1) {
+            chSpinner2.setVisibility(View.VISIBLE);
+            tvRemove2.setVisibility(View.VISIBLE);
+            chSpinner2.setSelection(tags.getPosition(tag[1]));
+        }
+        if (countTags > 2) {
+            chSpinner3.setVisibility(View.VISIBLE);
+            tvRemove3.setVisibility(View.VISIBLE);
+            chSpinner3.setSelection(tags.getPosition(tag[2]));
+        }
+        if (countTags > 3) {
+            chSpinner4.setVisibility(View.VISIBLE);
+            tvRemove4.setVisibility(View.VISIBLE);
+            chSpinner4.setSelection(tags.getPosition(tag[3]));
+        }
+        if (countTags > 4) {
+            chSpinner5.setVisibility(View.VISIBLE);
+            tvRemove5.setVisibility(View.VISIBLE);
+            chSpinner5.setSelection(tags.getPosition(tag[4]));
+            if (etExample.getVisibility() == View.VISIBLE) {
+                tvMore.setVisibility(View.GONE);
+            }
+        }
+
+        tvRemove1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Spinner chSpinner1 = (Spinner) dialogEdit.findViewById(R.id.tag1);
+                TextView tvRemove1 = (TextView) dialogEdit.findViewById(R.id.tvRemove1);
+                chSpinner1.setVisibility(View.GONE);
+                tvRemove1.setVisibility(View.GONE);
+                TextView tvMore = (TextView) dialogEdit.findViewById(R.id.tvAddMoreTag);
+                if (getTagsCount() == 0) tvMore.setText("Add tag");
+                if (getTagsCount() != 0) tvMore.setVisibility(View.VISIBLE);
+            }
+        });
+        tvRemove2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Spinner chSpinner2 = (Spinner) dialogEdit.findViewById(R.id.tag2);
+                TextView tvRemove2 = (TextView) dialogEdit.findViewById(R.id.tvRemove2);
+                chSpinner2.setVisibility(View.GONE);
+                tvRemove2.setVisibility(View.GONE);
+                TextView tvMore = (TextView) dialogEdit.findViewById(R.id.tvAddMoreTag);
+                if (getTagsCount() == 0) tvMore.setText("Add tag");
+                if (getTagsCount() != 0) tvMore.setVisibility(View.VISIBLE);
+            }
+        });
+        tvRemove3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Spinner chSpinner3 = (Spinner) dialogEdit.findViewById(R.id.tag3);
+                TextView tvRemove3 = (TextView) dialogEdit.findViewById(R.id.tvRemove3);
+                chSpinner3.setVisibility(View.GONE);
+                tvRemove3.setVisibility(View.GONE);
+                TextView tvMore = (TextView) dialogEdit.findViewById(R.id.tvAddMoreTag);
+                if (getTagsCount() == 0) tvMore.setText("Add tag");
+                if (getTagsCount() != 0) tvMore.setVisibility(View.VISIBLE);
+            }
+        });
+        tvRemove4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Spinner chSpinner4 = (Spinner) dialogEdit.findViewById(R.id.tag4);
+                TextView tvRemove4 = (TextView) dialogEdit.findViewById(R.id.tvRemove4);
+                chSpinner4.setVisibility(View.GONE);
+                tvRemove4.setVisibility(View.GONE);
+                TextView tvMore = (TextView) dialogEdit.findViewById(R.id.tvAddMoreTag);
+                if (getTagsCount() == 0) tvMore.setText("Add tag");
+                if (getTagsCount() != 0) tvMore.setVisibility(View.VISIBLE);
+            }
+        });
+        tvRemove5.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Spinner chSpinner5 = (Spinner) dialogEdit.findViewById(R.id.tag5);
+                TextView tvRemove5 = (TextView) dialogEdit.findViewById(R.id.tvRemove5);
+                chSpinner5.setVisibility(View.GONE);
+                tvRemove5.setVisibility(View.GONE);
+                TextView tvMore = (TextView) dialogEdit.findViewById(R.id.tvAddMoreTag);
+                if (getTagsCount() == 0) tvMore.setText("Add tag");
+                if (getTagsCount() != 0) tvMore.setVisibility(View.VISIBLE);
+            }
+        });
 
 
         etNewWord.setFocusableInTouchMode(true);
@@ -722,18 +1540,17 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
 
             @Override
             public void afterTextChanged(Editable editable) {
-                etNewWord.getText().toString();
                 String s = etNewWord.getText().toString();
                 int length = s.length();
                 String c = "";
                 if (length > 1) {
-                    c = s.substring(length-1, length);
+                    c = s.substring(length - 1, length);
                     if (c.equals("@")) {
                         etNewMeaning.requestFocus();
                         etNewMeaning.setSelection(etNewMeaning.getText().toString().length());
                         etNewWord.setText(s.substring(0, length - 1));
                     }
-                } else if (length == 1){
+                } else if (length == 1) {
                     c = s;
                     if (c.equals("@")) {
                         etNewMeaning.requestFocus();
@@ -757,23 +1574,70 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
 
             @Override
             public void afterTextChanged(Editable editable) {
-                etNewMeaning.getText().toString();
                 String s = etNewMeaning.getText().toString();
                 int length = s.length();
                 String c = "";
                 if (length > 1) {
-                    c = s.substring(length-1, length);
+                    c = s.substring(length - 1, length);
+                    if (c.equals("@")) {
+                        EditText etExample = (EditText) dialogEdit.findViewById(R.id.etExample);
+                        if (etExample.getVisibility() == View.VISIBLE) {
+                            etExample.requestFocus();
+                            etExample.setSelection(etExample.getText().toString().length());
+                        } else {
+                            etNewWord.requestFocus();
+                            etNewWord.setSelection(etNewWord.getText().toString().length());
+                        }
+                        etNewMeaning.setText(s.substring(0, length - 1));
+                    }
+                } else if (length == 1) {
+                    c = s;
+                    if (c.equals("@")) {
+                        EditText etExample = (EditText) dialogEdit.findViewById(R.id.etExample);
+                        if (etExample.getVisibility() == View.VISIBLE) {
+                            etExample.requestFocus();
+                            etExample.setSelection(etExample.getText().toString().length());
+
+                        } else {
+                            etNewWord.requestFocus();
+                            etNewWord.setSelection(etNewWord.getText().toString().length());
+                        }
+                        etNewMeaning.setText("");
+                    }
+                }
+            }
+        });
+
+        etExample.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                EditText etExample = (EditText) dialogEdit.findViewById(R.id.etExample);
+                String s = etExample.getText().toString();
+                int length = s.length();
+                String c = "";
+                if (length > 1) {
+                    c = s.substring(length - 1, length);
                     if (c.equals("@")) {
                         etNewWord.requestFocus();
                         etNewWord.setSelection(etNewWord.getText().toString().length());
-                        etNewMeaning.setText(s.substring(0, length - 1));
+                        etExample.setText(s.substring(0, length - 1));
                     }
-                } else if (length == 1){
+                } else if (length == 1) {
                     c = s;
                     if (c.equals("@")) {
                         etNewWord.requestFocus();
                         etNewWord.setSelection(etNewWord.getText().toString().length());
-                        etNewMeaning.setText("");
+                        etExample.setText("");
                     }
                 }
             }
@@ -793,19 +1657,20 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
 
 
         Button theButton = dialogEdit.getButton(DialogInterface.BUTTON_POSITIVE);
-        theButton.setOnClickListener(new CustomListenerEdit(dialogEdit, arrayItems.get(realPosition).getWord(), arrayItemsToShow.get(fakePosition).getMeaning()));
+        theButton.setOnClickListener(new CustomListenerEdit(dialogEdit, j.getWord(), j.getMeaning(), realPosition));
     }
 
     class CustomListenerEdit implements View.OnClickListener {
         private final Dialog dialog;
         private String word;
         private String meaning;
+        private int realPosition;
 
-
-        public CustomListenerEdit(Dialog dialog, String word, String meaning) {
+        public CustomListenerEdit(Dialog dialog, String word, String meaning, int realPosition) {
             this.dialog = dialog;
             this.word = word;
             this.meaning = meaning;
+            this.realPosition = realPosition;
         }
 
         @Override
@@ -813,21 +1678,47 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
             if (isReadyEdit(word)) {
                 etNewWord = (EditText) dialog.findViewById(R.id.etWord);
                 etNewMeaning = (EditText) dialog.findViewById(R.id.etMeaning);
+                EditText etNewExample = (EditText) dialogEdit.findViewById(R.id.etExample);
                 newWordEdit = etNewWord.getText().toString();
                 newMeaningEdit = etNewMeaning.getText().toString();
+                String newExample = etNewExample.getText().toString();
 
-                Custom current = database.getItem(database.getItemId(word, meaning));
-//                Log.i("current item", current.getWord() + "  " + current.getMeaning() + " " + current.getDate() + " " + current.getCount() + " " + current.getId());
-                database.updateItem(new Custom(database.getItemId(word, meaning), newWordEdit, newMeaningEdit, current.getDate(), current.getCount()));
+                Spinner spinner1 = (Spinner) dialogEdit.findViewById(R.id.tag1);
+                Spinner spinner2 = (Spinner) dialogEdit.findViewById(R.id.tag2);
+                Spinner spinner3 = (Spinner) dialogEdit.findViewById(R.id.tag3);
+                Spinner spinner4 = (Spinner) dialogEdit.findViewById(R.id.tag4);
+                Spinner spinner5 = (Spinner) dialogEdit.findViewById(R.id.tag5);
+                ArrayList<String> tagsArray = new ArrayList<String>();
+                if (spinner1.getVisibility() == View.VISIBLE)
+                    tagsArray.add(spinner1.getSelectedItem().toString());
+                if (spinner2.getVisibility() == View.VISIBLE)
+                    tagsArray.add(spinner2.getSelectedItem().toString());
+                if (spinner3.getVisibility() == View.VISIBLE)
+                    tagsArray.add(spinner3.getSelectedItem().toString());
+                if (spinner4.getVisibility() == View.VISIBLE)
+                    tagsArray.add(spinner4.getSelectedItem().toString());
+                if (spinner5.getVisibility() == View.VISIBLE)
+                    tagsArray.add(spinner5.getSelectedItem().toString());
+                String tags = "";
+                for (int i = 0; i < tagsArray.size(); i++) {
+                    String str = tagsArray.get(i);
+                    if (i == 0) {
+                        tags = str;
+                    } else {
+                        tags += "," + str;
+                    }
+                }
+
+                Custom j = arrayItems.get(realPosition);
+                database.updateItem(new Custom(j.getId(), newWordEdit, newMeaningEdit, newExample, tags, j.getDate(), j.getLastDate(), j.getCount()));
                 int idLeitner = databaseLeitner.getItemId(word, meaning);
                 if (idLeitner > 0) {
-                    Item j = databaseLeitner.getItem(idLeitner);
-                    databaseLeitner.updateItem(new Item(j.getId(), newWordEdit, newMeaningEdit,
-                            j.getAddDate(), j.getLastCheckDate(), j.getLastCheckDay(),
-                            j.getDeck(), j.getIndex(), j.getCountCorrect(), j.getCountInCorrect(), j.getCount()));
+                    Item j1 = databaseLeitner.getItem(idLeitner);
+                    databaseLeitner.updateItem(new Item(j1.getId(), newWordEdit, newMeaningEdit, j.getExample(), j.getTags(),
+                            j1.getAddDate(), j1.getLastCheckDate(), j1.getLastCheckDay(),
+                            j1.getDeck(), j1.getIndex(), j1.getCountCorrect(), j1.getCountInCorrect(), j1.getCount()));
                 }
-//                Log.i("after edit", x + " rows were effected");
-//                Log.i("after edit", "word for edit: " + word + "  meaning: " + meaning);
+
                 listViewPosition = items.onSaveInstanceState();
                 refreshListViewData(false);
                 dialog.dismiss();
@@ -838,7 +1729,7 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
         }
     }
 
-    void dialogAskDelete(final int position) {
+    void dialogAskDelete(final int position, final boolean fromEdit) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Ask To Delete");
         builder.setMessage("Are you sure you want to delete this word ?");
@@ -852,16 +1743,19 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
                 Toast.makeText(MainActivity.this, "Successfully deleted.", Toast.LENGTH_SHORT).show();
             }
         });
-
         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if (!dialogEdit.isShowing())
-                    dialogEdit(isFromSearch, position, getPosition(position));
-                EditText dialogEditWord = (EditText) dialogEdit.findViewById(R.id.etWord);
-                EditText dialogEditMeaning = (EditText) dialogEdit.findViewById(R.id.etMeaning);
-                dialogEditWord.setText(newWordEdit);
-                dialogEditMeaning.setText(newMeaningEdit);
+                if (fromEdit) {
+                    if (!dialogEdit.isShowing())
+                        dialogEdit(isFromSearch, position, getPosition(position));
+                    EditText dialogEditWord = (EditText) dialogEdit.findViewById(R.id.etWord);
+                    EditText dialogEditMeaning = (EditText) dialogEdit.findViewById(R.id.etMeaning);
+                    dialogEditWord.setText(newWordEdit);
+                    dialogEditMeaning.setText(newMeaningEdit);
+                } else {
+                    dialogMeaning(position, getPosition(position));
+                }
             }
         });
         dialogAskDelete = builder.create();
@@ -874,8 +1768,11 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
     void refreshItemsCount(int position, int realPosition) {
         int count = arrayItems.get(realPosition).getCount();
         int id = database.getItemId(arrayItems.get(realPosition).getWord(), arrayItems.get(realPosition).getMeaning());
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+        String currentDateAndTime = simpleDateFormat.format(new Date());
+
         Custom current = database.getItem(id);
-        database.updateItem(new Custom(id, current.getWord(), current.getMeaning(), current.getDate(), current.getCount() + 1));
+        database.updateItem(new Custom(id, current.getWord(), current.getMeaning(), current.getExample(), current.getTags(), current.getDate(), currentDateAndTime, current.getCount() + 1));
 
         arrayItems.get(realPosition).setCount(count + 1);
         arrayItemsToShow.get(position).setCount(count + 1);
@@ -1054,7 +1951,7 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
     }
 
 //    void sortBy() {
-//        if (database.getItemsCount() > 0) {
+//        if (databaseMain.getItemsCount() > 0) {
 //            listViewPosition = items.onSaveInstanceState();
 //            RadioButton nameA = (RadioButton) dialogSortBy.findViewById(R.id.rbNameA);
 //            RadioButton nameD = (RadioButton) dialogSortBy.findViewById(R.id.rbNameD);
@@ -1144,17 +2041,17 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
         String newMeaning = etNewMeaning.getText().toString();
 
         if (isStringJustSpace(newWord)) {
-            Toast.makeText(this, "The Word's Name is missing.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "The Card's Name is missing.", Toast.LENGTH_SHORT).show();
             return false;
         }
         if (isStringJustSpace(newMeaning)) {
-            Toast.makeText(this, "The Word's Meaning is missing.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "The Card's Meaning is missing.", Toast.LENGTH_SHORT).show();
             return false;
         }
         for (int i = 0; i < database.getItemsCount(); i++) {
 //            if (newWord.equals(arrayItems.get(i).getWord()) && newMeaning.equals(arrayItems.get(i).getMeaning())) {
             if (newWord.toLowerCase().equals(arrayItems.get(i).getWord().toLowerCase())) {
-                Toast.makeText(this, "The Word exists in the database", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "The Word exists in the databaseMain", Toast.LENGTH_SHORT).show();
                 return false;
             }
         }
@@ -1165,27 +2062,57 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
     public boolean isReadyEdit(String word) {
         etNewWord = (EditText) dialogEdit.findViewById(R.id.etWord);
         etNewMeaning = (EditText) dialogEdit.findViewById(R.id.etMeaning);
+        EditText etNewExample = (EditText) dialogEdit.findViewById(R.id.etExample);
         String newWord = etNewWord.getText().toString();
         String newMeaning = etNewMeaning.getText().toString();
+        String newExample = etNewExample.getText().toString();
 
+        Spinner spinner1 = (Spinner) dialogEdit.findViewById(R.id.tag1);
+        Spinner spinner2 = (Spinner) dialogEdit.findViewById(R.id.tag2);
+        Spinner spinner3 = (Spinner) dialogEdit.findViewById(R.id.tag3);
+        Spinner spinner4 = (Spinner) dialogEdit.findViewById(R.id.tag4);
+        Spinner spinner5 = (Spinner) dialogEdit.findViewById(R.id.tag5);
+        ArrayList<String> tagsArray = new ArrayList<String>();
+        if (spinner1.getVisibility() == View.VISIBLE)
+            tagsArray.add(spinner1.getSelectedItem().toString());
+        if (spinner2.getVisibility() == View.VISIBLE)
+            tagsArray.add(spinner2.getSelectedItem().toString());
+        if (spinner3.getVisibility() == View.VISIBLE)
+            tagsArray.add(spinner3.getSelectedItem().toString());
+        if (spinner4.getVisibility() == View.VISIBLE)
+            tagsArray.add(spinner4.getSelectedItem().toString());
+        if (spinner5.getVisibility() == View.VISIBLE)
+            tagsArray.add(spinner5.getSelectedItem().toString());
+        String tags = "";
+        for (int i = 0; i < tagsArray.size(); i++) {
+            String str = tagsArray.get(i);
+            if (i == 0) {
+                tags = str;
+            } else {
+                tags += "," + str;
+            }
+        }
 
         if (isStringJustSpace(newWord)) {
-            Toast.makeText(this, "The Word's Name is missing.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "The Card's Name is missing.", Toast.LENGTH_SHORT).show();
             return false;
         }
         if (isStringJustSpace(newMeaning)) {
-            Toast.makeText(this, "The Word's Meaning is missing.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "The Card's Meaning is missing.", Toast.LENGTH_SHORT).show();
             return false;
         }
 
-        if (arrayItems.get(getPosition(dialogMeaningWordPosition)).getWord().toLowerCase().equals(newWord.toLowerCase()) && arrayItems.get(getPosition(dialogMeaningWordPosition)).getMeaning().toLowerCase().equals(newMeaning.toLowerCase())) {
+        if (arrayItems.get(getPosition(dialogMeaningWordPosition)).getWord().toLowerCase().equals(newWord.toLowerCase()) &&
+                arrayItems.get(getPosition(dialogMeaningWordPosition)).getMeaning().toLowerCase().equals(newMeaning.toLowerCase()) &&
+                arrayItems.get(getPosition(dialogMeaningWordPosition)).getExample().toLowerCase().equals(newExample.toLowerCase()) &&
+                arrayItems.get(getPosition(dialogMeaningWordPosition)).getTags().toLowerCase().equals(tags.toLowerCase())) {
             Toast.makeText(this, "Nothing has changed", Toast.LENGTH_SHORT).show();
             return false;
         }
 
-        for (int i = 0; i < database.getItemsCount(); i++) {
+        for (int i = 0; i < arrayItems.size(); i++) {
             if (newWord.toLowerCase().equals(arrayItems.get(i).getWord().toLowerCase()) && !newWord.toLowerCase().equals(word.toLowerCase())) {
-                Toast.makeText(this, "The Word exists in the database", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "The Word exists in the databaseMain", Toast.LENGTH_SHORT).show();
                 return false;
             }
         }
@@ -1220,8 +2147,53 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
                 dialogAddNew();
             EditText wordAddNew = (EditText) dialogAddNew.findViewById(R.id.etWord);
             EditText meaningAddNew = (EditText) dialogAddNew.findViewById(R.id.etMeaning);
-            wordAddNew.setText(icicle.getString("editTextWordAddNew"));
-            meaningAddNew.setText(icicle.getString("editTextMeaningAddNew"));
+            EditText exampleAddNew = (EditText) dialogAddNew.findViewById(R.id.etExample);
+            wordAddNew.setText(icicle.getString("addWord"));
+            meaningAddNew.setText(icicle.getString("addMeaning"));
+            exampleAddNew.setText(icicle.getString("addExample"));
+
+            CheckBox chDoOrDoNot = (CheckBox) dialogAddNew.findViewById(R.id.chDoOrDoNot);
+            chDoOrDoNot.setChecked(icicle.getBoolean("chDoOrDoNot"));
+
+            Spinner chSpinner1 = (Spinner) dialogAddNew.findViewById(R.id.tag1);
+            Spinner chSpinner2 = (Spinner) dialogAddNew.findViewById(R.id.tag2);
+            Spinner chSpinner3 = (Spinner) dialogAddNew.findViewById(R.id.tag3);
+            Spinner chSpinner4 = (Spinner) dialogAddNew.findViewById(R.id.tag4);
+            Spinner chSpinner5 = (Spinner) dialogAddNew.findViewById(R.id.tag5);
+            TextView tvRemove1 = (TextView) dialogAddNew.findViewById(R.id.tvRemove1);
+            TextView tvRemove2 = (TextView) dialogAddNew.findViewById(R.id.tvRemove2);
+            TextView tvRemove3 = (TextView) dialogAddNew.findViewById(R.id.tvRemove3);
+            TextView tvRemove4 = (TextView) dialogAddNew.findViewById(R.id.tvRemove4);
+            TextView tvRemove5 = (TextView) dialogAddNew.findViewById(R.id.tvRemove5);
+            TextView tvMore = (TextView) dialogAddNew.findViewById(R.id.tvAddMoreTag);
+
+            boolean visibles[] = icicle.getBooleanArray("visibles");
+
+            chSpinner1.setVisibility(visibles[0] ? View.VISIBLE : View.GONE);
+            chSpinner2.setVisibility(visibles[1] ? View.VISIBLE : View.GONE);
+            chSpinner3.setVisibility(visibles[2] ? View.VISIBLE : View.GONE);
+            chSpinner4.setVisibility(visibles[3] ? View.VISIBLE : View.GONE);
+            chSpinner5.setVisibility(visibles[4] ? View.VISIBLE : View.GONE);
+            tvRemove1.setVisibility(visibles[5] ? View.VISIBLE : View.GONE);
+            tvRemove2.setVisibility(visibles[6] ? View.VISIBLE : View.GONE);
+            tvRemove3.setVisibility(visibles[7] ? View.VISIBLE : View.GONE);
+            tvRemove4.setVisibility(visibles[8] ? View.VISIBLE : View.GONE);
+            tvRemove5.setVisibility(visibles[9] ? View.VISIBLE : View.GONE);
+            tvMore.setVisibility(visibles[10] ? View.VISIBLE : View.GONE);
+            exampleAddNew.setVisibility(visibles[11] ? View.VISIBLE : View.GONE);
+
+            String selectTags[] = icicle.getStringArray("selectTags");
+
+            ArrayAdapter<String> tags = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_spinner_item);
+            ArrayList<String> tagsStr = database.getTags(false);
+            for (String str : tagsStr) {
+                tags.add(str);
+            }
+            chSpinner1.setSelection(tags.getPosition(selectTags[0]));
+            chSpinner2.setSelection(tags.getPosition(selectTags[1]));
+            chSpinner3.setSelection(tags.getPosition(selectTags[2]));
+            chSpinner4.setSelection(tags.getPosition(selectTags[3]));
+            chSpinner5.setSelection(tags.getPosition(selectTags[4]));
         }
         if (dialogMeaningIsOpen) {
             refreshListViewData(false);
@@ -1235,13 +2207,57 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
                 dialogEdit(isFromSearch, dialogMeaningWordPosition, getPosition(dialogMeaningWordPosition));
             EditText wordAddNew = (EditText) dialogEdit.findViewById(R.id.etWord);
             EditText meaningAddNew = (EditText) dialogEdit.findViewById(R.id.etMeaning);
-            wordAddNew.setText(icicle.getString("dialogEditWordText"));
-            meaningAddNew.setText(icicle.getString("dialogEditMeaningText"));
+            EditText exampleAddNew = (EditText) dialogEdit.findViewById(R.id.etExample);
+            wordAddNew.setText(icicle.getString("editWord"));
+            meaningAddNew.setText(icicle.getString("editMeaning"));
+            exampleAddNew.setText(icicle.getString("editExample"));
+
+            Spinner chSpinner1 = (Spinner) dialogEdit.findViewById(R.id.tag1);
+            Spinner chSpinner2 = (Spinner) dialogEdit.findViewById(R.id.tag2);
+            Spinner chSpinner3 = (Spinner) dialogEdit.findViewById(R.id.tag3);
+            Spinner chSpinner4 = (Spinner) dialogEdit.findViewById(R.id.tag4);
+            Spinner chSpinner5 = (Spinner) dialogEdit.findViewById(R.id.tag5);
+            TextView tvRemove1 = (TextView) dialogEdit.findViewById(R.id.tvRemove1);
+            TextView tvRemove2 = (TextView) dialogEdit.findViewById(R.id.tvRemove2);
+            TextView tvRemove3 = (TextView) dialogEdit.findViewById(R.id.tvRemove3);
+            TextView tvRemove4 = (TextView) dialogEdit.findViewById(R.id.tvRemove4);
+            TextView tvRemove5 = (TextView) dialogEdit.findViewById(R.id.tvRemove5);
+            TextView tvMore = (TextView) dialogEdit.findViewById(R.id.tvAddMoreTag);
+
+            boolean visibles[] = icicle.getBooleanArray("visibles");
+
+            chSpinner1.setVisibility(visibles[0] ? View.VISIBLE : View.GONE);
+            chSpinner2.setVisibility(visibles[1] ? View.VISIBLE : View.GONE);
+            chSpinner3.setVisibility(visibles[2] ? View.VISIBLE : View.GONE);
+            chSpinner4.setVisibility(visibles[3] ? View.VISIBLE : View.GONE);
+            chSpinner5.setVisibility(visibles[4] ? View.VISIBLE : View.GONE);
+            tvRemove1.setVisibility(visibles[5] ? View.VISIBLE : View.GONE);
+            tvRemove2.setVisibility(visibles[6] ? View.VISIBLE : View.GONE);
+            tvRemove3.setVisibility(visibles[7] ? View.VISIBLE : View.GONE);
+            tvRemove4.setVisibility(visibles[8] ? View.VISIBLE : View.GONE);
+            tvRemove5.setVisibility(visibles[9] ? View.VISIBLE : View.GONE);
+            tvMore.setVisibility(visibles[10] ? View.VISIBLE : View.GONE);
+            exampleAddNew.setVisibility(visibles[11] ? View.VISIBLE : View.GONE);
+
+            String selectTags[] = icicle.getStringArray("selectTags");
+
+            ArrayAdapter<String> tags = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_spinner_item);
+            ArrayList<String> tagsStr = database.getTags(false);
+            for (String str : tagsStr) {
+                tags.add(str);
+            }
+            chSpinner1.setSelection(tags.getPosition(selectTags[0]));
+            chSpinner2.setSelection(tags.getPosition(selectTags[1]));
+            chSpinner3.setSelection(tags.getPosition(selectTags[2]));
+            chSpinner4.setSelection(tags.getPosition(selectTags[3]));
+            chSpinner5.setSelection(tags.getPosition(selectTags[4]));
         }
+
         if (dialogAskDeleteIsOpen) {
             dialogMeaningWordPosition = icicle.getInt("dialogMeaningWordPosition");
-            if (!dialogAskDelete.isShowing())
-                dialogAskDelete(dialogMeaningWordPosition);
+            if (!dialogAskDelete.isShowing()) {
+//                dialogAskDelete(dialogMeaningWordPosition);
+            }
             newWordEdit = icicle.getString("dialogEditWordText");
             newMeaningEdit = icicle.getString("dialogEditMeaningText");
         }
@@ -1287,8 +2303,6 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
     protected void onSaveInstanceState(Bundle icicle) {
         super.onSaveInstanceState(icicle);
 
-        EditText wordAddNew = (EditText) dialogAddNew.findViewById(R.id.etWord);
-        EditText meaningAddNew = (EditText) dialogAddNew.findViewById(R.id.etMeaning);
         icicle.putParcelable("listViewPosition", items.onSaveInstanceState());
         icicle.putBoolean("isFromSearch", isFromSearch);
 
@@ -1300,9 +2314,54 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
 
 
         if (dialogAddNew.isShowing()) {
+            EditText wordAddNew = (EditText) dialogAddNew.findViewById(R.id.etWord);
+            EditText meaningAddNew = (EditText) dialogAddNew.findViewById(R.id.etMeaning);
+            EditText exampleAddNew = (EditText) dialogAddNew.findViewById(R.id.etExample);
+
+            Spinner chSpinner1 = (Spinner) dialogAddNew.findViewById(R.id.tag1);
+            Spinner chSpinner2 = (Spinner) dialogAddNew.findViewById(R.id.tag2);
+            Spinner chSpinner3 = (Spinner) dialogAddNew.findViewById(R.id.tag3);
+            Spinner chSpinner4 = (Spinner) dialogAddNew.findViewById(R.id.tag4);
+            Spinner chSpinner5 = (Spinner) dialogAddNew.findViewById(R.id.tag5);
+            TextView tvRemove1 = (TextView) dialogAddNew.findViewById(R.id.tvRemove1);
+            TextView tvRemove2 = (TextView) dialogAddNew.findViewById(R.id.tvRemove2);
+            TextView tvRemove3 = (TextView) dialogAddNew.findViewById(R.id.tvRemove3);
+            TextView tvRemove4 = (TextView) dialogAddNew.findViewById(R.id.tvRemove4);
+            TextView tvRemove5 = (TextView) dialogAddNew.findViewById(R.id.tvRemove5);
+            TextView tvMore = (TextView) dialogAddNew.findViewById(R.id.tvAddMoreTag);
+
+            boolean[] visibles = {
+                    chSpinner1.getVisibility() == View.VISIBLE,
+                    chSpinner2.getVisibility() == View.VISIBLE,
+                    chSpinner3.getVisibility() == View.VISIBLE,
+                    chSpinner4.getVisibility() == View.VISIBLE,
+                    chSpinner5.getVisibility() == View.VISIBLE,
+                    tvRemove1.getVisibility() == View.VISIBLE,
+                    tvRemove2.getVisibility() == View.VISIBLE,
+                    tvRemove3.getVisibility() == View.VISIBLE,
+                    tvRemove4.getVisibility() == View.VISIBLE,
+                    tvRemove5.getVisibility() == View.VISIBLE,
+                    tvMore.getVisibility() == View.VISIBLE,
+                    exampleAddNew.getVisibility() == View.VISIBLE
+            };
+            icicle.putBooleanArray("visibles", visibles);
+
+            String selectTags[] = {
+                    chSpinner1.getSelectedItem().toString(),
+                    chSpinner2.getSelectedItem().toString(),
+                    chSpinner3.getSelectedItem().toString(),
+                    chSpinner4.getSelectedItem().toString(),
+                    chSpinner5.getSelectedItem().toString(),
+            };
+           icicle.putStringArray("selectTags", selectTags);
+
+            CheckBox chDoOrDoNot = (CheckBox) dialogAddNew.findViewById(R.id.chDoOrDoNot);
+            icicle.putBoolean("chDoOrDoNot", chDoOrDoNot.isChecked());
+
             icicle.putBoolean("dialogAddNewIsOpen", dialogAddNew.isShowing());
-            icicle.putString("editTextWordAddNew", wordAddNew.getText().toString());
-            icicle.putString("editTextMeaningAddNew", meaningAddNew.getText().toString());
+            icicle.putString("addWord", wordAddNew.getText().toString());
+            icicle.putString("addMeaning", meaningAddNew.getText().toString());
+            icicle.putString("addExample", exampleAddNew.getText().toString());
         }
 
         if (dialogMeaning.isShowing()) {
@@ -1312,13 +2371,53 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
         }
 
         if (dialogEdit.isShowing()) {
-            EditText dialogEditWord = (EditText) dialogEdit.findViewById(R.id.etWord);
-            EditText dialogEditMeaning = (EditText) dialogEdit.findViewById(R.id.etMeaning);
-
             icicle.putBoolean("dialogEditIsOpen", dialogEdit.isShowing());
             icicle.putInt("dialogMeaningWordPosition", dialogMeaningWordPosition);
-            icicle.putString("dialogEditWordText", dialogEditWord.getText().toString());
-            icicle.putString("dialogEditMeaningText", dialogEditMeaning.getText().toString());
+            EditText wordAddNew = (EditText) dialogEdit.findViewById(R.id.etWord);
+            EditText meaningAddNew = (EditText) dialogEdit.findViewById(R.id.etMeaning);
+            EditText exampleAddNew = (EditText) dialogEdit.findViewById(R.id.etExample);
+
+            icicle.putBoolean("dialogEditIsOpen", dialogEdit.isShowing());
+            icicle.putString("editWord", wordAddNew.getText().toString());
+            icicle.putString("editMeaning", meaningAddNew.getText().toString());
+            icicle.putString("editExample", exampleAddNew.getText().toString());
+
+            Spinner chSpinner1 = (Spinner) dialogEdit.findViewById(R.id.tag1);
+            Spinner chSpinner2 = (Spinner) dialogEdit.findViewById(R.id.tag2);
+            Spinner chSpinner3 = (Spinner) dialogEdit.findViewById(R.id.tag3);
+            Spinner chSpinner4 = (Spinner) dialogEdit.findViewById(R.id.tag4);
+            Spinner chSpinner5 = (Spinner) dialogEdit.findViewById(R.id.tag5);
+            TextView tvRemove1 = (TextView) dialogEdit.findViewById(R.id.tvRemove1);
+            TextView tvRemove2 = (TextView) dialogEdit.findViewById(R.id.tvRemove2);
+            TextView tvRemove3 = (TextView) dialogEdit.findViewById(R.id.tvRemove3);
+            TextView tvRemove4 = (TextView) dialogEdit.findViewById(R.id.tvRemove4);
+            TextView tvRemove5 = (TextView) dialogEdit.findViewById(R.id.tvRemove5);
+            TextView tvMore = (TextView) dialogEdit.findViewById(R.id.tvAddMoreTag);
+
+            boolean[] visibles = {
+                    chSpinner1.getVisibility() == View.VISIBLE,
+                    chSpinner2.getVisibility() == View.VISIBLE,
+                    chSpinner3.getVisibility() == View.VISIBLE,
+                    chSpinner4.getVisibility() == View.VISIBLE,
+                    chSpinner5.getVisibility() == View.VISIBLE,
+                    tvRemove1.getVisibility() == View.VISIBLE,
+                    tvRemove2.getVisibility() == View.VISIBLE,
+                    tvRemove3.getVisibility() == View.VISIBLE,
+                    tvRemove4.getVisibility() == View.VISIBLE,
+                    tvRemove5.getVisibility() == View.VISIBLE,
+                    tvMore.getVisibility() == View.VISIBLE,
+                    exampleAddNew.getVisibility() == View.VISIBLE
+            };
+            icicle.putBooleanArray("visibles", visibles);
+
+            String selectTags[] = {
+                    chSpinner1.getSelectedItem().toString(),
+                    chSpinner2.getSelectedItem().toString(),
+                    chSpinner3.getSelectedItem().toString(),
+                    chSpinner4.getSelectedItem().toString(),
+                    chSpinner5.getSelectedItem().toString(),
+            };
+            icicle.putStringArray("selectTags", selectTags);
         }
 
         if (dialogAskDelete.isShowing()) {
@@ -1590,6 +2689,13 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
             }
         });
         builder.setNegativeButton(R.string.close, null);
+        builder.setNeutralButton(R.string.delete, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if (!dialogAskDelete.isShowing())
+                    dialogAskDelete(position, false);
+            }
+        });
         int currentApi = android.os.Build.VERSION.SDK_INT;
 //        if (currentApi >= Build.VERSION_CODES.HONEYCOMB){
 //            builder.setIconAttribute(android.R.drawable.ic_dialog_info);
@@ -1599,28 +2705,53 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
         dialogMeaning = builder.create();
         dialogMeaning.show();
 
+        Custom j = arrayItems.get(realPosition);
+
         TextView tvDate = (TextView) dialogMeaning.findViewById(R.id.dmDate);
+        TextView tvLastDate = (TextView) dialogMeaning.findViewById(R.id.dmLastDate);
         TextView tvWord = (TextView) dialogMeaning.findViewById(R.id.dmWord);
         TextView tvMeaning = (TextView) dialogMeaning.findViewById(R.id.dmMeaning);
+        TextView tvExample = (TextView) dialogMeaning.findViewById(R.id.dmExample);
+        TextView tvTags = (TextView) dialogMeaning.findViewById(R.id.dmTags);
         TextView tvCount = (TextView) dialogMeaning.findViewById(R.id.dmCount);
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+        String currentDateAndTime = simpleDateFormat.format(new Date());
 
         dialogMeaningWordPosition = position;
 
         refreshItemsCount(position, realPosition);
 
         tvMeaning.setText(arrayItemsToShow.get(position).getMeaning());
-        tvWord.setText(arrayItems.get(realPosition).getWord());
+        tvWord.setText(j.getWord());
+        if (isStringJustSpace(j.getExample())) {
+            tvExample.setText("-");
+        } else {
+            tvExample.setText(j.getExample());
+        }
+        if (isStringJustSpace(j.getTags())) {
+            tvTags.setText("-");
+        } else {
+            String newTags = j.getTags().replace(",", "  #");
+            newTags = "#" + newTags;
+            tvTags.setText(newTags);
+        }
         tvCount.setText(Integer.toString(arrayItemsToShow.get(position).getCount()));
 
-        isDistanceTemp = isDistance;
+        isDistanceTempAdd = isDistance;
+        isDistanceTempLast = isDistance;
         if (isDistance.equals("distance")) {
-            changeDateToDistance();
+            tvDate.setText(getDistance(j.getDate()));
+            tvLastDate.setText(getDistance(j.getLastDate()));
         } else {
             tvDate.setText(arrayItemsToShow.get(position).getDate());
+            tvLastDate.setText(j.getLastDate());
         }
+        j.setLastDate(currentDateAndTime);
 
         final String word = tvWord.getText().toString();
         final String meaning = tvMeaning.getText().toString();
+        final String example = j.getExample().toString();
 
         tvWord.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -1644,137 +2775,62 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
             }
         });
 
+        tvExample.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                Vibrator mVibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                mVibrator.vibrate(30);
+
+                speakOut(example);
+                return false;
+            }
+        });
+
 
         dialogMeaning.setCanceledOnTouchOutside(true);
     }
 
     public void tvDateOnClick(View view) {
-        changeDateToDistanceOnClick();
-    }
+        TextView tvAddDate = (TextView) dialogMeaning.findViewById(R.id.dmDate);
 
-    void changeDateToDistance() {
-        TextView etDate = (TextView) dialogMeaning.findViewById(R.id.dmDate);
-        boolean thisHour = false;
-        boolean today = false;
-        boolean thisMonth = false;
-        boolean thisYear = false;
-        String originalDate = arrayItems.get(getPosition(dialogMeaningWordPosition)).getDate();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
-        String currentDateAndTime = simpleDateFormat.format(new Date());
-
-        Date d1 = null;
-        Date d2 = null;
-        try {
-            d1 = simpleDateFormat.parse(originalDate);
-            d2 = simpleDateFormat.parse(currentDateAndTime);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        final long diff = d2.getTime() - d1.getTime();
-        final long diffSeconds = diff / 1000;
-        final long diffMinutes = diffSeconds / 60;
-        final long diffHours = diffMinutes / 60;
-        final long diffDays = diffHours /  24;
-        final long diffMonth = diffDays / 30;
-        final long diffYear = diffMonth / 12;
-
-        if (diffYear == 0 && diffMonth == 0 && diffDays == 0 && diffHours == 0) {
-            thisHour = true;
-        } else if (diffYear == 0 && diffMonth == 0 && diffDays == 0) {
-            today = true;
-        } else if (diffYear == 0 && diffMonth == 0) {
-            thisMonth = true;
-        } else if (diffYear == 0) {
-            thisYear = true;
-        }
-
-
-        if (thisHour) {
-            etDate.setText(diffMinutes == 0 ? "just now" : diffMinutes < 2 ? Long.toString(diffMinutes) + " minute ago" : Long.toString(diffMinutes) + " minutes ago");
-
-        } else if (today) {
-            etDate.setText(diffHours < 2 ? Long.toString(diffHours) + " hour ago" : Long.toString(diffHours) + " hours ago");
-
-        } else if (thisMonth) {
-            Long difDay = diffDays;
-            Long difHour = diffHours;
-            String strDistance;
-
-            if (diffHours > 24) {
-                difHour = diffHours % 24;
-            } else {
-                difDay--;
-                difHour = (difHour + 24) - difHour;
-            }
-
-            strDistance = difDay < 2 ? Long.toString(difDay) + " day" : Long.toString(difDay) + " days";
-            strDistance += (difHour == 0 ? " ago"
-                    : difHour < 2 ? " and " + Long.toString(difHour) + " hour ago"
-                    : " and " + Long.toString(difHour) + " hours ago");
-
-            if (difHour == 24) {
-                strDistance = "1 day and 0 hour ago";
-            }
-            etDate.setText(strDistance);
-
-        } else if (thisYear) {
-            long difDay = diffDays;
-            long difMonth = diffMonth;
-            long difYear = diffYear;
-            String strDistance = "";
-
-            if (difDay > 30) {
-                difDay = difDay - 30;
-            } {
-                difMonth--;
-                difDay = (difDay + 30) - difDay;
-            }
-            if (difMonth > 12) {
-                difMonth = difMonth - 12;
-            } else {
-                difYear--;
-                difMonth = (difMonth + 12) - difMonth;
-            }
-
-            if (diffYear == 0) {
-                if (difMonth > 0) {
-                    strDistance = difMonth < 2 ? Long.toString(difMonth) + " month" : Long.toString(difMonth) + " months";
-                    if (difDay == 0) {
-                        strDistance += " and " + Long.toString(difDay) + " day ago";
-                    }
-                }
-                strDistance += difDay < 2 ? " and " + Long.toString(difDay) + " day ago"
-                        : " and " + Long.toString(difDay) + " days ago";
-            } else {
-                strDistance = difYear < 2 ? Long.toString(difYear) + " year" : Long.toString(difYear) + " years";
-                strDistance += (difMonth == 0 ? " ago"
-                        : difMonth < 2 ? " and " + Long.toString(difMonth) + " month ago"
-                        : " and " + Long.toString(difMonth) + " months ago");
-            }
-            etDate.setText(strDistance);
+        if (isDistanceTempAdd.equals("date")) {
+            isDistanceTempAdd = "distance";
+            tvAddDate.setText(getDistance(arrayItems.get(getPosition(dialogMeaningWordPosition)).getDate()));
+        } else {
+            tvAddDate.setText(arrayItems.get(getPosition(dialogMeaningWordPosition)).getDate());
+            isDistanceTempAdd = "date";
         }
     }
 
-    void changeDateToDistanceOnClick() {
-        TextView etDate = (TextView) dialogMeaning.findViewById(R.id.dmDate);
-        if (isDistanceTemp.equals("date")) {
+    public void tvLastDateOnClick(View view) {
+        TextView tvLastDate = (TextView) dialogMeaning.findViewById(R.id.dmLastDate);
+        if (isDistanceTempLast.equals("date")) {
+            isDistanceTempLast = "distance";
+            tvLastDate.setText(getDistance(arrayItems.get(getPosition(dialogMeaningWordPosition)).getLastDate()));
+        } else {
+            tvLastDate.setText(arrayItems.get(getPosition(dialogMeaningWordPosition)).getLastDate());
+            isDistanceTempLast = "date";
+        }
+    }
+
+
+    String getDistance(String date) {
+        if (!date.equals("")) {
             boolean thisHour = false;
             boolean today = false;
             boolean thisMonth = false;
             boolean thisYear = false;
-            String originalDate = arrayItems.get(getPosition(dialogMeaningWordPosition)).getDate();
-//            String originalDate = "2000/02/24 20:25";
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
             String currentDateAndTime = simpleDateFormat.format(new Date());
 
             Date d1 = null;
             Date d2 = null;
             try {
-                d1 = simpleDateFormat.parse(originalDate);
+                d1 = simpleDateFormat.parse(date);
                 d2 = simpleDateFormat.parse(currentDateAndTime);
             } catch (ParseException e) {
                 e.printStackTrace();
+                return "wrong date";
             }
 
             final long diff = d2.getTime() - d1.getTime();
@@ -1796,11 +2852,11 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
                 thisYear = true;
             }
 
-            if (thisHour) {
-                etDate.setText(diffMinutes == 0 ? "just now" : diffMinutes < 2 ? Long.toString(diffMinutes) + " minute ago" : Long.toString(diffMinutes) + " minutes ago");
 
+            if (thisHour) {
+                return diffMinutes == 0 ? "just now" : diffMinutes < 2 ? Long.toString(diffMinutes) + " minute ago" : Long.toString(diffMinutes) + " minutes ago";
             } else if (today) {
-                etDate.setText(diffHours < 2 ? Long.toString(diffHours) + " hour ago" : Long.toString(diffHours) + " hours ago");
+                return diffHours < 2 ? Long.toString(diffHours) + " hour ago" : Long.toString(diffHours) + " hours ago";
 
             } else if (thisMonth) {
                 long difDay = diffDays;
@@ -1822,22 +2878,22 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
                 if (difHour == 24) {
                     strDistance = "1 day and 0 hour ago";
                 }
-                etDate.setText(strDistance);
+                return strDistance;
 
-            } else if (thisYear) {
+            } else {
                 long difDay = diffDays;
                 long difMonth = diffMonth;
                 long difYear = diffYear;
                 String strDistance = "";
 
                 if (difDay > 30) {
-                    difDay = difDay - 30;
-                } {
+                    difDay = difDay % 30;
+                } else {
                     difMonth--;
                     difDay = (difDay + 30) - difDay;
                 }
                 if (difMonth > 12) {
-                    difMonth = difMonth - 12;
+                    difMonth = difMonth % 12;
                 } else {
                     difYear--;
                     difMonth = (difMonth + 12) - difMonth;
@@ -1858,14 +2914,10 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
                             : difMonth < 2 ? " and " + Long.toString(difMonth) + " month ago"
                             : " and " + Long.toString(difMonth) + " months ago");
                 }
-                etDate.setText(strDistance);
+                return strDistance;
             }
-
-            isDistanceTemp = "distance";
-        } else {
-            etDate.setText(arrayItems.get(getPosition(dialogMeaningWordPosition)).getDate());
-            isDistanceTemp = "date";
         }
+        return "nothing";
     }
 
     void backup() {

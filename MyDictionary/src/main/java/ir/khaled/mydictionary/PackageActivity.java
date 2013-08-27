@@ -749,6 +749,7 @@ public class PackageActivity extends Activity implements TextToSpeech.OnInitList
                         outputStream.write("yes".getBytes());
                         outputStream.close();
 
+                        con.makeDirectory(s + userUsername + s + "mydictionary" + s);
                         con.makeDirectory(userDbPath);
                         con.storeFile(userDbPath + "has504", openFileInput("has504"));
 

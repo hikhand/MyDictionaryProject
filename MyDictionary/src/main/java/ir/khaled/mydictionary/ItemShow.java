@@ -9,6 +9,8 @@ public class ItemShow {
     private int id;
     private String name;
     private String meaning;
+    private String example;
+    private String tags;
     private String addDate;
     private String lastCheckDate;
     private int lastCheckDay;
@@ -21,10 +23,12 @@ public class ItemShow {
     private boolean chChecked;
     private boolean chVisible;
 
-    public ItemShow(int id, String name, String meaning, String addDate, String lastCheckDate,int lastCheckDay, int deck, int index, int countCorrect, int countInCorrect, int count) {
+    public ItemShow(int id, String name, String meaning, String example, String tags, String addDate, String lastCheckDate,int lastCheckDay, int deck, int index, int countCorrect, int countInCorrect, int count) {
         this.id = id;
         this.name = name;
         this.meaning = meaning;
+        this.example = example;
+        this.tags = tags;
         this.addDate = addDate;
         this.lastCheckDate= lastCheckDate;
         this.lastCheckDay = lastCheckDay;
@@ -48,6 +52,8 @@ public class ItemShow {
 //        this.id = id;
         this.name = name;
         this.meaning = meaning;
+        this.example = "";
+        this.tags = "";
         this.addDate = addDate;
         this.lastCheckDate = addDate;
         this.lastCheckDay = 0;
@@ -176,5 +182,21 @@ public class ItemShow {
 
     public void setChVisible(boolean selected) {
         this.chVisible = selected;
+    }
+
+    public String getExample() {
+        return example;
+    }
+
+    public void setExample(String example) {
+        this.example = example;
+    }
+
+    public String getTags() {
+        return tags;
+    }
+
+    public void setTags(String tags) {
+        this.tags = tags;
     }
 }

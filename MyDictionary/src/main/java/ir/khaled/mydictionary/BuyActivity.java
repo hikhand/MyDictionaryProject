@@ -110,7 +110,7 @@ public class BuyActivity extends Activity {
             } else if (responseCode == v.BILLING_RESPONSE_RESULT_ERROR) {
                 Toast.makeText(BuyActivity.this, "There was an error in payment operation", Toast.LENGTH_LONG).show();
             } else if (responseCode == v.BILLING_RESPONSE_RESULT_ITEM_ALREADY_OWNED) {
-                Toast.makeText(BuyActivity.this, "you already bought 504 words database", Toast.LENGTH_LONG).show();
+                Toast.makeText(BuyActivity.this, "you already bought 504 words databaseMain", Toast.LENGTH_LONG).show();
             }
         } else {
             Toast.makeText(BuyActivity.this, "error in operation", Toast.LENGTH_LONG).show();

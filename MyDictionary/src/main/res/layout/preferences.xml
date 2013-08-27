@@ -30,6 +30,10 @@
                 android:key="showItemMeaning"
                 android:summary="whether show the item's meaning in the list or not"
                 android:defaultValue="true"/>
+        <Preference android:title="Tags" >
+            <intent android:action="ir.khaled.mydictionary.TagsActivity" />
+        </Preference>
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="Leitner Packages" android:key="packageCat">

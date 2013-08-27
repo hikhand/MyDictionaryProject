@@ -18,7 +18,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginRight="12dp"
             android:padding="1dp"
-            />
+            android:textColor="#4d551c"/>
 
     <TextView
             android:layout_width="wrap_content"
@@ -26,7 +26,7 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="9999/99/99 99:99"
             android:id="@+id/dmDate"
-            android:layout_alignParentTop="true"
+            android:layout_alignParentTop="false"
             android:layout_marginRight="0dp"
             android:layout_alignParentRight="false"
             android:layout_marginLeft="0dp"
@@ -37,8 +37,30 @@
             android:onClick="tvDateOnClick"
             android:paddingLeft="13dp"
             android:paddingRight="30dp"
-            android:paddingTop="10dp"
-            android:paddingBottom="15dp"/>
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:textColor="#232323"/>
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="9999/99/99 99:99"
+            android:id="@+id/dmLastDate"
+            android:layout_alignParentTop="false"
+            android:layout_marginRight="0dp"
+            android:layout_alignParentRight="false"
+            android:layout_marginLeft="0dp"
+            android:gravity="center"
+            android:layout_alignParentLeft="true"
+            android:layout_marginTop="0dp"
+            android:clickable="true"
+            android:onClick="tvLastDateOnClick"
+            android:paddingLeft="13dp"
+            android:paddingRight="30dp"
+            android:paddingTop="4dp"
+            android:layout_below="@+id/dmDate"
+            android:textColor="#232323"/>
 
     <ScrollView
             android:layout_width="wrap_content"
@@ -52,19 +74,6 @@
             android:layout_marginRight="10dp"
             >
 
-        <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:id="@+id/dmWord"
-                android:layout_below="@+id/dmDate"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="10dp"
-                android:text="im the word im the im the word im the im the word im the im the word im the im the word im the im the word im the im the word im the im the word im the im the word im the im the word im the "
-                android:textStyle="italic"
-                android:textColor="#777577"
-                android:gravity="left"
-                android:maxHeight="170dp"/>
     </ScrollView>
 
     <ImageView
@@ -72,8 +81,8 @@
             android:layout_height="2dp"
             android:background="#FFFFBB33"
             android:id="@+id/imageView"
-            android:layout_below="@+id/scrollView2"
-            android:layout_marginTop="4dp"/>
+            android:layout_below="@+id/dmLastDate"
+            android:layout_marginTop="5dp"/>
 
     <ScrollView
             android:layout_width="fill_parent"
@@ -81,20 +90,95 @@
             android:id="@+id/scrollView"
             android:layout_below="@+id/imageView"
             android:fillViewport="false"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="12dp"
             android:minHeight="50dp"
-            android:paddingBottom="15dp">
+            >
 
-        <TextView
+        <RelativeLayout
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:id="@+id/dmMeaning"
-                android:text="and im the meaning and im the meaning and im the meaning and im the meaning"
-                android:textSize="24dp"
-                android:textColor="#363636"
-                android:paddingTop="8dp"/>
+                android:layout_height="fill_parent"
+                android:paddingLeft="8dp"
+                android:paddingTop="5dp"
+                android:paddingRight="10dp"
+                android:paddingBottom="10dp">
+
+            <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:id="@+id/dmWord"
+                    android:layout_marginTop="10dp"
+                    android:text="im the word im  im the word im"
+                    android:textColor="#777577"
+                    android:gravity="left"
+                    android:maxHeight="170dp"
+                    android:layout_marginLeft="10dp"
+                    android:textStyle="italic"
+                    android:layout_marginRight="10dp"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="Meaning:"
+                    android:id="@+id/textView3"
+                    android:layout_below="@+id/dmWord"
+                    android:layout_marginTop="15dp"
+                    android:textColor="#7a6c16"
+                    android:layout_marginBottom="-3dp"/>
+
+            <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:id="@+id/dmMeaning"
+                    android:text="and im the meaning and im the meaning and im the meaning and im the meaning"
+                    android:textColor="#232323"
+                    android:layout_below="@+id/textView3"
+                    android:paddingLeft="5dp"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="Examples: "
+                    android:id="@+id/textView"
+                    android:layout_below="@+id/dmMeaning"
+                    android:layout_marginTop="15dp"
+                    android:textColor="#7a6c16"
+                    android:layout_marginBottom="-3dp"/>
+
+            <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="and im the meaning and im the meaning and im the meaning and im the meaning"
+                    android:id="@+id/dmExample"
+                    android:layout_below="@+id/textView"
+                    android:textColor="#232323"
+                    android:paddingLeft="5dp"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="Tags:"
+                    android:id="@+id/textView2"
+                    android:layout_below="@+id/dmExample"
+                    android:layout_marginTop="15dp"
+                    android:textColor="#7a6c16"
+                    android:layout_marginBottom="-3dp"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="tag1, tag2, tag3, tag4, tag5"
+                    android:id="@+id/dmTags"
+                    android:layout_below="@+id/textView2"
+                    android:textColor="#5d355e"
+                    android:paddingLeft="5dp"/>
+
+        </RelativeLayout>
     </ScrollView>
 
 </RelativeLayout>

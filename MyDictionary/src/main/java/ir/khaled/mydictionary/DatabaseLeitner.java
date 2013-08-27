@@ -1,0 +1,555 @@
+package ir.khaled.mydictionary;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Created by khaled on 4/07/13 at 2:12 AM.
+ */
+class DatabaseLeitner extends SQLiteOpenHelper {
+
+    // All Static variables
+    // Database Version
+    private static final int DATABASE_VERSION = 2;
+
+    // Database Name
+    public static final String DATABASE_NAME = "leitner.db";
+
+    // Contacts table name
+    private static final String TABLE_LEITNER = "leitner";
+    private static final String TABLE_LAST_CHECK_DAY = "indexesLastCheckDay";
+    private static final String TABLE_LAST_CHECK_DAY_DATE = "indexesLastCheckDayDate";
+    private static final String TABLE_MAIN = "main";
+    private static final String TABLE_ARCHIVE = "archive";
+
+
+    // Contacts Table Columns names
+    private static final String KEY_ID = "_id";
+    private static final String KEY_NAME = "name";
+    private static final String KEY_MEANING = "meaning";
+    private static final String KEY_EXAMPLE = "example";
+    private static final String KEY_TAGS = "tags";
+    private static final String KEY_ADD_DATE = "addDate";
+    private static final String KEY_lAST_DATE = "lastCheckDate";
+    private static final String KEY_lAST_DAY = "lastCheckDay";
+    private static final String KEY_DECK = "deck";
+    private static final String KEY_INDEX = "index1";
+    private static final String KEY_COUNT_CORRECT = "countCorrect";
+    private static final String KEY_COUNT_INCORRECT = "countInCorrect";
+    private static final String KEY_COUNT = "count";
+
+    private static final String KEY_LAST_DAY = "lastDay";
+    private static final String KEY_LAST_DAY_DATE = "lastDayDate";
+
+    private static final String KEY_MAIN_LAST_DATE = "lastDate";
+    private static final String KEY_MAIN_LAST_DAY = "lastDay";
+
+    boolean isFromUpgrade = false;
+
+    public DatabaseLeitner(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+//        DATABASE_NAME = databaseName;
+    }
+
+    // Creating Tables
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        if (isFromUpgrade) {
+            return;
+        }
+        String sqlLeitner = String.format("CREATE TABLE %s " + "(%s INTEGER PRIMARY KEY AUTOINCREMENT, %s TEXT, %s TEXT, %s TEXT, %s TEXT, %s TEXT, %s TEXT," +
+                " %s INTEGER, %s INTEGER, %s INTEGER, %s INTEGER, %s INTEGER, %s INTEGER)",
+                TABLE_LEITNER, KEY_ID, KEY_NAME, KEY_MEANING, KEY_EXAMPLE, KEY_TAGS, KEY_ADD_DATE, KEY_lAST_DATE,
+                KEY_lAST_DAY, KEY_DECK, KEY_INDEX, KEY_COUNT_CORRECT, KEY_COUNT_INCORRECT, KEY_COUNT);
+        db.execSQL(sqlLeitner);
+
+//        String sqlDontADd = String.format("CREATE TABLE %s " + "(%s INTEGER PRIMARY KEY AUTOINCREMENT, %s TEXT, %s TEXT, %s TEXT, %s TEXT, %s TEXT, %s TEXT," +
+//                " %s INTEGER, %s INTEGER, %s INTEGER, %s INTEGER, %s INTEGER, %s INTEGER)",
+//                TABLE_DONT_ADD, KEY_ID, KEY_NAME, KEY_MEANING, KEY_EXAMPLE, KEY_TAGS, KEY_ADD_DATE, KEY_lAST_DATE,
+//                KEY_lAST_DAY, KEY_DECK, KEY_INDEX, KEY_COUNT_CORRECT, KEY_COUNT_INCORRECT, KEY_COUNT);
+//        db.execSQL(sqlDontADd);
+
+        String sqlArchive = String.format("CREATE TABLE %s " + "(%s INTEGER PRIMARY KEY AUTOINCREMENT, %s TEXT, %s TEXT, %s TEXT, %s TEXT, %s TEXT, %s TEXT," +
+                " %s INTEGER, %s INTEGER, %s INTEGER, %s INTEGER, %s INTEGER, %s INTEGER)",
+                TABLE_ARCHIVE, KEY_ID, KEY_NAME, KEY_MEANING, KEY_EXAMPLE, KEY_TAGS, KEY_ADD_DATE, KEY_lAST_DATE,
+                KEY_lAST_DAY, KEY_DECK, KEY_INDEX, KEY_COUNT_CORRECT, KEY_COUNT_INCORRECT, KEY_COUNT);
+        db.execSQL(sqlArchive);
+
+
+
+        String sqlLastCheckDay = String.format("CREATE TABLE %s " + "(%s INTEGER PRIMARY KEY AUTOINCREMENT, %s INTEGER)",
+                TABLE_LAST_CHECK_DAY, KEY_ID, KEY_LAST_DAY);
+        db.execSQL(sqlLastCheckDay);
+        for (int i = 0; i < 31; i++) {
+            ContentValues values = new ContentValues();
+            values.put(KEY_LAST_DAY, -1);
+            db.insert(TABLE_LAST_CHECK_DAY, null, values);
+        }
+
+        String sqlLastCheckDayDate = String.format("CREATE TABLE %s " + "(%s INTEGER PRIMARY KEY AUTOINCREMENT, %s INTEGER)",
+                TABLE_LAST_CHECK_DAY_DATE, KEY_ID, KEY_LAST_DAY_DATE);
+        db.execSQL(sqlLastCheckDayDate);
+        for (int i = 0; i < 31; i++) {
+            ContentValues values = new ContentValues();
+            values.put(KEY_LAST_DAY_DATE, "today");
+            db.insert(TABLE_LAST_CHECK_DAY_DATE, null, values);
+        }
+
+        String sqlMain = String.format("CREATE TABLE %s " + "(%s INTEGER PRIMARY KEY AUTOINCREMENT, %s TEXT, %s INTEGER)",
+                TABLE_MAIN, KEY_ID, KEY_MAIN_LAST_DATE, KEY_MAIN_LAST_DAY);
+        db.execSQL(sqlMain);
+        ContentValues values = new ContentValues();
+        values.put(KEY_MAIN_LAST_DATE, "today");
+        values.put(KEY_MAIN_LAST_DAY, 0);
+        db.insert(TABLE_MAIN, null, values);
+    }
+
+    // Upgrading databaseMain
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        isFromUpgrade = true;
+        List<Item> itemsList = new ArrayList<Item>();
+        List<Item> itemsList3 = new ArrayList<Item>();
+
+        String selectQuery = "SELECT  * FROM " + (TABLE_LEITNER);
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        if (cursor.moveToFirst()) {
+            do {
+                Item item = new Item(
+                        Integer.parseInt(cursor.getString(0)),//id
+                        cursor.getString(1), //name
+                        cursor.getString(2), //name
+                        "", "",
+                        cursor.getString(3), //add date
+                        cursor.getString(4), //last check date
+                        Integer.parseInt(cursor.getString(5)),//last check day
+                        Integer.parseInt(cursor.getString(6)),//deck
+                        Integer.parseInt(cursor.getString(7)),//index
+                        Integer.parseInt(cursor.getString(8)),//count correct
+                        Integer.parseInt(cursor.getString(9)),//count incorrect
+                        Integer.parseInt(cursor.getString(10)));//count
+                itemsList.add(item);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+
+        selectQuery =  "SELECT  * FROM " + (TABLE_ARCHIVE);
+        cursor = db.rawQuery(selectQuery, null);
+        if (cursor.moveToFirst()) {
+            do {
+                Item item = new Item(
+                        Integer.parseInt(cursor.getString(0)),//id
+                        cursor.getString(1), //name
+                        cursor.getString(2), //name
+                        "", "",
+                        cursor.getString(3), //add date
+                        cursor.getString(4), //last check date
+
+                        Integer.parseInt(cursor.getString(5)),//last check day
+                        Integer.parseInt(cursor.getString(6)),//deck
+                        Integer.parseInt(cursor.getString(7)),//index
+                        Integer.parseInt(cursor.getString(8)),//count correct
+                        Integer.parseInt(cursor.getString(9)),//count incorrect
+                        Integer.parseInt(cursor.getString(10)));//count
+                itemsList3.add(item);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+
+        db.execSQL("drop table if exists '" + TABLE_LEITNER + "'");
+        db.execSQL("drop table if exists 'dontAdd'");
+        db.execSQL("drop table if exists '" + TABLE_ARCHIVE + "'");
+
+        updateToVersion2(db);
+
+        ContentValues values = new ContentValues();
+        for (Item item : itemsList) {
+            values.put(KEY_NAME, item.getName());
+            values.put(KEY_MEANING, item.getMeaning());
+            values.put(KEY_EXAMPLE, item.getExample());
+            values.put(KEY_TAGS, item.getTags());
+            values.put(KEY_ADD_DATE, item.getAddDate());
+            values.put(KEY_lAST_DATE, item.getLastCheckDate());
+            values.put(KEY_lAST_DAY, item.getLastCheckDay());
+            values.put(KEY_DECK, item.getDeck());
+            values.put(KEY_INDEX, item.getIndex());
+            values.put(KEY_COUNT_CORRECT, item.getCountCorrect());
+            values.put(KEY_COUNT_INCORRECT, item.getCountInCorrect());
+            values.put(KEY_COUNT, item.getCount());
+            db.insert(TABLE_LEITNER, null, values);
+        }
+
+        values = new ContentValues();
+        for (Item item : itemsList3) {
+            values.put(KEY_NAME, item.getName());
+            values.put(KEY_MEANING, item.getMeaning());
+            values.put(KEY_EXAMPLE, item.getExample());
+            values.put(KEY_TAGS, item.getTags());
+            values.put(KEY_ADD_DATE, item.getAddDate());
+            values.put(KEY_lAST_DATE, item.getLastCheckDate());
+            values.put(KEY_lAST_DAY, item.getLastCheckDay());
+            values.put(KEY_DECK, item.getDeck());
+            values.put(KEY_INDEX, item.getIndex());
+            values.put(KEY_COUNT_CORRECT, item.getCountCorrect());
+            values.put(KEY_COUNT_INCORRECT, item.getCountInCorrect());
+            values.put(KEY_COUNT, item.getCount());
+            db.insert(TABLE_ARCHIVE, null, values);
+        }
+
+    }
+
+    void updateToVersion2(SQLiteDatabase db ) {
+        String sqlLeitner = String.format("CREATE TABLE %s " + "(%s INTEGER PRIMARY KEY AUTOINCREMENT, %s TEXT, %s TEXT, %s TEXT, %s TEXT, %s TEXT, %s TEXT," +
+                " %s INTEGER, %s INTEGER, %s INTEGER, %s INTEGER, %s INTEGER, %s INTEGER)",
+                TABLE_LEITNER, KEY_ID, KEY_NAME, KEY_MEANING, KEY_EXAMPLE, KEY_TAGS, KEY_ADD_DATE, KEY_lAST_DATE,
+                KEY_lAST_DAY, KEY_DECK, KEY_INDEX, KEY_COUNT_CORRECT, KEY_COUNT_INCORRECT, KEY_COUNT);
+        db.execSQL(sqlLeitner);
+
+        String sqlArchive = String.format("CREATE TABLE %s " + "(%s INTEGER PRIMARY KEY AUTOINCREMENT, %s TEXT, %s TEXT, %s TEXT, %s TEXT, %s TEXT, %s TEXT," +
+                " %s INTEGER, %s INTEGER, %s INTEGER, %s INTEGER, %s INTEGER, %s INTEGER)",
+                TABLE_ARCHIVE, KEY_ID, KEY_NAME, KEY_MEANING, KEY_EXAMPLE, KEY_TAGS, KEY_ADD_DATE, KEY_lAST_DATE,
+                KEY_lAST_DAY, KEY_DECK, KEY_INDEX, KEY_COUNT_CORRECT, KEY_COUNT_INCORRECT, KEY_COUNT);
+        db.execSQL(sqlArchive);
+    }
+
+    // Adding new item
+    public void addItem(Item item, String TABLE_NAME) {
+        SQLiteDatabase db = this.getWritableDatabase();
+//        assert db != null;
+
+        ContentValues values = new ContentValues();
+
+        values.put(KEY_NAME, item.getName());
+        values.put(KEY_MEANING, item.getMeaning());
+        values.put(KEY_EXAMPLE, item.getExample());
+        values.put(KEY_TAGS, item.getTags());
+        values.put(KEY_ADD_DATE, item.getAddDate());
+        values.put(KEY_lAST_DATE, item.getLastCheckDate());
+        values.put(KEY_lAST_DAY, item.getLastCheckDay());
+        values.put(KEY_DECK, item.getDeck());
+        values.put(KEY_INDEX, item.getIndex());
+        values.put(KEY_COUNT_CORRECT, item.getCountCorrect());
+        values.put(KEY_COUNT_INCORRECT, item.getCountInCorrect());
+        values.put(KEY_COUNT, item.getCount());
+
+        Log.d("id value : ", Integer.toString(item.getId()));
+
+        db.insert(TABLE_NAME, null, values);
+        db.close();
+
+    }
+
+
+    // Getting single Item
+    public Item getItem(int id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.query(TABLE_LEITNER, new String[]{KEY_ID,
+                KEY_NAME, KEY_MEANING, KEY_EXAMPLE, KEY_TAGS, KEY_ADD_DATE, KEY_lAST_DATE,
+                KEY_lAST_DAY, KEY_DECK, KEY_INDEX, KEY_COUNT_CORRECT, KEY_COUNT_INCORRECT, KEY_COUNT}, KEY_ID + "=?",
+                new String[]{String.valueOf(id)}, null, null, null, null);
+
+        cursor.moveToFirst();
+
+        Item item = null;
+        if (cursor.getCount() > 0 && cursor != null) {
+            item = new Item(
+                    Integer.parseInt(cursor.getString(0)),//id
+                    cursor.getString(1), //name
+                    cursor.getString(2), //meaning
+                    cursor.getString(3), //meaning
+                    cursor.getString(4), //meaning
+                    cursor.getString(5), //add date
+                    cursor.getString(6), //last check date
+
+                    Integer.parseInt(cursor.getString(7)),//last check day
+                    Integer.parseInt(cursor.getString(8)),//deck
+                    Integer.parseInt(cursor.getString(9)),//index
+                    Integer.parseInt(cursor.getString(10)),//count correct
+                    Integer.parseInt(cursor.getString(11)),//count incorrect
+                    Integer.parseInt(cursor.getString(12)));//count
+        }
+        cursor.close();
+        db.close();
+        // return item
+        return item;
+    }
+
+
+
+    // Getting single Item's word
+    public int getItemId(String word, String meaning) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.query(TABLE_LEITNER, new String[] { KEY_ID,
+                KEY_NAME, KEY_MEANING, KEY_EXAMPLE, KEY_TAGS, KEY_ADD_DATE, KEY_lAST_DATE,
+                KEY_lAST_DAY, KEY_DECK, KEY_INDEX, KEY_COUNT_CORRECT, KEY_COUNT_INCORRECT, KEY_COUNT}, KEY_NAME +"=? AND " + KEY_MEANING +"=?",
+                new String[] {word, meaning}, null, null, null, null);
+        if( cursor != null && cursor.moveToFirst()  ){
+            Log.i("getItem's Id", "word: " + word + "  meaning: " + meaning + " = " + Integer.toString(cursor.getInt(0)));
+            return cursor.getInt(0);
+        }
+        return 0;
+    }
+
+
+    // Getting All items
+    public ArrayList<Item> getAllItems() {
+        ArrayList<Item> itemsList = new ArrayList<Item>();
+        // Select All Query
+        String selectQuery = "SELECT  * FROM " + (TABLE_LEITNER );
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst() && cursor.getCount() >= 1) {
+            do {
+                Item item = new Item(
+                        cursor.getInt(0),//id
+                        cursor.getString(1), //name
+                        cursor.getString(2), //meaning
+                        cursor.getString(3), //meaning
+                        cursor.getString(4), //meaning
+                        cursor.getString(5), //add date
+                        cursor.getString(6), //last check date
+
+                        Integer.parseInt(cursor.getString(7)),//last check day
+                        Integer.parseInt(cursor.getString(8)),//deck
+                        Integer.parseInt(cursor.getString(9)),//index
+                        Integer.parseInt(cursor.getString(10)),//count correct
+                        Integer.parseInt(cursor.getString(11)),//count incorrect
+                        Integer.parseInt(cursor.getString(12)));//count
+                itemsList.add(item);
+            } while (cursor.moveToNext() && cursor.getPosition() < cursor.getCount());
+        }
+        cursor.close();
+        // return contact list
+        return itemsList;
+    }
+
+
+    // Getting contacts Count
+    public int getItemsCount() {
+        String countQuery = "SELECT  * FROM " + (TABLE_LEITNER);
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(countQuery, null);
+        int count = cursor.getCount();
+        cursor.close();
+
+        Log.d("myTag2", Integer.toString(count));
+        // return count
+        return count;
+    }
+
+    // Updating single contact
+    public int updateItem(Item item) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_NAME, item.getName());
+        values.put(KEY_MEANING, item.getMeaning());
+        values.put(KEY_EXAMPLE, item.getExample());
+        values.put(KEY_TAGS, item.getTags());
+        values.put(KEY_ADD_DATE, item.getAddDate());
+        values.put(KEY_lAST_DATE, item.getLastCheckDate());
+        values.put(KEY_lAST_DAY, item.getLastCheckDay());
+        values.put(KEY_DECK, item.getDeck());
+        values.put(KEY_INDEX, item.getIndex());
+        values.put(KEY_COUNT_CORRECT, item.getCountCorrect());
+        values.put(KEY_COUNT_INCORRECT, item.getCountInCorrect());
+        values.put(KEY_COUNT, item.getCount());
+
+        Log.i("in update method", "id: " + item.getId());
+        return db.update(TABLE_LEITNER, values, KEY_ID + "=" + item.getId(), null);
+    }
+
+    public int updatePosition(int id, int deck, int index) {
+        Item item = getItem(id);
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_NAME, item.getName());
+        values.put(KEY_MEANING, item.getMeaning());
+        values.put(KEY_EXAMPLE, item.getExample());
+        values.put(KEY_TAGS, item.getTags());
+        values.put(KEY_ADD_DATE, item.getAddDate());
+        values.put(KEY_lAST_DATE, item.getLastCheckDate());
+        values.put(KEY_lAST_DAY, item.getLastCheckDay());
+        values.put(KEY_DECK, deck);
+        values.put(KEY_INDEX, index);
+        values.put(KEY_COUNT_CORRECT, item.getCountCorrect());
+        values.put(KEY_COUNT_INCORRECT, item.getCountInCorrect());
+        values.put(KEY_COUNT, item.getCount());
+
+        return db.update(TABLE_LEITNER, values, KEY_ID + "=" + item.getId(), null);
+    }
+
+
+    // Deleting single contact
+    public void deleteItem(int id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+//        db.delete(TABLE_WORDS, KEY_ID + " = ?",
+//                new String[] { String.valueOf(id) });
+
+        try {db.delete(TABLE_LEITNER, KEY_ID + "=" + Integer.toString(id), null);}
+        catch (Exception e)
+        {
+            Log.e("DB ERROR", e.toString());
+            e.printStackTrace();
+        }
+        db.close();
+    }
+
+
+    public void clearTable(String tableName) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(tableName, null, null);
+    }
+
+
+
+    public String getLastDate() {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.query(TABLE_MAIN, new String[]{KEY_ID,
+                KEY_MAIN_LAST_DATE, KEY_MAIN_LAST_DAY}, KEY_ID + "=?",
+                new String[]{String.valueOf(1)}, null, null, null, null);
+
+        cursor.moveToFirst();
+
+        String item = "today";
+        if (cursor.getCount() > 0 && cursor != null) {
+            item = cursor.getString(1);
+        }
+        cursor.close();
+        db.close();
+        // return item
+        return item;
+    }
+
+    public int getLastDay() {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.query(TABLE_MAIN, new String[]{KEY_ID,
+                KEY_MAIN_LAST_DATE, KEY_MAIN_LAST_DAY}, KEY_ID + "=?",
+                new String[]{String.valueOf(1)}, null, null, null, null);
+
+        cursor.moveToFirst();
+
+        int item = 0;
+        if (cursor.getCount() > 0 && cursor != null) {
+            item = Integer.parseInt(cursor.getString(2));
+        }
+        cursor.close();
+        db.close();
+        // return item
+        return item;
+    }
+
+    public int updateLastDate(String newLastDate) {
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_MAIN_LAST_DATE, newLastDate);
+        values.put(KEY_MAIN_LAST_DAY, getLastDay());
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        return db.update(TABLE_MAIN, values, KEY_ID + "=" + 1, null);
+    }
+
+    public int updateLastDay(int newLastDay) {
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_MAIN_LAST_DATE, getLastDate());
+        values.put(KEY_MAIN_LAST_DAY, newLastDay);
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        return db.update(TABLE_MAIN, values, KEY_ID + "=" + 1, null);
+    }
+
+    public String getLastDayDate(int id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.query(TABLE_LAST_CHECK_DAY_DATE, new String[]{KEY_ID,
+                KEY_LAST_DAY_DATE}, KEY_ID + "=?",
+                new String[]{String.valueOf(id)}, null, null, null, null);
+
+        cursor.moveToFirst();
+
+        String item = "today";
+        if (cursor.getCount() > 0 && cursor != null) {
+            item = cursor.getString(1);
+        }
+        cursor.close();
+        db.close();
+        // return item
+        return item;
+    }
+
+    public ArrayList<Integer> getAllItemsLastDay() {
+        ArrayList<Integer> itemsList = new ArrayList<Integer>();
+        // Select All Query
+        String selectQuery = "SELECT  * FROM " + TABLE_LAST_CHECK_DAY;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                int item = Integer.parseInt(cursor.getString(1)); //name
+                itemsList.add(item);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        // return contact list
+        return itemsList;
+    }
+
+    public ArrayList<String> getAllItemsLastDayDate() {
+        ArrayList<String> itemsList = new ArrayList<String>();
+        // Select All Query
+        String selectQuery = "SELECT  * FROM " + TABLE_LAST_CHECK_DAY_DATE;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                String item = cursor.getString(1); //name
+                itemsList.add(item);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        // return contact list
+        return itemsList;
+    }
+
+    public int updateItemLastDays(int id, int newLastDay) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_LAST_DAY, newLastDay);
+
+        return db.update(TABLE_LAST_CHECK_DAY, values, KEY_ID + "=" + id, null);
+    }
+
+    public int updateItemLastDaysDate(int id, String newLastDay) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_LAST_DAY_DATE, newLastDay);
+
+        return db.update(TABLE_LAST_CHECK_DAY_DATE, values, KEY_ID + "=" + id, null);
+    }
+
+}

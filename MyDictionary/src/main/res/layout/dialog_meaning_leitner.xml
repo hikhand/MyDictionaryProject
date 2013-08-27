@@ -32,7 +32,8 @@
             android:layout_marginRight="12dp"
             android:padding="1dp"
             android:layout_below="@+id/leitnerCountCorrect"
-            android:layout_marginTop="1dp"/>
+            android:layout_marginTop="1dp"
+            android:textColor="#232323"/>
 
     <TextView
             android:layout_width="wrap_content"
@@ -66,7 +67,7 @@
             android:paddingLeft="13dp"
             android:paddingRight="30dp"
             android:paddingTop="7dp"
-            />
+            android:textColor="#232323"/>
 
     <TextView
             android:layout_width="wrap_content"
@@ -87,7 +88,8 @@
             android:paddingRight="30dp"
             android:paddingTop="4dp"
             android:paddingBottom="10dp"
-            android:layout_below="@+id/leitnerAddDate"/>
+            android:layout_below="@+id/leitnerAddDate"
+            android:textColor="#232323"/>
 
     <TextView
             android:layout_width="wrap_content"
@@ -97,7 +99,7 @@
             android:layout_marginTop="57dp"
             android:text="at deck '0', index '0'"
             android:gravity="left"
-            android:textColor="#363636"
+            android:textColor="#232323"
             android:layout_alignParentLeft="false"
             android:layout_marginRight="10dp"
             android:layout_alignParentTop="false"
@@ -115,41 +117,6 @@
             android:layout_below="@+id/leitnerPosition"
             android:layout_marginTop="5dp"/>
 
-    <ScrollView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/scrollView"
-            android:layout_below="@+id/imageView"
-            android:fillViewport="false"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="12dp"
-            android:minHeight="50dp"
-            android:paddingBottom="15dp"
-            android:layout_centerHorizontal="true"
-            android:layout_alignParentTop="false"
-            android:layout_alignParentLeft="false"
-            android:clickable="true"
-            android:onClick="name_click"
-            android:paddingTop="3dp">
-
-        <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:id="@+id/leitnerNameAndMeaning"
-                android:text="eaning and im the meaning and im th"
-                android:textIsSelectable="false"
-                android:textSize="24dp"
-                android:textColor="#363636"
-                android:editable="false"
-                android:clickable="true"
-                android:onClick="name_click"
-                android:layout_alignTop="@+id/scrollView"
-                android:layout_centerHorizontal="true"
-                android:minWidth="2000dp"
-                android:gravity="center"/>
-    </ScrollView>
-
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -160,5 +127,120 @@
             android:layout_marginLeft="13dp"
             android:textColor="#928e87"
             android:layout_above="@+id/imageView"/>
+
+    <ScrollView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/back"
+            android:layout_below="@+id/imageView"
+            android:fillViewport="false"
+            android:minHeight="50dp">
+
+        <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:paddingLeft="8dp"
+                android:paddingTop="5dp"
+                android:paddingRight="10dp"
+                android:paddingBottom="10dp">
+
+            <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:id="@+id/lWordFront"
+                    android:text="eaning and im the mg and im th"
+                    android:textIsSelectable="false"
+                    android:textSize="24dp"
+                    android:textColor="#232323"
+                    android:editable="false"
+                    android:clickable="true"
+                    android:onClick="name_click"
+                    android:layout_centerHorizontal="true"
+                    android:gravity="center"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    />
+
+            <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:id="@+id/lWordBack"
+                    android:text="im the word im  im the word im"
+                    android:textColor="#777577"
+                    android:gravity="left"
+                    android:maxHeight="170dp"
+                    android:textStyle="italic"
+                    android:onClick="name_click2"
+                    android:paddingLeft="10dp"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:layout_below="@+id/lWordFront"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="Meaning:"
+                    android:id="@+id/lTMeaning"
+                    android:layout_below="@+id/lWordBack"
+                    android:layout_marginTop="10dp"
+                    android:textColor="#7a6c16"
+                    android:layout_marginBottom="-3dp"/>
+
+            <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:id="@+id/lMeaning"
+                    android:text="and im the meaning and im the meaning and im the meaning and im the meaning"
+                    android:textColor="#232323"
+                    android:layout_below="@+id/lTMeaning"
+                    android:paddingLeft="5dp"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="Examples: "
+                    android:id="@+id/lTExamples"
+                    android:layout_below="@+id/lMeaning"
+                    android:layout_marginTop="15dp"
+                    android:textColor="#7a6c16"
+                    android:layout_marginBottom="-3dp"/>
+
+            <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="and im the meaning and im the meaning and im the meaning and im the meaning"
+                    android:id="@+id/lExample"
+                    android:layout_below="@+id/lTExamples"
+                    android:textColor="#232323"
+                    android:paddingLeft="5dp"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="Tags:"
+                    android:id="@+id/lTTags"
+                    android:layout_below="@+id/lExample"
+                    android:layout_marginTop="15dp"
+                    android:textColor="#7a6c16"
+                    android:layout_marginBottom="-3dp"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="tag1, tag2, tag3, tag4, tag5"
+                    android:id="@+id/lTags"
+                    android:layout_below="@+id/lTTags"
+                    android:textColor="#5d355e"
+                    android:paddingLeft="5dp"/>
+        </RelativeLayout>
+    </ScrollView>
 
 </RelativeLayout>

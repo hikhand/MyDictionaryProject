@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/dialog_meaning"
+                android:id="@+id/dialog_addnew"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="#f2f2f2"
@@ -51,7 +51,22 @@
 
         <RelativeLayout
                 android:layout_width="fill_parent"
+                android:id="@+id/dialog_addnew_contex"
                 android:layout_height="fill_parent">
+
+            <EditText
+                    android:id="@+id/etWord"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:hint="@string/word"
+                    android:singleLine="false"
+                    android:inputType="textMultiLine|textCapSentences|textEmailAddress"
+                    android:maxLines="100"
+                    android:editable="true"
+                    android:enabled="true"/>
 
             <EditText
                     android:id="@+id/etMeaning"
@@ -69,27 +84,177 @@
                     android:editable="true"/>
 
             <EditText
-                    android:id="@+id/etWord"
+                    android:id="@+id/etExample"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginRight="5dp"
-                    android:hint="@string/word"
+                    android:hint="Enter examples"
                     android:singleLine="false"
                     android:inputType="textMultiLine|textCapSentences|textEmailAddress"
+                    android:layout_below="@+id/etMeaning"
+                    android:layout_alignLeft="@+id/etWord"
+                    android:layout_alignRight="@+id/etWord"
+                    android:layout_marginTop="5dp"
                     android:maxLines="100"
-                    android:editable="true"
-                    android:enabled="true"/>
+                    android:enabled="true"
+                    android:editable="true"/>
+
+            <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/img1"
+                    android:layout_alignRight="@+id/etWord"
+                    android:src="@drawable/remove"
+                    android:layout_below="@+id/etMeaning"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginLeft="3dp"
+                    android:layout_marginRight="3dp"
+                    android:layout_marginBottom="3dp"
+                    android:visibility="gone"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="Remove"
+                    android:id="@+id/tvRemove1"
+                    android:layout_below="@+id/etExample"
+                    android:padding="3dp"
+                    android:clickable="true"
+                    android:textColor="#3183c2"
+                    android:typeface="normal"
+                    android:textStyle="italic"
+                    android:layout_alignRight="@+id/etWord"
+                    android:layout_alignBaseline="@+id/tag1"/>
+
+            <Spinner
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tag1"
+                    android:layout_alignLeft="@+id/etWord"
+                    android:layout_marginTop="4dp"
+                    android:layout_below="@+id/etExample"
+                    android:layout_toLeftOf="@+id/tvRemove1"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="Remove"
+                    android:id="@+id/tvRemove2"
+                    android:layout_below="@+id/tag1"
+                    android:padding="3dp"
+                    android:clickable="true"
+                    android:textColor="#3183c2"
+                    android:typeface="normal"
+                    android:textStyle="italic"
+                    android:layout_alignRight="@+id/etWord"
+                    android:layout_alignBaseline="@+id/tag2"/>
+
+            <Spinner
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tag2"
+                    android:layout_alignLeft="@+id/etWord"
+                    android:layout_marginTop="4dp"
+                    android:layout_below="@+id/tag1"
+                    android:layout_toLeftOf="@+id/tvRemove2"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="Remove"
+                    android:id="@+id/tvRemove3"
+                    android:layout_below="@+id/tag2"
+                    android:padding="3dp"
+                    android:clickable="true"
+                    android:textColor="#3183c2"
+                    android:typeface="normal"
+                    android:textStyle="italic"
+                    android:layout_alignRight="@+id/etWord"
+                    android:layout_alignBaseline="@+id/tag3"/>
+
+            <Spinner
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tag3"
+                    android:layout_alignLeft="@+id/etWord"
+                    android:layout_marginTop="4dp"
+                    android:layout_below="@+id/tag2"
+                    android:layout_toLeftOf="@+id/tvRemove3"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="Remove"
+                    android:id="@+id/tvRemove4"
+                    android:layout_below="@+id/tag3"
+                    android:padding="3dp"
+                    android:clickable="true"
+                    android:textColor="#3183c2"
+                    android:typeface="normal"
+                    android:textStyle="italic"
+                    android:layout_alignRight="@+id/etWord"
+                    android:layout_alignBaseline="@+id/tag4"/>
+
+            <Spinner
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tag4"
+                    android:layout_alignLeft="@+id/etWord"
+                    android:layout_marginTop="4dp"
+                    android:layout_below="@+id/tag3"
+                    android:layout_toLeftOf="@+id/tvRemove4"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="Remove"
+                    android:id="@+id/tvRemove5"
+                    android:layout_below="@+id/tag4"
+                    android:padding="3dp"
+                    android:clickable="true"
+                    android:textColor="#3183c2"
+                    android:typeface="normal"
+                    android:textStyle="italic"
+                    android:layout_alignRight="@+id/etWord"
+                    android:layout_alignBaseline="@+id/tag5"/>
+
+            <Spinner
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tag5"
+                    android:layout_alignLeft="@+id/etWord"
+                    android:layout_marginTop="4dp"
+                    android:layout_below="@+id/tag4"
+                    android:layout_toLeftOf="@+id/tvRemove5"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="Add more details"
+                    android:id="@+id/tvAddMoreTag"
+                    android:layout_below="@+id/tag5"
+                    android:layout_alignLeft="@+id/etWord"
+                    android:padding="3dp"
+                    android:clickable="true"
+                    android:textColor="#3183c2"
+                    android:typeface="normal"
+                    android:textStyle="italic"
+                    android:onClick="addMoreTags_click"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="-5dp"/>
 
             <CheckBox
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Do not add to leitner"
                     android:id="@+id/chDoOrDoNot"
-                    android:layout_below="@+id/etMeaning"
+                    android:layout_below="@+id/tvAddMoreTag"
                     android:layout_alignParentLeft="true"
-                    android:layout_marginTop="5dp"
                     android:checked="false"
                     android:layout_alignLeft="@+id/etWord"/>
         </RelativeLayout>

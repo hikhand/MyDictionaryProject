@@ -8,7 +8,7 @@ import java.io.File;
 public class Names {
     
     final public String TABLE_LEITNER = "leitner";
-    final public String TABLE_DONT_ADD = "dontAdd";
+//    final public String TABLE_DONT_ADD = "dontAdd";
     final public String TABLE_ARCHIVE = "archive";
     final String TABLE_MAIN = "main";
     final String TABLE_LAST_CHECK_DAY = "indexesLastCheckDay";
@@ -54,5 +54,16 @@ public class Names {
     final String DATABASE_PACKAGE504 = "package504.db";
 
     final String DEVELOPER_PAY_LOAD = "629614616624614620618570565569";//package504
+
+
+    final int tag2Id = 633567;
+    final int tag3Id = 633568;
+    final int tag4Id = 633569;
+    final int tag5Id = 633570;
+
+    final int img2Id = 622567;
+    final int img3Id = 622568;
+    final int img4Id = 622569;
+    final int img5Id = 622570;
 
 }

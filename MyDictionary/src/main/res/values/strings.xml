@@ -90,7 +90,6 @@
         <item>s15</item>
         <item>s20</item>
     </array>
-
     <array name="packages">
         <item>504 essential words</item>
     </array>
@@ -99,6 +98,6 @@
     </array>
 
     <string name="action_package">Leitner package</string>
-
+    <string name="title_activity_tags">Tags</string>
 
 </resources>

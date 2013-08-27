@@ -850,7 +850,7 @@ public class Backup extends Activity {
 
                         succeed = true;
                     } else if (!currentDBMain.exists()) {
-                        errorS = "there is nothing in database to create backup";
+                        errorS = "there is nothing in databaseMain to create backup";
                     }
 
                     con.logout();
@@ -872,7 +872,7 @@ public class Backup extends Activity {
                     TextView tvLastDateServer = (TextView) findViewById(R.id.tvLastServer);
                     TextView tvDistanceServer = (TextView) findViewById(R.id.tvDistanceServer);
                     tvLastDateServer.setText("Last Backup: " +  UserInfo.getString("lastDateServer", ""));
-                    tvDistanceServer.setText("Distance :" + getDistance(UserInfo.getString("lastDateServer", "")));
+                    tvDistanceServer.setText("Distance: " + getDistance(UserInfo.getString("lastDateServer", "")));
                 } else if (!errorS.equals("")) {
                     Toast.makeText(Backup.this, errorS, Toast.LENGTH_SHORT).show();
                 } else {
@@ -938,17 +938,19 @@ public class Backup extends Activity {
                             File dbPackage504 = getDatabasePath(v.DATABASE_PACKAGE504);
                             if (dbPackage504.exists()) {
                                 inputStream = con.retrieveFileStream(s + userUsername + v.rootBackups + "pathPackage504Server");
-                                r = new BufferedReader(new InputStreamReader(inputStream));
-                                pathPackage504 = r.readLine();
-                                inputStream.close();
-                                r.close();
-                                con.completePendingCommand();
-                                pathPackage504 = pathPackage504.replace("com.hister.mydictionary", "ir.khaled.mydictionary");
+                                if (inputStream != null) {
+                                    r = new BufferedReader(new InputStreamReader(inputStream));
+                                    pathPackage504 = r.readLine();
+                                    inputStream.close();
+                                    r.close();
+                                    con.completePendingCommand();
+                                    pathPackage504 = pathPackage504.replace("com.hister.mydictionary", "ir.khaled.mydictionary");
 
-                                dbPackage504.delete();
+                                    dbPackage504.delete();
 
-                                FileOutputStream outBackup = new FileOutputStream(this.pathPackage504);
-                                con.retrieveFile(s + userUsername + v.rootBackups + "package504 " + date + ".db", outBackup);
+                                    FileOutputStream outBackup = new FileOutputStream(this.pathPackage504);
+                                    con.retrieveFile(s + userUsername + v.rootBackups + "package504 " + date + ".db", outBackup);
+                                }
                             }
 
 
@@ -1011,7 +1013,7 @@ public class Backup extends Activity {
                     TextView tvLastDateServer = (TextView) findViewById(R.id.tvLastServer);
                     TextView tvDistanceServer = (TextView) findViewById(R.id.tvDistanceServer);
                     tvLastDateServer.setText("Last backup: " + UserInfo.getString("lastDateServer", ""));
-                    tvDistanceServer.setText("Distance" + getDistance(UserInfo.getString("lastDateServer", "")));
+                    tvDistanceServer.setText("Distance: " + getDistance(UserInfo.getString("lastDateServer", "")));
                     Toast.makeText(Backup.this, "successfully restored.", Toast.LENGTH_SHORT).show();
                 } else if (!errorS.equals("")) {
                     Toast.makeText(Backup.this, errorS, Toast.LENGTH_SHORT).show();
@@ -1173,23 +1175,24 @@ public class Backup extends Activity {
                 File dbPackage504 = getDatabasePath(v.DATABASE_PACKAGE504);
                 if (dbPackage504.exists()) {
                     inputStream = new FileInputStream(backupPath + "pathPackage504Local");
-                    r = new BufferedReader(new InputStreamReader(inputStream));
-                    pathPackage504 = r.readLine();
-                    inputStream.close();
-                    r.close();
-                    pathPackage504 = pathPackage504.replace("com.hister.mydictionary", "ir.khaled.mydictionary");
+                    if (inputStream != null) {
+                        r = new BufferedReader(new InputStreamReader(inputStream));
+                        pathPackage504 = r.readLine();
+                        inputStream.close();
+                        r.close();
+                        pathPackage504 = pathPackage504.replace("com.hister.mydictionary", "ir.khaled.mydictionary");
 
 
-                    File currentDB = new File(dbPackage504, "");
-                    currentDB.delete();
+                        File currentDB = new File(dbPackage504, "");
+                        currentDB.delete();
 
 
-                    FileChannel src = new FileInputStream(backupPath + "package504 " + date + ".db").getChannel();
-                    FileChannel dst = new FileOutputStream(pathPackage504).getChannel();
-                    dst.transferFrom(src, 0, src.size());
-                    src.close();
-                    dst.close();
-
+                        FileChannel src = new FileInputStream(backupPath + "package504 " + date + ".db").getChannel();
+                        FileChannel dst = new FileOutputStream(pathPackage504).getChannel();
+                        dst.transferFrom(src, 0, src.size());
+                        src.close();
+                        dst.close();
+                    }
                 }
 
                 inputStream = new FileInputStream(backupPath + "pathMainLocal");

@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ir.khaled.mydictionary"
     android:installLocation="auto"
-    android:versionCode="26"
-    android:versionName="2.1.1" >
+    android:versionCode="29"
+    android:versionName="2.2.0" >
 
     <uses-sdk
         android:minSdkVersion="9"
@@ -61,6 +61,15 @@
         <activity
             android:name="ir.khaled.mydictionary.PackageActivity"
             android:label="@string/title_activity_package" >
+        </activity>
+        <activity
+            android:name="ir.khaled.mydictionary.TagsActivity"
+            android:label="@string/title_activity_tags"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="ir.khaled.mydictionary.TagsActivity" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
     </application>
 

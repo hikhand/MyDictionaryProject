@@ -25,6 +25,8 @@
     <color name="black">#FF000000</color>
     <color name="whitegrey">#FFF2F2F2</color>
 
+    <color name="my_blue">#3183c2</color>
+
     <style name="Theme_Dialog" parent="@android:style/Theme.Dialog">
         <item name="@android:windowBackground">@color/whitegrey</item>
         <item name="@android:textColor">@color/black</item>

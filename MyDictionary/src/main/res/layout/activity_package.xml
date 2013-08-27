@@ -10,9 +10,9 @@
             android:layout_height="wrap_content"
             android:id="@+id/packageListView"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="45dp"
             android:drawSelectorOnTop="false"
-            android:choiceMode="multipleChoice"/>
+            android:choiceMode="multipleChoice"
+            android:layout_marginTop="-2dp"/>
 
     <EditText
             android:layout_width="wrap_content"
@@ -30,7 +30,8 @@
             android:hint="Search here"
             android:layout_toLeftOf="@+id/packageSummeryTV"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="5dp"/>
+            android:layout_marginTop="8dp"
+            android:layout_alignBottom="@+id/button"/>
 
     <TextView
             android:layout_width="wrap_content"
@@ -44,6 +45,23 @@
             android:textColor="#3d3a3d"
             android:layout_alignBaseline="@+id/packageSearchET"
             android:layout_alignParentRight="true"
-            android:layout_marginRight="3dp"/>
+            android:paddingLeft="4dp"
+            android:paddingTop="5dp"
+            android:paddingRight="8dp"
+            android:paddingBottom="5dp"/>
+
+    <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add New"
+            android:id="@+id/button"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:onClick="AddNew"
+            android:layout_alignParentRight="false"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="2dp"
+            android:layout_marginTop="5dp"
+            android:visibility="invisible"/>
 
 </RelativeLayout>
